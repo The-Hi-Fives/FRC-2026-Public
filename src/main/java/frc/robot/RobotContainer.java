@@ -1,12 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,10 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.Driving;
-import frc.robot.commands.AutoRoutines;
-import frc.robot.commands.ManualDriveCommand;
+import frc.robot.commands.DriveCommands;
 import frc.robot.commands.SubsystemCommands;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Floor;
@@ -26,111 +15,138 @@ import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Swerve;
-import frc.util.SwerveTelemetry;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.generated.TunerConstants;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
+/** RobotContainer using AdvantageKit Drive subsystem. */
 public class RobotContainer {
-    private final Swerve swerve = new Swerve();
-    private final Intake intake = new Intake();
-    private final Floor floor = new Floor();
-    private final Feeder feeder = new Feeder();
-    private final Shooter shooter = new Shooter();
-    private final Hood hood = new Hood();
-    private final Hanger hanger = new Hanger();
-    private final Limelight limelight = new Limelight("limelight");
+  // Drive
+  private final Drive drive;
 
-    private final SwerveTelemetry swerveTelemetry = new SwerveTelemetry(Driving.kMaxSpeed.in(MetersPerSecond));
-    
-    private final CommandXboxController driver = new CommandXboxController(0);
+  // Other subsystems (kept from original project)
+  private final Intake intake = new Intake();
+  private final Floor floor = new Floor();
+  private final Feeder feeder = new Feeder();
+  private final Shooter shooter = new Shooter();
+  private final Hood hood = new Hood();
+  private final Hanger hanger = new Hanger();
+  private final Limelight limelight = new Limelight("limelight");
 
-    private final AutoRoutines autoRoutines = new AutoRoutines(
-        swerve,
-        intake,
-        floor,
-        feeder,
-        shooter,
-        hood,
-        hanger,
-        limelight
-    );
-    private final SubsystemCommands subsystemCommands = new SubsystemCommands(
-        swerve,
-        intake,
-        floor,
-        feeder,
-        shooter,
-        hood,
-        hanger,
-        () -> -driver.getLeftY(),
-        () -> -driver.getLeftX()
-    );
-    
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer() {
-        configureBindings();
-        autoRoutines.configure();
-        swerve.registerTelemetry(swerveTelemetry::telemeterize);
-    }
-    
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-     * predicate, or via the named factories in {@link
-     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-     * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-     * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
-     */
-    private void configureBindings() {
-        configureManualDriveBindings();
-        limelight.setDefaultCommand(updateVisionCommand());
+  // Controller
+  private final CommandXboxController driver = new CommandXboxController(0);
 
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
-            .onTrue(intake.homingCommand())
-            .onTrue(hanger.homingCommand());
+  // Commands
+  private final SubsystemCommands subsystemCommands;
 
-        driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());
-        driver.rightBumper().whileTrue(subsystemCommands.shootManually());
-        driver.leftTrigger().whileTrue(intake.intakeCommand());
-        driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));
+  // Auto chooser (PathPlanner)
+  private final LoggedDashboardChooser<Command> autoChooser;
 
-        driver.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
-        driver.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
+  public RobotContainer() {
+    // Instantiate Drive based on mode
+    switch (Constants.currentMode) {
+      case REAL:
+        drive =
+            new Drive(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
+        break;
+      case SIM:
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIOSim(TunerConstants.FrontLeft),
+                new ModuleIOSim(TunerConstants.FrontRight),
+                new ModuleIOSim(TunerConstants.BackLeft),
+                new ModuleIOSim(TunerConstants.BackRight));
+        break;
+      default:
+        drive = new Drive(new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
+        break;
     }
 
-    private void configureManualDriveBindings() {
-        final ManualDriveCommand manualDriveCommand = new ManualDriveCommand(
-            swerve, 
-            () -> -driver.getLeftY(), 
-            () -> -driver.getLeftX(), 
-            () -> -driver.getRightX()
-        );
-        swerve.setDefaultCommand(manualDriveCommand);
-        driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
-        driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
-        driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
-        driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
-        driver.back().onTrue(Commands.runOnce(() -> manualDriveCommand.seedFieldCentric()));
-    }
+    subsystemCommands =
+        new SubsystemCommands(
+            drive,
+            intake,
+            floor,
+            feeder,
+            shooter,
+            hood,
+            hanger,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX());
 
-    private Command updateVisionCommand() {
-        return limelight.run(() -> {
-            final Pose2d currentRobotPose = swerve.getState().Pose;
-            final Optional<Limelight.Measurement> measurement = limelight.getMeasurement(currentRobotPose);
-            measurement.ifPresent(m -> {
-                swerve.addVisionMeasurement(
-                    m.poseEstimate.pose, 
-                    m.poseEstimate.timestampSeconds,
-                    m.standardDeviations
-                );
-            });
-        })
+    configureBindings();
+
+    // PathPlanner auto chooser (Drive constructor configures AutoBuilder)
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser());
+  }
+
+  private void configureBindings() {
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+
+    // Lock to headings with buttons (optional)
+    driver.a().whileTrue(DriveCommands.joystickDriveAtAngle(drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> Rotation2d.kZero));
+
+    // X pattern
+    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+    // Reset gyro heading
+    driver
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                    drive)
+                .ignoringDisable(true));
+
+    // Original subsystem bindings
+    RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
+        .onTrue(intake.homingCommand())
+        .onTrue(hanger.homingCommand());
+
+    driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());
+    driver.rightBumper().whileTrue(subsystemCommands.shootManually());
+    driver.leftTrigger().whileTrue(intake.intakeCommand());
+    driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));
+
+    driver.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
+    driver.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
+
+    // Vision update (same logic as original)
+    limelight.setDefaultCommand(updateVisionCommand());
+  }
+
+  private Command updateVisionCommand() {
+    return limelight
+        .run(
+            () ->
+                limelight
+                    .getMeasurement(drive.getPose())
+                    .ifPresent(
+                        (m) ->
+                            drive.addVisionMeasurement(
+                                m.poseEstimate.pose,
+                                m.poseEstimate.timestampSeconds,
+                                m.standardDeviations)))
         .ignoringDisable(true);
-    }
+  }
+
+  public Command getAutonomousCommand() {
+    return autoChooser.get();
+  }
 }

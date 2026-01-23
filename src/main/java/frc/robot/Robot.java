@@ -1,49 +1,77 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-/**
- * The methods in this class are called automatically corresponding to each mode, as described in
- * the TimedRobot documentation. If you change the name of this class or the package after creating
- * this project, you must also update the Main.java file in the project.
- */
-public class Robot extends TimedRobot {
-    private final RobotContainer m_robotContainer;
-    
-    /**
-     * This function is run when the robot is first started up and should be used for any
-     * initialization code.
-     */
-    public Robot() {
-        // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-        // autonomous chooser on the dashboard.
-        m_robotContainer = new RobotContainer();
-        SmartDashboard.putData(CommandScheduler.getInstance());
-        RobotController.setBrownoutVoltage(Volts.of(6.1));
+/** Robot entrypoint with AdvantageKit logging. */
+public class Robot extends LoggedRobot {
+  private Command autonomousCommand;
+  private RobotContainer robotContainer;
+
+  public Robot() {
+    // Brownout (matches original project)
+    RobotController.setBrownoutVoltage(Volts.of(6.1));
+
+    // Basic metadata
+    Logger.recordMetadata("ProjectName", "FRC-2026-Public + AdvantageKit Drive");
+
+    // Set up data receivers & replay source
+    switch (Constants.currentMode) {
+      case REAL:
+        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+      case SIM:
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+      case REPLAY:
+        setUseTiming(false);
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
     }
-    
-    /**
-     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-     * that you want ran during disabled, autonomous, teleoperated and test.
-     *
-     * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-     * SmartDashboard integrated updating.
-     */
-    @Override
-    public void robotPeriodic() {
-        // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-        // commands, running already-scheduled commands, removing finished or interrupted commands,
-        // and running subsystem periodic() methods.  This must be called from the robot's periodic
-        // block in order for anything in the Command-based framework to work.
-        CommandScheduler.getInstance().run();
+
+    // Start AdvantageKit logger
+    Logger.start();
+
+    // Instantiate container
+    robotContainer = new RobotContainer();
+    SmartDashboard.putData(CommandScheduler.getInstance());
+  }
+
+  @Override
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
+
+  @Override
+  public void autonomousInit() {
+    autonomousCommand = robotContainer.getAutonomousCommand();
+    if (autonomousCommand != null) {
+      autonomousCommand.schedule();
     }
+  }
+
+  @Override
+  public void teleopInit() {
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
+    }
+  }
+
+  @Override
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 }
