@@ -10,10 +10,10 @@ import frc.robot.subsystems.Hanger;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.Swerve;
 
 public final class SubsystemCommands {
-    private final Drive drive;
+    private final Swerve swerve;
     private final Intake intake;
     private final Floor floor;
     private final Feeder feeder;
@@ -25,7 +25,7 @@ public final class SubsystemCommands {
     private final DoubleSupplier leftInput;
 
     public SubsystemCommands(
-        Drive drive,
+        Swerve swerve,
         Intake intake,
         Floor floor,
         Feeder feeder,
@@ -35,7 +35,7 @@ public final class SubsystemCommands {
         DoubleSupplier forwardInput,
         DoubleSupplier leftInput
     ) {
-        this.drive = drive;
+        this.swerve = swerve;
         this.intake = intake;
         this.floor = floor;
         this.feeder = feeder;
@@ -48,7 +48,7 @@ public final class SubsystemCommands {
     }
 
     public SubsystemCommands(
-        Drive drive,
+        Swerve swerve,
         Intake intake,
         Floor floor,
         Feeder feeder,
@@ -57,7 +57,7 @@ public final class SubsystemCommands {
         Hanger hanger
     ) {
         this(
-            drive,
+            swerve,
             intake,
             floor,
             feeder,
@@ -70,8 +70,8 @@ public final class SubsystemCommands {
     }
 
     public Command aimAndShoot() {
-        final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(drive, forwardInput, leftInput);
-        final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, drive::getPose);
+        final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(swerve, forwardInput, leftInput);
+        final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getState().Pose);
         return Commands.parallel(
             aimAndDriveCommand,
             Commands.waitSeconds(0.25)

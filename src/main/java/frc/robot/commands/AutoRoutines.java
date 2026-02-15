@@ -13,7 +13,6 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import choreo.trajectory.SwerveSample;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -24,10 +23,10 @@ import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.Swerve;
 
 public final class AutoRoutines {
-    private final Drive drive;
+    private final Swerve swerve;
     private final Intake intake;
     private final Floor floor;
     private final Feeder feeder;
@@ -42,7 +41,7 @@ public final class AutoRoutines {
     private final AutoChooser autoChooser;
 
     public AutoRoutines(
-        Drive drive,
+        Swerve swerve,
         Intake intake,
         Floor floor,
         Feeder feeder,
@@ -51,7 +50,7 @@ public final class AutoRoutines {
         Hanger hanger,
         Limelight limelight
     ) {
-        this.drive = drive;
+        this.swerve = swerve;
         this.intake = intake;
         this.floor = floor;
         this.feeder = feeder;
@@ -60,17 +59,9 @@ public final class AutoRoutines {
         this.hanger = hanger;
         this.limelight = limelight;
 
-        this.subsystemCommands = new SubsystemCommands(drive, intake, floor, feeder, shooter, hood, hanger);
+        this.subsystemCommands = new SubsystemCommands(swerve, intake, floor, feeder, shooter, hood, hanger);
 
-        // Create a Choreo AutoFactory backed by the AdvantageKit Drive subsystem
-        this.autoFactory = new AutoFactory(
-            drive::getPose,
-            drive::setPose,
-            (SwerveSample sample) -> drive.runVelocity(sample.getChassisSpeeds()),
-            true,
-            drive,
-            (sample, isStart) -> {}
-        );
+        this.autoFactory = swerve.createAutoFactory();
         this.autoChooser = new AutoChooser();
     }
 
