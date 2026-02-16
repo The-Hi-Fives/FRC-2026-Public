@@ -22,35 +22,36 @@ public class Hood extends SubsystemBase {
   /* ==================== USER TUNING ==================== */
 
   // Percent range (kept from your servo version)
-  private static final double kMinPercent = 0.01;
-  private static final double kMaxPercent = 0.77;
-  private static final double kPercentTolerance = 0.01;
+  private static final double kMinPercent = 0.01; //0.01
+  private static final double kMaxPercent = 0.77; //0.77
+  private static final double kPercentTolerance = 0.01; //0.01
 
   // Hood mechanical range (MECHANISM rotations)
   // Example: 90° hood travel = 0.25 rotations
-  private static final double kMinMechRot = 0.0;
-  private static final double kMaxMechRot = 0.25;
+  private static final double kMinMechRot = 0.0; //0.0
+  private static final double kMaxMechRot = 0.25; //0.25
 
   // Gear ratio: motor rotations per hood rotation
   // CHANGE THIS to match your real gearing
-  private static final double kMotorRotsPerMechRot = 100.0;
+  private static final double kMotorRotsPerMechRot = 100.0; //100.0
 
   // PID (start conservative)
-  private static final double kP = 40.0;
-  private static final double kI = 0.0;
-  private static final double kD = 0.0;
+  private static final double kP = 15.0; //40.0
+  private static final double kI = 0.0; //0.0
+  private static final double kD = 0; //0.0
 
   /* ===================================================== */
 
   private final TalonFX hoodMotor;
-  private final PositionVoltage positionRequest = new PositionVoltage(0);
+  private final PositionVoltage positionRequest = new PositionVoltage(0); //0
+  
 
-  private double targetPercent = 0.5;
+  private double targetPercent = 0.5; //0.5
 
   private final StatusSignal<Angle> motorPosition;
 
   public Hood() {
-    hoodMotor = new TalonFX(Ports.kHoodKrakenId);
+    hoodMotor = new TalonFX(Ports.kHoodKrakenId, Ports.kCANivoreCANBus);
 
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -102,12 +103,12 @@ public class Hood extends SubsystemBase {
 
     // Convert mechRot back to percent (and clamp for safety)
     double percent = (mechRot - kMinMechRot) / (kMaxMechRot - kMinMechRot);
-    return MathUtil.clamp(percent, 0.0, 1.0);
+    return MathUtil.clamp(percent, 0.0, 1.0); //0.0, 1.0
   }
 
   @Override
   public void periodic() {
-    motorPosition.refresh();
+    //motorPosition.refresh();
   }
 
   @Override
