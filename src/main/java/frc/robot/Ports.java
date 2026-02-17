@@ -5,7 +5,7 @@ import com.ctre.phoenix6.CANBus;
 public final class Ports {
     // CAN Buses
     public static final CANBus kRoboRioCANBus = new CANBus("rio");
-    public static final CANBus kCANivoreCANBus = new CANBus("main");
+    public static final CANBus kCANivoreCANBus = new CANBus("CANivore");
 
     // Talon FX IDs
     public static final int kIntakePivot = 13;
