@@ -65,12 +65,17 @@ public class Hood extends SubsystemBase {
 
   private final TalonFX hoodMotor;
   private final PositionVoltage positionRequest = new PositionVoltage(0); //0
+<<<<<<< HEAD
   private final VoltageOut pivotVoltageRequest = new VoltageOut(0);
       private final MotionMagicVoltage pivotMotionMagicRequest = new MotionMagicVoltage(0).withSlot(0);
 
    private boolean isHomed = false;
 
 
+=======
+  
+
+>>>>>>> d6f2c1ea613fed74e2f8b8bbd7da1f1fb13e836c
   private double targetPercent = 0.5; //0.5
 
   private final StatusSignal<Angle> motorPosition;
