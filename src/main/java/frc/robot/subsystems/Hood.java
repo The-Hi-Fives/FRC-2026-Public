@@ -23,7 +23,7 @@ public class Hood extends SubsystemBase {
 
   // Percent range (kept from your servo version)
   private static final double kMinPercent = 0.01; //0.01
-  private static final double kMaxPercent = 0.77; //0.77
+  private static final double kMaxPercent = 0.33; //0.77
   private static final double kPercentTolerance = 0.01; //0.01
 
   // Hood mechanical range (MECHANISM rotations)
@@ -108,7 +108,7 @@ public class Hood extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //motorPosition.refresh();
+    motorPosition.refresh();
   }
 
   @Override
