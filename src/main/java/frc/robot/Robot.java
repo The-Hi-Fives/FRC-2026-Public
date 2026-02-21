@@ -6,8 +6,18 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.Optional;
+
+import com.ctre.phoenix6.controls.SolidColor;
+import com.ctre.phoenix6.hardware.CANdle;
+import com.ctre.phoenix6.signals.RGBWColor;
+
+import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.simulation.SolenoidSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -31,6 +41,17 @@ public class Robot extends TimedRobot {
         RobotController.setBrownoutVoltage(Volts.of(6.1));
     }
     
+    private final CANdle shootingColoLight = new CANdle(0);
+
+    private final RGBWColor statusGreen = new RGBWColor(0, 255, 0, 0);
+    private final RGBWColor statusRed = new RGBWColor(255, 0, 0, 0);
+
+    private final SolidColor ledStatusColorGreen = new SolidColor(0, 0).withColor(statusGreen);
+    private final SolidColor ledStatusColorRed = new SolidColor(0, 0).withColor(statusRed);
+
+
+
+
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
@@ -45,5 +66,84 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+    }
+
+    public void isHubActive() {
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        // If we have no alliance, we cannot be enabled, therefore no hub.
+        if (alliance.isEmpty()) {
+            return;
+        }
+        // Hub is always enabled in autonomous.
+        if (DriverStation.isAutonomousEnabled()) {
+            return;
+        }
+        // At this point, if we're not teleop enabled, there is no hub.
+        if (!DriverStation.isTeleopEnabled()) {
+            return;
+        }
+
+        // We're teleop enabled, compute.
+        double matchTime = DriverStation.getMatchTime();
+        String gameData = DriverStation.getGameSpecificMessage();
+        // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
+        if (gameData.isEmpty()) {
+            return;
+        }
+        boolean redInactiveFirst = false;
+        switch (gameData.charAt(0)) {
+            case 'R' -> redInactiveFirst = true;
+            case 'B' -> redInactiveFirst = false;
+            default -> {
+            // If we have invalid game data, assume hub is active.
+            return;
+            }
+        }
+
+        // Shift was is active for blue if red won auto, or red if blue won auto.
+        // boolean shift1Active = switch (alliance.get()) {
+        //     case Red -> !redInactiveFirst;
+        //     case Blue -> redInactiveFirst;
+        // };
+
+        if (matchTime > 130) {
+            // Transition shift, hub is active.
+            return;
+        } else if (matchTime > 105) {
+            // Shift 1
+            if(redInactiveFirst) {
+                shootingColoLight.setControl(ledStatusColorGreen);
+            } else {
+                shootingColoLight.setControl(ledStatusColorRed);
+            }
+            // return shift1Active;
+        } else if (matchTime > 80) {
+            // Shift 2
+            if(!redInactiveFirst) {
+                shootingColoLight.setControl(ledStatusColorGreen);
+            } else {
+                shootingColoLight.setControl(ledStatusColorRed);
+            }
+            // return !shift1Active;
+        } else if (matchTime > 55) {
+            // Shift 3
+            if(redInactiveFirst) {
+                shootingColoLight.setControl(ledStatusColorGreen);
+            } else {
+                shootingColoLight.setControl(ledStatusColorRed);
+            }
+            // return shift1Active;
+        } else if (matchTime > 30) {
+            // Shift 4
+            if(!redInactiveFirst) {
+                shootingColoLight.setControl(ledStatusColorGreen);
+            } else {
+                shootingColoLight.setControl(ledStatusColorRed);
+            }
+            // return !shift1Active;
+        } else {
+            // End game, hub always active.
+            return;
+        }
     }
 }

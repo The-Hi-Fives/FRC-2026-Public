@@ -2,9 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -14,31 +12,12 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Volts;
-
 import frc.robot.Ports;
+
 public class Hood extends SubsystemBase {
-
-  public enum Position {
-        HOMED(110),
-        STOWED(100);
-
-        private final double degrees;
-
-        private Position(double degrees) {
-            this.degrees = degrees;
-        }
-
-        public Angle angle() {
-            return Degrees.of(degrees);
-        }
-    }
 
   /* ==================== USER TUNING ==================== */
 
@@ -65,17 +44,8 @@ public class Hood extends SubsystemBase {
 
   private final TalonFX hoodMotor;
   private final PositionVoltage positionRequest = new PositionVoltage(0); //0
-<<<<<<< HEAD
-  private final VoltageOut pivotVoltageRequest = new VoltageOut(0);
-      private final MotionMagicVoltage pivotMotionMagicRequest = new MotionMagicVoltage(0).withSlot(0);
-
-   private boolean isHomed = false;
-
-
-=======
   
 
->>>>>>> d6f2c1ea613fed74e2f8b8bbd7da1f1fb13e836c
   private double targetPercent = 0.5; //0.5
 
   private final StatusSignal<Angle> motorPosition;
@@ -97,34 +67,6 @@ public class Hood extends SubsystemBase {
     setPercent(targetPercent);
     SmartDashboard.putData(this);
   }
-
-   public Command homingCommand() {
-        return Commands.sequence(
-            runOnce(() -> setPivotPercentOutput(0.1)),
-            Commands.waitUntil(() -> hoodMotor.getSupplyCurrent().getValue().in(Amps) > 6),
-            runOnce(() -> {
-                hoodMotor.setPosition(Position.HOMED.angle());
-                isHomed = true;
-                set(Position.STOWED);
-            })
-        )
-        .unless(() -> isHomed)
-        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    }
-
-     private void setPivotPercentOutput(double percentOutput) {
-        hoodMotor.setControl(
-            pivotVoltageRequest
-                .withOutput(Volts.of(percentOutput * 12.0))
-        );
-    }
-
-     public void set(Position position) {
-        hoodMotor.setControl(
-            pivotMotionMagicRequest
-                .withPosition(position.angle())
-        );
-    }
 
   /** Set hood position as a percent [0.0 – 1.0] */
   public void setPercent(double percent) {
