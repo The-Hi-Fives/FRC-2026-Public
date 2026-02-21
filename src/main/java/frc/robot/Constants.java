@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 
 /**
@@ -20,6 +21,19 @@ import frc.robot.generated.TunerConstants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final Mode simMode = Mode.SIM;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
     public static class Driving {
         public static final LinearVelocity kMaxSpeed = TunerConstants.kSpeedAt12Volts;
         public static final AngularVelocity kMaxRotationalRate = RotationsPerSecond.of(1);
@@ -29,4 +43,5 @@ public final class Constants {
     public static class KrakenX60 {
         public static final AngularVelocity kFreeSpeed = RPM.of(6000);
     }
+
 }

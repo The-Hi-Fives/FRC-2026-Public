@@ -82,9 +82,13 @@ public final class SubsystemCommands {
     }
 
     public Command shootManually() {
-        return shooter.dashboardSpinUpCommand()
-            .andThen(feed())
-            .handleInterrupt(() -> shooter.stop());
+        final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getState().Pose);
+         return Commands.parallel(
+            Commands.waitSeconds(0.25)
+                .andThen(prepareShotCommand),
+            Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
+                .andThen(feed())
+        );
     }
 
     private Command feed() {
