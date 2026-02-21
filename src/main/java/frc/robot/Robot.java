@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.SolenoidSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Limelight;
+
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -49,8 +51,7 @@ public class Robot extends TimedRobot {
     private final SolidColor ledStatusColorGreen = new SolidColor(0, 0).withColor(statusGreen);
     private final SolidColor ledStatusColorRed = new SolidColor(0, 0).withColor(statusRed);
 
-
-
+    private LimelightHelpers.RawFiducial[] detectedTags;
 
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -66,6 +67,17 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+        isHubActive();
+
+        detectedTags = LimelightHelpers.getRawFiducials("limelight");
+
+        SmartDashboard.putString("detectedTags Size: ", String.valueOf(detectedTags.length));
+        //            SmartDashboard.putNumberArray("Detected IDs: ", )
+        for(int i = 0; i < detectedTags.length; i++)
+        {
+//        for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
+            SmartDashboard.putNumber("Tag" + i + "# ", detectedTags[i].id);
+        }
     }
 
     public void isHubActive() {
