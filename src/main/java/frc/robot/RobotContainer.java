@@ -48,6 +48,8 @@ public class RobotContainer {
     private final SwerveTelemetry swerveTelemetry = new SwerveTelemetry(Driving.kMaxSpeed.in(MetersPerSecond));
     
     private final CommandXboxController driver = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(0);
+
 
     private final AutoRoutines autoRoutines = new AutoRoutines(
         swerve,
@@ -89,7 +91,7 @@ public class RobotContainer {
      */
     private void configureBindings() {
         configureManualDriveBindings();
-        limelight.setDefaultCommand(updateVisionCommand());
+        // limelight.setDefaultCommand(updateVisionCommand());
 
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
@@ -112,11 +114,14 @@ public class RobotContainer {
             () -> -driver.getRightX()
         );
         swerve.setDefaultCommand(manualDriveCommand);
-        driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
-        driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
-        driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
-        driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
+        driver.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U")));
+        driver.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D")));
+        // driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
+        // driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
+        // driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
+        // driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
         driver.start().onTrue(Commands.runOnce(() -> manualDriveCommand.seedFieldCentric()));
+
     }
 
     private Command updateVisionCommand() {

@@ -1,7 +1,9 @@
 package frc.robot.commands;
 
+import java.util.Objects;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Feeder;
@@ -76,7 +78,7 @@ public final class SubsystemCommands {
             aimAndDriveCommand,
             Commands.waitSeconds(0.25)
                 .andThen(prepareShotCommand),
-            Commands.waitUntil(() -> aimAndDriveCommand.isAimed() && prepareShotCommand.isReadyToShoot())
+            Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
                 .andThen(feed())
         );
     }
@@ -96,5 +98,18 @@ public final class SubsystemCommands {
                     .andThen(floor.feedCommand().alongWith(intake.agitateCommand()))
             )
         );
+    }
+
+    public void setHoodPercent(String state) {
+
+        double currentHoodPerent = hood.getCurrentPercent();
+        SmartDashboard.putNumber("Current Hood Percent: ", currentHoodPerent);
+
+        if(Objects.equals(state, "U")){
+            hood.setPercent(currentHoodPerent + .01);
+        } else {
+            hood.setPercent(currentHoodPerent - .01);
+        }
+
     }
 }

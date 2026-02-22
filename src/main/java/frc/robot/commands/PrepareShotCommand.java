@@ -82,18 +82,24 @@ public class PrepareShotCommand extends Command {
             //2800, 0.19
             shooter.setRPM(2800);
             hood.setPosition(0.19);
+            SmartDashboard.putNumber("RPM: ", 2800);
+            SmartDashboard.putNumber("Position: ", 0.19);
         }
         else if (distanceFromTag <= 114)
         {
             //3275, 0.40
             shooter.setRPM(3275);
             hood.setPosition(0.4);
+            SmartDashboard.putNumber("RPM: ", 3275);
+            SmartDashboard.putNumber("Position: ", 0.4);
         }
         else if (distanceFromTag <= 165)
         {
             //3650, 0.48
             shooter.setRPM(3650);
             hood.setPosition(0.48);
+            SmartDashboard.putNumber("RPM: ", 3650);
+            SmartDashboard.putNumber("Position: ", 0.48);
         }
         else
         {

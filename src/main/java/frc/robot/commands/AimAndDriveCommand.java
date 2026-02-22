@@ -55,13 +55,13 @@ public class AimAndDriveCommand extends Command {
         return GeometryUtil.isNear(targetHeading, currentHeadingInOperatorPerspective, kAimTolerance);
     }
 
-    private Rotation2d getDirectionToHub() {
-        final Translation2d hubPosition = Landmarks.hubPosition();
-        final Translation2d robotPosition = swerve.getState().Pose.getTranslation();
-        final Rotation2d hubDirectionInBlueAlliancePerspective = hubPosition.minus(robotPosition).getAngle();
-        final Rotation2d hubDirectionInOperatorPerspective = hubDirectionInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection());
-        return hubDirectionInOperatorPerspective;
-    }
+    // private Rotation2d getDirectionToHub() {
+    //     // // final Translation2d hubPosition = Landmarks.hubPosition();
+    //     // final Translation2d robotPosition = swerve.getState().Pose.getTranslation();
+    //     // // final Rotation2d hubDirectionInBlueAlliancePerspective = hubPosition.minus(robotPosition).getAngle();
+    //     // final Rotation2d hubDirectionInOperatorPerspective = hubDirectionInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection());
+    //     // return hubDirectionInOperatorPerspective;
+    // }
 
     @Override
     public void execute() {
@@ -70,7 +70,7 @@ public class AimAndDriveCommand extends Command {
             fieldCentricFacingAngleRequest
                 .withVelocityX(Driving.kMaxSpeed.times(input.forward))
                 .withVelocityY(Driving.kMaxSpeed.times(input.left))
-                .withTargetDirection(getDirectionToHub())
+                // .withTargetDirection(getDirectionToHub())
         );
     }
 

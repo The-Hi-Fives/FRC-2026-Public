@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.SolenoidSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Limelight;
 
 
@@ -36,20 +37,22 @@ public class Robot extends TimedRobot {
      * initialization code.
      */
     public Robot() {
+        Hood hood = new Hood();
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotController.setBrownoutVoltage(Volts.of(6.1));
+        SmartDashboard.putNumber("Current Hood Percent: ", hood.getCurrentPercent());
     }
     
-    private final CANdle shootingColoLight = new CANdle(0);
+    private final CANdle shootingColoLight = new CANdle(22, "rio");
 
     private final RGBWColor statusGreen = new RGBWColor(0, 255, 0, 0);
     private final RGBWColor statusRed = new RGBWColor(255, 0, 0, 0);
 
-    private final SolidColor ledStatusColorGreen = new SolidColor(0, 0).withColor(statusGreen);
-    private final SolidColor ledStatusColorRed = new SolidColor(0, 0).withColor(statusRed);
+    private final SolidColor ledStatusColorGreen = new SolidColor(8, 399).withColor(statusGreen);
+    private final SolidColor ledStatusColorRed = new SolidColor(8,399).withColor(statusRed);
 
 //    private LimelightHelpers.RawFiducial[] detectedTags;
 
@@ -67,7 +70,11 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        isHubActive();
+        // isHubActive();
+        shootingColoLight.setControl(ledStatusColorRed);
+
+        
+
 
 //        detectedTags = LimelightHelpers.getRawFiducials("limelight");
 //

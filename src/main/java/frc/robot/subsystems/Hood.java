@@ -23,17 +23,17 @@ public class Hood extends SubsystemBase {
 
   // Percent range (kept from your servo version)
   private static final double kMinPercent = 0.01; //0.01
-  private static final double kMaxPercent = 0.33; //0.77
+  private static final double kMaxPercent = 0.99; //0.77
   private static final double kPercentTolerance = 0.01; //0.01
 
   // Hood mechanical range (MECHANISM rotations)
   // Example: 90° hood travel = 0.25 rotations
   private static final double kMinMechRot = 0.0; //0.0
-  private static final double kMaxMechRot = 0.25; //0.25
+  private static final double kMaxMechRot = 0.125; //0.25
 
   // Gear ratio: motor rotations per hood rotation
   // CHANGE THIS to match your real gearing
-  private static final double kMotorRotsPerMechRot = 100.0; //100.0
+  private static final double kMotorRotsPerMechRot = 60.07; //100.0
 
   // PID (start conservative)
   private static final double kP = 15.0; //40.0
