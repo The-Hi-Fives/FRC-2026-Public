@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -14,6 +15,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Landmarks;
+import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Shooter;
 
@@ -60,11 +62,50 @@ public class PrepareShotCommand extends Command {
 
     @Override
     public void execute() {
-        final Distance distanceToHub = getDistanceToHub();
-        final Shot shot = distanceToShotMap.get(distanceToHub);
-        shooter.setRPM(shot.shooterRPM);
-        hood.setPosition(shot.hoodPosition);
-        SmartDashboard.putNumber("Distance to Hub (inches)", distanceToHub.in(Inches));
+        double distanceFromTag = 0;
+        int[] validTags = {26, 27, 20, 24};
+//        final Distance distanceToHub = getDistanceToHub();
+//        final Shot shot = distanceToShotMap.get(distanceToHub);
+//        Shot shot;
+        LimelightHelpers.RawFiducial[] detectedTags = LimelightHelpers.getRawFiducials("limelight");
+        for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
+            if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
+            {
+                //Distance from tag in inches
+                distanceFromTag = detectedTag.distToCamera * 39.37;
+                SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
+            }
+        }
+
+        if(distanceFromTag <= 52)
+        {
+            //2800, 0.19
+            shooter.setRPM(2800);
+            hood.setPosition(0.19);
+        }
+        else if (distanceFromTag <= 114)
+        {
+            //3275, 0.40
+            shooter.setRPM(3275);
+            hood.setPosition(0.4);
+        }
+        else if (distanceFromTag <= 165)
+        {
+            //3650, 0.48
+            shooter.setRPM(3650);
+            hood.setPosition(0.48);
+        }
+        else
+        {
+            //4000 0.5
+            shooter.setRPM(4000);
+            hood.setPosition(0.5);
+        }
+
+//        shooter.setRPM(shot.shooterRPM);
+//        hood.setPosition(shot.hoodPosition);
+//        SmartDashboard.putNumber("Distance to Hub (inches)", distanceToHub.in(Inches));
+
     }
 
     @Override

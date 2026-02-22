@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
     private final SolidColor ledStatusColorGreen = new SolidColor(0, 0).withColor(statusGreen);
     private final SolidColor ledStatusColorRed = new SolidColor(0, 0).withColor(statusRed);
 
-    private LimelightHelpers.RawFiducial[] detectedTags;
+//    private LimelightHelpers.RawFiducial[] detectedTags;
 
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -69,15 +69,15 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         isHubActive();
 
-        detectedTags = LimelightHelpers.getRawFiducials("limelight");
-
-        SmartDashboard.putString("detectedTags Size: ", String.valueOf(detectedTags.length));
-        //            SmartDashboard.putNumberArray("Detected IDs: ", )
-        for(int i = 0; i < detectedTags.length; i++)
-        {
+//        detectedTags = LimelightHelpers.getRawFiducials("limelight");
+//
+//        SmartDashboard.putString("detectedTags Size: ", String.valueOf(detectedTags.length));
+//        //            SmartDashboard.putNumberArray("Detected IDs: ", )
+//        for(int i = 0; i < detectedTags.length; i++)
+//        {
 //        for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
-            SmartDashboard.putNumber("Tag" + i + "# ", detectedTags[i].id);
-        }
+//            SmartDashboard.putNumber("Tag" + i + "# ", detectedTags[i].id);
+//        }
     }
 
     public void isHubActive() {
