@@ -22,14 +22,14 @@ public class Hood extends SubsystemBase {
   /* ==================== USER TUNING ==================== */
 
   // Percent range (kept from your servo version)
-  private static final double kMinPercent = 0.01; //0.01
-  private static final double kMaxPercent = 0.99; //0.77
+  private static final double kMinPercent = 0.00; //0.01
+  private static final double kMaxPercent = 0.52; //0.77
   private static final double kPercentTolerance = 0.01; //0.01
 
   // Hood mechanical range (MECHANISM rotations)
   // Example: 90° hood travel = 0.25 rotations
   private static final double kMinMechRot = 0.0; //0.0
-  private static final double kMaxMechRot = 0.125; //0.25
+  private static final double kMaxMechRot = 0.0625; //0.25
 
   // Gear ratio: motor rotations per hood rotation
   // CHANGE THIS to match your real gearing
@@ -47,11 +47,13 @@ public class Hood extends SubsystemBase {
   
 
   private double targetPercent = 0.5; //0.5
+  private double currentPercent = 0.0; 
 
   private final StatusSignal<Angle> motorPosition;
 
   public Hood() {
     hoodMotor = new TalonFX(Ports.kHoodKrakenId, Ports.kCANivoreCANBus);
+    hoodMotor.setPosition(0.0);
 
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -70,7 +72,8 @@ public class Hood extends SubsystemBase {
 
   /** Set hood position as a percent [0.0 – 1.0] */
   public void setPercent(double percent) {
-    targetPercent = MathUtil.clamp(percent, kMinPercent, kMaxPercent);
+    targetPercent = MathUtil.interpolate(kMinPercent, kMaxPercent, percent);
+    currentPercent = percent;
 
     double mechRot = MathUtil.interpolate(kMinMechRot, kMaxMechRot, targetPercent);
     double motorRot = mechRot * kMotorRotsPerMechRot;
@@ -98,12 +101,13 @@ public class Hood extends SubsystemBase {
   }
 
   public double getCurrentPercent() {
-    double motorRot = motorPosition.getValue().in(Units.Rotations);
-    double mechRot = motorRot / kMotorRotsPerMechRot;
+    return currentPercent;
+    // double motorRot = motorPosition.getValue().in(Units.Rotations);
+    // double mechRot = motorRot / kMotorRotsPerMechRot;
 
-    // Convert mechRot back to percent (and clamp for safety)
-    double percent = (mechRot - kMinMechRot) / (kMaxMechRot - kMinMechRot);
-    return MathUtil.clamp(percent, 0.0, 1.0); //0.0, 1.0
+    // // Convert mechRot back to percent (and clamp for safety)
+    // double percent = (mechRot - kMinMechRot) / (kMaxMechRot - kMinMechRot);
+    // return MathUtil.clamp(percent, 0.0, 1.0); //0.0, 1.0
   }
 
   @Override

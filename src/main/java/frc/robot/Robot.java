@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
@@ -51,8 +52,8 @@ public class Robot extends TimedRobot {
     private final RGBWColor statusGreen = new RGBWColor(0, 255, 0, 0);
     private final RGBWColor statusRed = new RGBWColor(255, 0, 0, 0);
 
-    private final SolidColor ledStatusColorGreen = new SolidColor(8, 399).withColor(statusGreen);
-    private final SolidColor ledStatusColorRed = new SolidColor(8,399).withColor(statusRed);
+    private final SolidColor ledStatusColorGreen = new SolidColor(0, 399).withColor(statusGreen);
+    private final SolidColor ledStatusColorRed = new SolidColor(0,399).withColor(statusRed);
 
 //    private LimelightHelpers.RawFiducial[] detectedTags;
 
@@ -72,6 +73,19 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         // isHubActive();
         shootingColoLight.setControl(ledStatusColorRed);
+
+        double distanceFromTag = 0.0;
+        int[] validTags = {25, 26, 27, 20, 24};
+        LimelightHelpers.RawFiducial[] detectedTags = LimelightHelpers.getRawFiducials("limelight");
+        for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
+            if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
+            {
+                //Distance from tag in inches
+                distanceFromTag = detectedTag.distToCamera * 39.37;
+                SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
+            }
+        }
+
 
         
 

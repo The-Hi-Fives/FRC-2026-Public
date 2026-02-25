@@ -99,7 +99,9 @@ public class RobotContainer {
 
         driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());
         driver.rightBumper().whileTrue(subsystemCommands.shootManually());
-        driver.leftTrigger().whileTrue(intake.intakeCommand());
+        operator.leftTrigger().whileTrue(intake.intakeCommand());
+        
+        driver.povRight().whileTrue(subsystemCommands.feed());
         driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));
 
         driver.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
@@ -116,6 +118,9 @@ public class RobotContainer {
         swerve.setDefaultCommand(manualDriveCommand);
         driver.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U")));
         driver.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D")));
+        driver.x().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));
+        driver.a().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));
+
         // driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
         // driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
         // driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));

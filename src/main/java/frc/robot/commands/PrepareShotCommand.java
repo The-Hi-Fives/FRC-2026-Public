@@ -42,6 +42,7 @@ public class PrepareShotCommand extends Command {
     private final Shooter shooter;
     private final Hood hood;
     private final Supplier<Pose2d> robotPoseSupplier;
+    private double prevDistToTag = 0.0;
 
     public PrepareShotCommand(Shooter shooter, Hood hood, Supplier<Pose2d> robotPoseSupplier) {
         this.shooter = shooter;
@@ -62,8 +63,9 @@ public class PrepareShotCommand extends Command {
 
     @Override
     public void execute() {
+        //TODO: add in seperate arrays for alliance tags, and braching code for alliances
         double distanceFromTag = 0;
-        int[] validTags = {26, 27, 20, 24};
+        int[] validTags = {25, 26, 27, 20, 24};
 //        final Distance distanceToHub = getDistanceToHub();
 //        final Shot shot = distanceToShotMap.get(distanceToHub);
 //        Shot shot;
@@ -74,29 +76,30 @@ public class PrepareShotCommand extends Command {
                 //Distance from tag in inches
                 distanceFromTag = detectedTag.distToCamera * 39.37;
                 SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
+                prevDistToTag = distanceFromTag;
             }
         }
 
-        if(distanceFromTag <= 52)
+        if(prevDistToTag <= 52)
         {
             //2800, 0.19
-            shooter.setRPM(2800);
-            hood.setPosition(0.19);
+            shooter.setRPM(3400);
+            hood.setPosition(0.1);
             SmartDashboard.putNumber("RPM: ", 2800);
-            SmartDashboard.putNumber("Position: ", 0.19);
+            SmartDashboard.putNumber("Position: ", 0.1);
         }
-        else if (distanceFromTag <= 114)
+        else if (prevDistToTag <= 114)
         {
             //3275, 0.40
-            shooter.setRPM(3275);
+            shooter.setRPM(3800);
             hood.setPosition(0.4);
             SmartDashboard.putNumber("RPM: ", 3275);
             SmartDashboard.putNumber("Position: ", 0.4);
         }
-        else if (distanceFromTag <= 165)
+        else if (prevDistToTag <= 165)
         {
             //3650, 0.48
-            shooter.setRPM(3650);
+            shooter.setRPM(4100);
             hood.setPosition(0.48);
             SmartDashboard.putNumber("RPM: ", 3650);
             SmartDashboard.putNumber("Position: ", 0.48);
@@ -104,7 +107,7 @@ public class PrepareShotCommand extends Command {
         else
         {
             //4000 0.5
-            shooter.setRPM(4000);
+            shooter.setRPM(4600);
             hood.setPosition(0.5);
         }
 

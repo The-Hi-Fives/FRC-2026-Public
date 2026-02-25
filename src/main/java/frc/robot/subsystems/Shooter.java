@@ -134,4 +134,8 @@ public class Shooter extends SubsystemBase {
         builder.addDoubleProperty("Dashboard RPM", () -> dashboardTargetRPM, value -> dashboardTargetRPM = value);
         builder.addDoubleProperty("Target RPM", () -> velocityRequest.getVelocityMeasure().in(RPM), null);
     }
+
+    public double getMotorVelocity() {
+       return middleMotor.getVelocity().getValueAsDouble();
+    }
 }

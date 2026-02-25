@@ -74,22 +74,28 @@ public final class SubsystemCommands {
     public Command aimAndShoot() {
         final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(swerve, forwardInput, leftInput);
         final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getState().Pose);
+        // return Commands.parallel(
+        //     aimAndDriveCommand,
+        //     Commands.waitSeconds(0.25)
+        //         .andThen(prepareShotCommand),
+        //     Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
+        //         .andThen(feed())
+        // );
+
         return Commands.parallel(
-            aimAndDriveCommand,
-            Commands.waitSeconds(0.25)
-                .andThen(prepareShotCommand),
-            Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
-                .andThen(feed())
+            prepareShotCommand, Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot()).andThen(feed())
         );
     }
 
     public Command shootManually() {
         return shooter.dashboardSpinUpCommand()
-            .andThen(feed())
             .handleInterrupt(() -> shooter.stop());
+        // return shooter.dashboardSpinUpCommand()
+        //     .andThen(feed())
+        //     .handleInterrupt(() -> shooter.stop());
     }
 
-    private Command feed() {
+    public Command feed() {
         return Commands.sequence(
             Commands.waitSeconds(0.25),
             Commands.parallel(
@@ -102,14 +108,25 @@ public final class SubsystemCommands {
 
     public void setHoodPercent(String state) {
 
-        double currentHoodPerent = hood.getCurrentPercent();
-        SmartDashboard.putNumber("Current Hood Percent: ", currentHoodPerent);
+        double currentHoodPercent = hood.getCurrentPercent();
+        SmartDashboard.putNumber("Current Hood Percent: ", currentHoodPercent);
 
         if(Objects.equals(state, "U")){
-            hood.setPercent(currentHoodPerent + .01);
+            hood.setPercent(currentHoodPercent + .01);
         } else {
-            hood.setPercent(currentHoodPerent - .01);
+            hood.setPercent(currentHoodPercent - .01);
         }
-
     }
+
+    public void setRPM(String state) {
+        double currentRPM = shooter.getMotorVelocity() * 60;
+        SmartDashboard.putNumber("Current RPM: ", currentRPM); 
+        if (Objects.equals(state, "U")) {
+
+            shooter.setRPM(currentRPM + 100);
+        } else {
+            shooter.setRPM(currentRPM - 100);
+        }
+    }
+    
 }
