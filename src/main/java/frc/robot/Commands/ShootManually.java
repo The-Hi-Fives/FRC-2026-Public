@@ -1,0 +1,118 @@
+package frc.robot.commands;
+
+import java.util.stream.IntStream;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.LimelightHelpers;
+import frc.robot.subsystems.Shooter;
+
+public class ShootManually extends Command {
+    // private static final InterpolatingTreeMap<Distance, Shot> distanceToShotMap = new InterpolatingTreeMap<>(
+    //     (startValue, endValue, q) -> 
+    //         InverseInterpolator.forDouble()
+    //             .inverseInterpolate(startValue.in(Meters), endValue.in(Meters), q.in(Meters)),
+    //     (startValue, endValue, t) ->
+    //         new Shot(
+    //             Interpolator.forDouble()
+    //                 .interpolate(startValue.shooterRPM, endValue.shooterRPM, t),
+    //             Interpolator.forDouble()
+    //                 .interpolate(startValue.hoodPosition, endValue.hoodPosition, t)
+    //         )
+    // );
+
+    // static {
+    //     distanceToShotMap.put(Inches.of(52.0), new Shot(2800, 0.19)); //2800, 0.19
+    //     distanceToShotMap.put(Inches.of(114.4), new Shot(3275, 0.40)); //3275, 0.40
+    //     distanceToShotMap.put(Inches.of(165.5), new Shot(3650, 0.48)); //3650, 0.48
+    // }
+
+    private final Shooter shooter;
+    private double prevDistToTag = 0.0;
+
+    public ShootManually(Shooter shooter) {
+        this.shooter = shooter;
+        addRequirements(shooter);
+    }
+
+    public boolean isReadyToShoot() {
+        return shooter.isVelocityWithinTolerance();
+    }
+
+    @Override
+    public void execute() {
+        //TODO: add in seperate arrays for alliance tags, and braching code for alliances
+        double distanceFromTag = 0;
+        int[] validTags = {25, 26, 27, 20, 24};
+//        final Distance distanceToHub = getDistanceToHub();
+//        final Shot shot = distanceToShotMap.get(distanceToHub);
+//        Shot shot;
+        LimelightHelpers.RawFiducial[] detectedTags = LimelightHelpers.getRawFiducials("limelight");
+        for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
+            if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
+            {
+                //Distance from tag in inches
+                distanceFromTag = detectedTag.distToCamera * 39.37;
+                SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
+                prevDistToTag = distanceFromTag;
+            }
+        }
+
+        // if(prevDistToTag <= 52)
+        // {
+        //     //2800, 0.19
+        //     shooter.setRPM(3400);
+        //     hood.setPosition(0.1);
+        //     SmartDashboard.putNumber("RPM: ", 2800);
+        //     SmartDashboard.putNumber("Position: ", 0.1);
+        // }
+        // else if (prevDistToTag <= 114)
+        // {
+        //     //3275, 0.40
+        //     shooter.setRPM(3800);
+        //     hood.setPosition(0.4);
+        //     SmartDashboard.putNumber("RPM: ", 3275);
+        //     SmartDashboard.putNumber("Position: ", 0.4);
+        // }
+        // else if (prevDistToTag <= 165)
+        // {
+        //     //3650, 0.48
+        //     shooter.setRPM(4100);
+        //     hood.setPosition(0.48);
+        //     SmartDashboard.putNumber("RPM: ", 3650);
+        //     SmartDashboard.putNumber("Position: ", 0.48);
+        // }
+        // else
+        // {
+        //     //4000 0.5
+        //     shooter.setRPM(4600);
+        //     hood.setPosition(0.5);
+        // }
+
+        double shooterRPM = 0.0985926 * Math.pow(prevDistToTag, 2) + -5.42072 * prevDistToTag + 2865.86315;
+        shooter.setRPM(shooterRPM);
+
+//        shooter.setRPM(shot.shooterRPM);
+//        hood.setPosition(shot.hoodPosition);
+//        SmartDashboard.putNumber("Distance to Hub (inches)", distanceToHub.in(Inches));
+
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        shooter.stop();
+    }
+
+    public static class Shot {
+        public final double shooterRPM;
+
+        public Shot(double shooterRPM) {
+            this.shooterRPM = shooterRPM;
+        }
+    }
+}

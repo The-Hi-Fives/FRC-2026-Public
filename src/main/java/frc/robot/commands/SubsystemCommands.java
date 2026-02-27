@@ -6,6 +6,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Robot;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hanger;
@@ -88,8 +89,11 @@ public final class SubsystemCommands {
     }
 
     public Command shootManually() {
-        return shooter.dashboardSpinUpCommand()
-            .handleInterrupt(() -> shooter.stop());
+        final ShootManually manualShoot = new ShootManually(shooter);
+        return Commands.parallel(
+            manualShoot
+        );
+
         // return shooter.dashboardSpinUpCommand()
         //     .andThen(feed())
         //     .handleInterrupt(() -> shooter.stop());
@@ -102,6 +106,18 @@ public final class SubsystemCommands {
                 feeder.feedCommand(),
                 Commands.waitSeconds(0.125)
                     .andThen(floor.feedCommand().alongWith(intake.agitateCommand()))
+            )
+        );
+
+    }
+
+        public Command reverseFeed() {
+        return Commands.sequence(
+            Commands.waitSeconds(0.25),
+            Commands.parallel(
+                feeder.reverseFeedCommand(),
+                Commands.waitSeconds(0.125)
+                    .andThen(floor.reverseFeedCommand())
             )
         );
     }

@@ -97,16 +97,8 @@ public class RobotContainer {
             .onTrue(intake.homingCommand())
             .onTrue(hanger.homingCommand())
             .onTrue(hood.homingCommand());
-
-        driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());
-        driver.rightBumper().whileTrue(subsystemCommands.shootManually());
-        operator.leftTrigger().whileTrue(intake.intakeCommand());
         
-        driver.povRight().whileTrue(subsystemCommands.feed());
-        driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));
-
-        driver.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
-        driver.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
+        
     }
 
     private void configureManualDriveBindings() {
@@ -117,16 +109,38 @@ public class RobotContainer {
             () -> -driver.getRightX()
         );
         swerve.setDefaultCommand(manualDriveCommand);
-        // driver.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U")));
-        // driver.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D")));
-        // driver.x().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));
-        // driver.a().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));
 
-        driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
-        driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
-        driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
-        driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
-        driver.start().onTrue(Commands.runOnce(() -> manualDriveCommand.seedFieldCentric()));
+        //Driver Controls\\  
+
+        driver.start().onTrue(Commands.runOnce(() -> manualDriveCommand.seedFieldCentric())); //Zero Robot Heading
+
+        driver.leftTrigger().whileTrue(intake.intakeCommand());                               //Rollers                     
+        driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
+
+        driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
+        driver.rightBumper().whileTrue(subsystemCommands.shootManually());                    //Manual Shoot
+        
+        //Operator Controls\\  
+        
+        operator.x().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
+        operator.a().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
+
+        operator.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
+        operator.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
+
+        operator.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));                 //Climb Hanging
+        operator.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));                  //Climb Hung
+
+        operator.leftTrigger().whileTrue(intake.reverseIntakeCommand());                          //Outtake
+
+        operator.povRight().whileTrue(subsystemCommands.feed());                                  //Manual Feed
+        operator.rightBumper().whileTrue(subsystemCommands.reverseFeed());                        //Manual Feed Reverse
+        
+
+        // driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
+        // driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
+        // driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
+        // driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
 
     }
 
