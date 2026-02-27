@@ -95,7 +95,8 @@ public class RobotContainer {
 
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
-            .onTrue(hanger.homingCommand());
+            .onTrue(hanger.homingCommand())
+            .onTrue(hood.homingCommand());
 
         driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());
         driver.rightBumper().whileTrue(subsystemCommands.shootManually());
@@ -116,15 +117,15 @@ public class RobotContainer {
             () -> -driver.getRightX()
         );
         swerve.setDefaultCommand(manualDriveCommand);
-        driver.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U")));
-        driver.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D")));
-        driver.x().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));
-        driver.a().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));
+        // driver.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U")));
+        // driver.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D")));
+        // driver.x().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));
+        // driver.a().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));
 
-        // driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
-        // driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
-        // driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
-        // driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
+        driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
+        driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
+        driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
+        driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
         driver.start().onTrue(Commands.runOnce(() -> manualDriveCommand.seedFieldCentric()));
 
     }

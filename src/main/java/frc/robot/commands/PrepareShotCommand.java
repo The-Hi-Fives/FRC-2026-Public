@@ -80,36 +80,41 @@ public class PrepareShotCommand extends Command {
             }
         }
 
-        if(prevDistToTag <= 52)
-        {
-            //2800, 0.19
-            shooter.setRPM(3400);
-            hood.setPosition(0.1);
-            SmartDashboard.putNumber("RPM: ", 2800);
-            SmartDashboard.putNumber("Position: ", 0.1);
-        }
-        else if (prevDistToTag <= 114)
-        {
-            //3275, 0.40
-            shooter.setRPM(3800);
-            hood.setPosition(0.4);
-            SmartDashboard.putNumber("RPM: ", 3275);
-            SmartDashboard.putNumber("Position: ", 0.4);
-        }
-        else if (prevDistToTag <= 165)
-        {
-            //3650, 0.48
-            shooter.setRPM(4100);
-            hood.setPosition(0.48);
-            SmartDashboard.putNumber("RPM: ", 3650);
-            SmartDashboard.putNumber("Position: ", 0.48);
-        }
-        else
-        {
-            //4000 0.5
-            shooter.setRPM(4600);
-            hood.setPosition(0.5);
-        }
+        // if(prevDistToTag <= 52)
+        // {
+        //     //2800, 0.19
+        //     shooter.setRPM(3400);
+        //     hood.setPosition(0.1);
+        //     SmartDashboard.putNumber("RPM: ", 2800);
+        //     SmartDashboard.putNumber("Position: ", 0.1);
+        // }
+        // else if (prevDistToTag <= 114)
+        // {
+        //     //3275, 0.40
+        //     shooter.setRPM(3800);
+        //     hood.setPosition(0.4);
+        //     SmartDashboard.putNumber("RPM: ", 3275);
+        //     SmartDashboard.putNumber("Position: ", 0.4);
+        // }
+        // else if (prevDistToTag <= 165)
+        // {
+        //     //3650, 0.48
+        //     shooter.setRPM(4100);
+        //     hood.setPosition(0.48);
+        //     SmartDashboard.putNumber("RPM: ", 3650);
+        //     SmartDashboard.putNumber("Position: ", 0.48);
+        // }
+        // else
+        // {
+        //     //4000 0.5
+        //     shooter.setRPM(4600);
+        //     hood.setPosition(0.5);
+        // }
+
+        double hoodAngle = -0.00143472 * Math.pow(prevDistToTag, 2) + 0.60728 * prevDistToTag + 8.01954;
+        double shooterRPM = 0.0985926 * Math.pow(prevDistToTag, 2) + -5.42072 * prevDistToTag + 2865.86315;
+        shooter.setRPM(shooterRPM);
+        hood.setPosition(hoodAngle);
 
 //        shooter.setRPM(shot.shooterRPM);
 //        hood.setPosition(shot.hoodPosition);

@@ -43,6 +43,7 @@ public class Feeder extends SubsystemBase {
     private final VoltageOut voltageRequest = new VoltageOut(0);
 
     public Feeder() {
+        //TODO: Look at PID tuning for feeder to fix ball feeding
         motor = new TalonFX(Ports.kFeeder, Ports.kCANivoreCANBus);
 
         final TalonFXConfiguration config = new TalonFXConfiguration()
@@ -60,7 +61,7 @@ public class Feeder extends SubsystemBase {
             )
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(1)
+                    .withKP(15) // 1,
                     .withKI(0)
                     .withKD(0)
                     .withKV(12.0 / KrakenX60.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS

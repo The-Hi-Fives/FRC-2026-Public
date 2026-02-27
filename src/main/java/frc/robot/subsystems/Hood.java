@@ -3,8 +3,13 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Volts;
+
+
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.Units;
@@ -12,6 +17,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -44,16 +50,20 @@ public class Hood extends SubsystemBase {
 
   private final TalonFX hoodMotor;
   private final PositionVoltage positionRequest = new PositionVoltage(0); //0
+  private final VoltageOut hoodVoltageRequest = new VoltageOut(0);
+
   
 
   private double targetPercent = 0.5; //0.5
   private double currentPercent = 0.0; 
+  private boolean isHomed = false;
+
 
   private final StatusSignal<Angle> motorPosition;
 
   public Hood() {
     hoodMotor = new TalonFX(Ports.kHoodKrakenId, Ports.kCANivoreCANBus);
-    hoodMotor.setPosition(0.0);
+    // hoodMotor.setPosition(0.0);
 
     TalonFXConfiguration cfg = new TalonFXConfiguration();
     cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -130,4 +140,24 @@ public class Hood extends SubsystemBase {
         () -> motorPosition.getValue().in(Units.Rotations),
         null);
   }
+
+  public Command homingCommand() {
+        return Commands.sequence(
+            runOnce(() -> setHoodPercentOutput(0.1)),
+            Commands.waitUntil(() -> hoodMotor.getSupplyCurrent().getValue().in(Amps) > 6),
+            runOnce(() -> {
+                hoodMotor.setPosition(0);
+                isHomed = true;
+            })
+        )
+        .unless(() -> isHomed)
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    private void setHoodPercentOutput(double percentOutput) {
+        hoodMotor.setControl(
+            hoodVoltageRequest
+                .withOutput(Volts.of(percentOutput * 12.0))
+        );
+    }
 }
