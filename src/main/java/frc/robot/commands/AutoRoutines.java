@@ -131,10 +131,49 @@ public final class AutoRoutines {
 
     private AutoRoutine allianceZoneToNeutralZoneRoutine() {
          final AutoRoutine routine = autoFactory.newRoutine("AZ -> NZ");
-         final AutoTrajectory startToNZ = AZToNZ.asAutoTraj(routine);
-         final AutoTrajectory nZToStartIntake = AZToNZ.asAutoTraj(routine);
-        //  final AutoTrajectory Intake1To
+         final AutoTrajectory nZToStartIntake = AZToNZ$0.asAutoTraj(routine);
+         final AutoTrajectory startIntakeToShoot = AZToNZ$1.asAutoTraj(routine);
+         final AutoTrajectory shootToStartIntake = AZToNZ$2.asAutoTraj(routine);
 
+        routine.active().onTrue(
+            Commands.sequence(
+                nZToStartIntake.resetOdometry(),
+                nZToStartIntake.cmd()
+            )
+        );
+
+        routine.observe(hanger::isHomed).onTrue(
+            Commands.sequence(
+                Commands.waitSeconds(0.5),
+                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
+            )
+        );
+
+        nZToStartIntake.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
+        nZToStartIntake.doneDelayed(0.1).onTrue(startIntakeToShoot.cmd());
+
+        startIntakeToShoot.atTime(0.5).onTrue(
+            Commands.parallel(
+                shooter.spinUpCommand(2600),
+                hood.positionCommand(0.32)
+            )
+        );
+
+        startIntakeToShoot.done().onTrue(
+            Commands.sequence(
+                subsystemCommands.aimAndShoot()
+                    .withTimeout(5),
+                shootToStartIntake.cmd()
+            )
+        );
+
+        nZToStartIntake.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
+        nZToStartIntake.doneDelayed(0.1).onTrue(
+            Commands.sequence(
+                subsystemCommands.aimAndShoot()
+                    .withTimeout(5)
+            )
+        );
 
 
         return routine;
