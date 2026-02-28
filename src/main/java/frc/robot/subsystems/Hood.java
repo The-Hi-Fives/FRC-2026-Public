@@ -9,7 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 
-
+import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.Units;
@@ -107,7 +107,8 @@ public class Hood extends SubsystemBase {
   }
 
   public boolean isWithinTolerance() {
-    return MathUtil.isNear(targetPercent, getCurrentPercent(), kPercentTolerance);
+    // return MathUtil.isNear(targetPercent, getCurrentPercent(), kPercentTolerance);
+    return true;
   }
 
   public double getCurrentPercent() {
@@ -142,16 +143,29 @@ public class Hood extends SubsystemBase {
   }
 
   public Command homingCommand() {
+        // hoodMotor.setPosition(0);
         return Commands.sequence(
-            runOnce(() -> setHoodPercentOutput(0.1)),
-            Commands.waitUntil(() -> hoodMotor.getSupplyCurrent().getValue().in(Amps) > 6),
+            // run(() -> SmartDashboard.putNumber("hood Stall Current", hoodMotor.getSupplyCurrent().getValue().in(Amps))),
+            runOnce(() -> setHoodPercentOutput(-0.1)),
+            Commands.waitUntil(() -> getHoodCurrent()),
             runOnce(() -> {
                 hoodMotor.setPosition(0);
+                setPercent(.01);
                 isHomed = true;
             })
         )
         .unless(() -> isHomed)
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    private Boolean getHoodCurrent()
+    {
+      SmartDashboard.putNumber("hood Stall Current", hoodMotor.getSupplyCurrent().getValue().in(Amps));
+      if (hoodMotor.getSupplyCurrent().getValue().in(Amps) > 2)
+      {
+        return true;
+      }
+      return false;
     }
 
     private void setHoodPercentOutput(double percentOutput) {

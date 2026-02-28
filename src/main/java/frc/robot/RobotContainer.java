@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -48,7 +49,7 @@ public class RobotContainer {
     private final SwerveTelemetry swerveTelemetry = new SwerveTelemetry(Driving.kMaxSpeed.in(MetersPerSecond));
     
     private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
 
 
     private final AutoRoutines autoRoutines = new AutoRoutines(
@@ -97,6 +98,7 @@ public class RobotContainer {
             .onTrue(intake.homingCommand())
             .onTrue(hanger.homingCommand())
             .onTrue(hood.homingCommand());
+
         
         
     }

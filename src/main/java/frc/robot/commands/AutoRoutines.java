@@ -4,10 +4,19 @@
 
 package frc.robot.commands;
 
-import static frc.robot.generated.ChoreoTraj.OutpostAndDepotTrajectory$0;
-import static frc.robot.generated.ChoreoTraj.OutpostAndDepotTrajectory$1;
-import static frc.robot.generated.ChoreoTraj.OutpostAndDepotTrajectory$2;
-import static frc.robot.generated.ChoreoTraj.OutpostAndDepotTrajectory$3;
+import static frc.robot.generated.ChoreoTraj.*;
+
+
+// import static frc.robot.generated.ChoreoTraj.OutpostAndDepotTrajectory$0;
+// import static frc.robot.generated.ChoreoTraj.OutpostAndDepotTrajectory$1;
+// import static frc.robot.generated.ChoreoTraj.OutpostAndDepotTrajectory$2;
+// import static frc.robot.generated.ChoreoTraj.OutpostAndDepotTrajectory$3;
+
+// import static frc.robot.generated.AZToNZ.ChoreoTraj.AZToNZ;
+// import static frc.robot.generated.AZToNZ.ChoreoTraj.AZToNZ$0;
+// import static frc.robot.generated.AZToNZ.ChoreoTraj.AZToNZ$1;
+// import static frc.robot.generated.AZToNZ.ChoreoTraj.AZToNZ$2;
+// import static frc.robot.generated.AZToNZ.ChoreoTraj.AZToNZ$3;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
@@ -67,6 +76,7 @@ public final class AutoRoutines {
 
     public void configure() {
         autoChooser.addRoutine("Outpost and Depot", this::outpostAndDepotRoutine);
+        autoChooser.addRoutine("AZ -> NZ", this::allianceZoneToNeutralZoneRoutine);
         SmartDashboard.putData("Auto Chooser", autoChooser);
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
     }
@@ -115,6 +125,17 @@ public final class AutoRoutines {
         shootingPoseToTower.active().whileTrue(limelight.idle());
         shootingPoseToTower.active().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
         shootingPoseToTower.done().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
+
+        return routine;
+    }
+
+    private AutoRoutine allianceZoneToNeutralZoneRoutine() {
+         final AutoRoutine routine = autoFactory.newRoutine("AZ -> NZ");
+         final AutoTrajectory startToNZ = AZToNZ.asAutoTraj(routine);
+         final AutoTrajectory nZToStartIntake = AZToNZ.asAutoTraj(routine);
+        //  final AutoTrajectory Intake1To
+
+
 
         return routine;
     }

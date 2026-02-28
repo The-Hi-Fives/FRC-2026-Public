@@ -71,8 +71,8 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        // isHubActive();
-        shootingColoLight.setControl(ledStatusColorRed);
+         isHubActive();
+        // shootingColoLight.setControl(ledStatusColorRed);
 
         double distanceFromTag = 0.0;
         int[] validTags = {25, 26, 27, 20, 24};
@@ -119,6 +119,8 @@ public class Robot extends TimedRobot {
         // We're teleop enabled, compute.
         double matchTime = DriverStation.getMatchTime();
         String gameData = DriverStation.getGameSpecificMessage();
+        SmartDashboard.putString("gameData", gameData);
+        SmartDashboard.putNumber("matchTime", matchTime);
         // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
         if (gameData.isEmpty()) {
             return;
