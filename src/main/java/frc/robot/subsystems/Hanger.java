@@ -36,7 +36,7 @@ import frc.robot.Ports;
 public class Hanger extends SubsystemBase {
     public enum Position {
         HOMED(0),
-        EXTEND_HOPPER(2),
+        EXTEND_HOPPER(4),
         HANGING(6),
         HUNG(0.2);
 
@@ -84,7 +84,7 @@ public class Hanger extends SubsystemBase {
             )
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(10)
+                    .withKP(20) //20
                     .withKI(0)
                     .withKD(0)
                     .withKV(12.0 / KrakenX60.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
@@ -115,7 +115,7 @@ public class Hanger extends SubsystemBase {
 
     public Command homingCommand() {
         return Commands.sequence(
-            runOnce(() -> setPercentOutput(-0.05)),
+            runOnce(() -> setPercentOutput(-0.05)), 
             Commands.waitUntil(() -> motor.getSupplyCurrent().getValue().in(Amps) > 0.4),
             runOnce(() -> {
                 motor.setPosition(Position.HOMED.motorAngle());

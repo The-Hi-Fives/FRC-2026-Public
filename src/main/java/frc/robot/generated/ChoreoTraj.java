@@ -52,66 +52,94 @@ public record ChoreoTraj(
 	    new Pose2d(7.046, 3.227, Rotation2d.fromRadians(-2.813)),
 	    new Pose2d(6.968, 6.145, Rotation2d.fromRadians(-2.878))
 	);
+	public static final ChoreoTraj DriverLeftToDepotToHub = new ChoreoTraj(
+	    "DriverLeftToDepotToHub",
+	    OptionalInt.empty(),
+	    5.27927,
+	    new Pose2d(3.601, 6.019, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(0.941, 3.564, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj DriverLeftToDepotToHub$0 = new ChoreoTraj(
+	    "DriverLeftToDepotToHub",
+	    OptionalInt.of(0),
+	    1.6141,
+	    new Pose2d(3.601, 6.019, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(0.668, 5.964, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj DriverLeftToDepotToHub$1 = new ChoreoTraj(
+	    "DriverLeftToDepotToHub",
+	    OptionalInt.of(1),
+	    2.10389,
+	    new Pose2d(0.668, 5.964, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(2.498, 4.035, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj DriverLeftToDepotToHub$2 = new ChoreoTraj(
+	    "DriverLeftToDepotToHub",
+	    OptionalInt.of(2),
+	    1.5612800000000004,
+	    new Pose2d(2.498, 4.035, Rotation2d.fromRadians(0)),
+	    new Pose2d(0.941, 3.564, Rotation2d.fromRadians(3.142))
+	);
 	public static final ChoreoTraj OutpostAndDepotTrajectory = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
 	    OptionalInt.empty(),
-	    11.35632,
-	    new Pose2d(3.598, 0.64, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(0.941, 3.564, Rotation2d.fromRadians(3.142))
+	    11.48294,
+	    new Pose2d(3.618, 0.635, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostAndDepotTrajectory$0 = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
 	    OptionalInt.of(0),
-	    1.81742,
-	    new Pose2d(3.598, 0.64, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(0.581, 0.669, Rotation2d.fromRadians(3.142))
+	    1.83723,
+	    new Pose2d(3.618, 0.635, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(0.533, 0.635, Rotation2d.fromRadians(1.571))
 	);
 	public static final ChoreoTraj OutpostAndDepotTrajectory$1 = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
 	    OptionalInt.of(1),
-	    3.40099,
-	    new Pose2d(0.581, 0.669, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(0.668, 5.964, Rotation2d.fromRadians(3.142))
+	    3.2603,
+	    new Pose2d(0.533, 0.635, Rotation2d.fromRadians(1.571)),
+	    new Pose2d(0.864, 5.644, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostAndDepotTrajectory$2 = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
 	    OptionalInt.of(2),
-	    2.5827999999999998,
-	    new Pose2d(0.668, 5.964, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(2.498, 4.035, Rotation2d.fromRadians(0))
+	    2.59912,
+	    new Pose2d(0.864, 5.644, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj OutpostAndDepotTrajectory$3 = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
 	    OptionalInt.of(3),
-	    3.55511,
-	    new Pose2d(2.498, 4.035, Rotation2d.fromRadians(0)),
-	    new Pose2d(0.941, 3.564, Rotation2d.fromRadians(3.142))
+	    3.7862899999999993,
+	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostToHubTrajectory = new ChoreoTraj(
 	    "OutpostToHubTrajectory",
 	    OptionalInt.empty(),
-	    25.75796,
-	    new Pose2d(3.598, 0.64, Rotation2d.fromRadians(-3.142)),
+	    6.48166,
+	    new Pose2d(3.598, 0.64, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(0.941, 3.564, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostToHubTrajectory$0 = new ChoreoTraj(
 	    "OutpostToHubTrajectory",
 	    OptionalInt.of(0),
-	    9.13459,
-	    new Pose2d(3.598, 0.64, Rotation2d.fromRadians(-3.142)),
+	    1.6709,
+	    new Pose2d(3.598, 0.64, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(0.581, 0.669, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostToHubTrajectory$1 = new ChoreoTraj(
 	    "OutpostToHubTrajectory",
 	    OptionalInt.of(1),
-	    10.145120000000002,
+	    1.9505,
 	    new Pose2d(0.581, 0.669, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(2.498, 4.035, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj OutpostToHubTrajectory$2 = new ChoreoTraj(
 	    "OutpostToHubTrajectory",
 	    OptionalInt.of(2),
-	    6.478249999999999,
+	    2.86026,
 	    new Pose2d(2.498, 4.035, Rotation2d.fromRadians(0)),
 	    new Pose2d(0.941, 3.564, Rotation2d.fromRadians(3.142))
 	);
@@ -125,6 +153,10 @@ public record ChoreoTraj(
 		Map.entry("AZToNZ$0", AZToNZ$0),
 		Map.entry("AZToNZ$1", AZToNZ$1),
 		Map.entry("AZToNZ$2", AZToNZ$2),
+		Map.entry("DriverLeftToDepotToHub", DriverLeftToDepotToHub),
+		Map.entry("DriverLeftToDepotToHub$0", DriverLeftToDepotToHub$0),
+		Map.entry("DriverLeftToDepotToHub$1", DriverLeftToDepotToHub$1),
+		Map.entry("DriverLeftToDepotToHub$2", DriverLeftToDepotToHub$2),
 		Map.entry("OutpostAndDepotTrajectory", OutpostAndDepotTrajectory),
 		Map.entry("OutpostAndDepotTrajectory$0", OutpostAndDepotTrajectory$0),
 		Map.entry("OutpostAndDepotTrajectory$1", OutpostAndDepotTrajectory$1),

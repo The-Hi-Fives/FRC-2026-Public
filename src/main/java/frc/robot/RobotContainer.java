@@ -94,7 +94,8 @@ public class RobotContainer {
         configureManualDriveBindings();
         // limelight.setDefaultCommand(updateVisionCommand());
 
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
+        // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
+        (RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
             .onTrue(hanger.homingCommand())
             .onTrue(hood.homingCommand());
@@ -116,16 +117,24 @@ public class RobotContainer {
 
         driver.start().onTrue(Commands.runOnce(() -> manualDriveCommand.seedFieldCentric())); //Zero Robot Heading
 
+        driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
+        driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
+        driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
+        driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
+
         driver.leftTrigger().whileTrue(intake.intakeCommand());                               //Rollers                     
         driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
 
         driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
+        driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500")));
         driver.rightBumper().whileTrue(subsystemCommands.shootManually());                    //Manual Shoot
         
         //Operator Controls\\  
         
         operator.x().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
         operator.a().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
+
+        operator.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));   //Stow
 
         operator.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
         operator.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
@@ -138,11 +147,6 @@ public class RobotContainer {
         operator.povRight().whileTrue(subsystemCommands.feed());                                  //Manual Feed
         operator.rightBumper().whileTrue(subsystemCommands.reverseFeed());                        //Manual Feed Reverse
         
-
-        // driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
-        // driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
-        // driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
-        // driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
 
     }
 

@@ -122,6 +122,16 @@ public final class SubsystemCommands {
         );
     }
 
+    // public Command feedToAlliance() {
+    //     return Commands.sequence(
+    //         Commands.waitSeconds(0),
+    //         Commands.sequence(
+    //             shooter.setRPM(4000),
+    //             Commands.waitSeconds(0),
+    //             hood.setPosition(.70))
+    //         );
+    // }
+
     public void setHoodPercent(String state) {
 
         double currentHoodPercent = hood.getCurrentPercent();
@@ -140,9 +150,17 @@ public final class SubsystemCommands {
         if (Objects.equals(state, "U")) {
 
             shooter.setRPM(currentRPM + 100);
-        } else {
+        } else if (Objects.equals(state, "D")){
             shooter.setRPM(currentRPM - 100);
+        } else if (Objects.equals(state, "1500"))
+        {
+            shooter.setRPM(1500);
         }
     }
+
+    // public static void staticSetRPM(String state)
+    // {
+    //     setRPM(state);
+    // }
     
 }

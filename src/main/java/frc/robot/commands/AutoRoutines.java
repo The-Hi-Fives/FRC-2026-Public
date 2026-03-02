@@ -33,6 +33,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Hanger.Position;
 
 public final class AutoRoutines {
     private final Swerve swerve;
@@ -77,6 +78,7 @@ public final class AutoRoutines {
     public void configure() {
         autoChooser.addRoutine("Outpost and Depot", this::outpostAndDepotRoutine);
         autoChooser.addRoutine("AZ -> NZ", this::allianceZoneToNeutralZoneRoutine);
+        autoChooser.addRoutine("Outpost and Hub", this::outpostToHubRoutine);
         SmartDashboard.putData("Auto Chooser", autoChooser);
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
     }
@@ -88,17 +90,30 @@ public final class AutoRoutines {
         final AutoTrajectory depotToShootingPose = OutpostAndDepotTrajectory$2.asAutoTraj(routine);
         final AutoTrajectory shootingPoseToTower = OutpostAndDepotTrajectory$3.asAutoTraj(routine);
 
+
+        
+        // routine.active().onTrue(intake.runOnce(() -> intake.set(Intake.Position.INTAKE)));
+
+        // routine.observe(hanger::isHomed).onTrue(
+        routine.active().onTrue(
+            Commands.sequence(
+                hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER))
+            )
+        );
+
+
+        routine.active().onTrue(
+            Commands.sequence(
+                // hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER)),
+                Commands.waitSeconds(1),
+                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
+            )
+        );
+
         routine.active().onTrue(
             Commands.sequence(
                 startToOutpost.resetOdometry(),
                 startToOutpost.cmd()
-            )
-        );
-
-        routine.observe(hanger::isHomed).onTrue(
-            Commands.sequence(
-                Commands.waitSeconds(0.5),
-                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
             )
         );
 
@@ -110,8 +125,8 @@ public final class AutoRoutines {
         depotToShootingPose.active().whileTrue(limelight.idle());
         depotToShootingPose.atTime(0.5).onTrue(
             Commands.parallel(
-                shooter.spinUpCommand(2600),
-                hood.positionCommand(0.32)
+                shooter.spinUpCommand(3000),
+                hood.positionCommand(0.35)
             )
         );
         depotToShootingPose.done().onTrue(
@@ -178,4 +193,53 @@ public final class AutoRoutines {
 
         return routine;
     }
+
+    private AutoRoutine outpostToHubRoutine() {
+        final AutoRoutine routine = autoFactory.newRoutine("Outpost and Hub");
+        final AutoTrajectory startToOutpost = OutpostToHubTrajectory$0.asAutoTraj(routine);
+        final AutoTrajectory outpostToShootingPoseToTower = OutpostToHubTrajectory$1.asAutoTraj(routine);
+        final AutoTrajectory shootingPoseToTowerToClimb = OutpostAndDepotTrajectory$2.asAutoTraj(routine);
+
+        routine.active().onTrue(
+            Commands.sequence(
+                startToOutpost.resetOdometry(),
+                startToOutpost.cmd()
+            )
+        );
+
+        routine.observe(hanger::isHomed).onTrue(
+            Commands.sequence(
+                Commands.waitSeconds(0.5),
+                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
+            )
+        );
+
+        startToOutpost.doneDelayed(1).onTrue(outpostToShootingPoseToTower.cmd());
+
+        outpostToShootingPoseToTower.active().whileTrue(limelight.idle());
+        outpostToShootingPoseToTower.atTime(0.5).onTrue(
+            Commands.parallel(
+                shooter.spinUpCommand(2600),
+                hood.positionCommand(0.32)
+            )
+        );
+        outpostToShootingPoseToTower.done().onTrue(
+            Commands.sequence(
+                subsystemCommands.aimAndShoot()
+                    .withTimeout(5),
+                shootingPoseToTowerToClimb.cmd()
+            )
+        );
+
+        shootingPoseToTowerToClimb.active().whileTrue(limelight.idle());
+        shootingPoseToTowerToClimb.active().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
+        shootingPoseToTowerToClimb.done().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
+
+        return routine;
+    }
+
+    // private AutoRoutine () {}
+
 }
+
+

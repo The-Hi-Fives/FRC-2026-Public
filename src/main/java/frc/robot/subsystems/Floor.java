@@ -62,7 +62,7 @@ public class Floor extends SubsystemBase {
             )
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(15) // 1
+                    .withKP(80) // 1
                     .withKI(0)
                     .withKD(0)
                     .withKV(12.0 / KrakenX60.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
