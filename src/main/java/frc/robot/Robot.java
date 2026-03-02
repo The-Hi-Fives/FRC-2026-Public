@@ -4,41 +4,21 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import com.ctre.phoenix6.configs.CANdleConfiguration;
-import com.ctre.phoenix6.controls.ColorFlowAnimation;
-import com.ctre.phoenix6.controls.EmptyAnimation;
-import com.ctre.phoenix6.controls.FireAnimation;
-import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
-import com.ctre.phoenix6.controls.TwinkleAnimation;
-import com.ctre.phoenix6.controls.TwinkleOffAnimation;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
-import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
-import com.ctre.phoenix6.signals.StripTypeValue;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.simulation.SolenoidSim;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.Shooter;
-import frc.robot.commands.SubsystemCommands;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -48,31 +28,6 @@ import frc.robot.commands.SubsystemCommands;
 public class Robot extends TimedRobot {
     private final RobotContainer m_robotContainer;
 
-    private final CommandXboxController driver = new CommandXboxController(1);
-
-    private static final RGBWColor kGreen = new RGBWColor(0, 217, 0, 0);
-    private static final RGBWColor kWhite = new RGBWColor(Color.kWhite).scaleBrightness(0.5);
-    private static final RGBWColor kViolet = RGBWColor.fromHSV(Degrees.of(270), 0.9, 0.8);
-    private static final RGBWColor kRed = RGBWColor.fromHex("#D9000000").orElseThrow();
-
-    private static final int kSlot0StartIdx = 8;
-    private static final int kSlot0EndIdx = 37;
-
-    private static final int kSlot1StartIdx = 38;
-    private static final int kSlot1EndIdx = 67;
-
-    private enum AnimationType {
-        None,
-        ColorFlow,
-        Fire,
-        Larson,
-        Rainbow,
-        RgbFade,
-        SingleFade,
-        Strobe,
-        Twinkle,
-        TwinkleOff,
-    }
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -123,17 +78,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        // m_candle.setControl(
-        //     new ColorFlowAnimation(kSlot0StartIdx, kSlot0EndIdx)
-        //         .withColor(kViolet)
-        // );
-        
-    //   if (driver.rightTrigger().whileFalse()) {
-    //     return ;
-    //   } {
-        // driver.rightTrigger().whileFalse(subsystemCommands.setRPM(1500));
-
-    //   }
        
         // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
         // commands, running already-scheduled commands, removing finished or interrupted commands,
