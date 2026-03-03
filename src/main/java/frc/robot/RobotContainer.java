@@ -127,7 +127,7 @@ public class RobotContainer {
         driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
         driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle For Shooter
         driver.rightBumper().whileTrue(subsystemCommands.shootManually());                    //Manual Shoot
-        driver.a().whileTrue(Commands.parallel(shooter.runOnce(() -> shooter.setRPM(4000)), hood.runOnce(() -> hood.setPosition(0.70)), subsystemCommands.feed()));
+        driver.a().whileTrue(Commands.sequence(shooter.runOnce(() -> shooter.setRPM(4000)), hood.runOnce(() -> hood.setPosition(0.70)), Commands.waitSeconds(.125), subsystemCommands.feed())); //Feeder
         
         //Operator Controls\\  
         

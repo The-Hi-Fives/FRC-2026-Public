@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -36,6 +37,7 @@ public final class Constants {
   }
     public static class Driving {
         public static final LinearVelocity kMaxSpeed = TunerConstants.kSpeedAt12Volts;
+        public static final LinearVelocity kHalfSpeed = MetersPerSecond.of(.5);
         public static final AngularVelocity kMaxRotationalRate = RotationsPerSecond.of(1);
         public static final AngularVelocity kPIDRotationDeadband = kMaxRotationalRate.times(0.005);
     }
