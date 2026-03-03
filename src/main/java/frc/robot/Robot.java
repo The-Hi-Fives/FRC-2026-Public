@@ -64,8 +64,8 @@ public class Robot extends TimedRobot {
     private final RGBWColor statusGreen = new RGBWColor(0, 255, 0, 0);
     private final RGBWColor statusRed = new RGBWColor(255, 0, 0, 0);
 
-    private final SolidColor ledStatusColorGreen = new SolidColor(0, 0).withColor(statusGreen);
-    private final SolidColor ledStatusColorRed = new SolidColor(8, 24).withColor(statusRed);
+    private final SolidColor ledStatusColorGreen = new SolidColor(8, 84).withColor(statusGreen);
+    private final SolidColor ledStatusColorRed = new SolidColor(8, 84).withColor(statusRed);
 
 //    private LimelightHelpers.RawFiducial[] detectedTags;
 
