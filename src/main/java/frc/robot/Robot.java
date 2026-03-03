@@ -75,8 +75,8 @@ public class Robot extends TimedRobot {
   // Note: CANdle onboard LEDs are 0-7. Strip LEDs are 8-399.
   private final LEDSegment candle = new LEDSegment(0,   7,   0); // 8 LEDs
   private final LEDSegment stripLeft = new LEDSegment(8, 32, 1); // 24 LEDs
-  private final LEDSegment stripHood = new LEDSegment(32,  60,  2); // 28 LEDs
-  private final LEDSegment stripRight = new LEDSegment(61,   85,  3); // 24 LEDs
+  private final LEDSegment stripHood = new LEDSegment(33,  61,  2); // 28 LEDs
+  private final LEDSegment stripRight = new LEDSegment(62,   86,  3); // 24 LEDs
 
 
   // === Segment helper ===
