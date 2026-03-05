@@ -375,7 +375,7 @@ public class Robot extends TimedRobot {
         }
         // At this point, if we're not teleop enabled, there is no hub.
         if (!DriverStation.isTeleopEnabled()) {
-            return;
+        return;
         }
 
         // We're teleop enabled, compute.
@@ -383,127 +383,100 @@ public class Robot extends TimedRobot {
         String gameData = DriverStation.getGameSpecificMessage();
         SmartDashboard.putString("gameData", gameData);
         SmartDashboard.putNumber("matchTime", matchTime);
-        // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
+        // If we have no game data, assume hub is active early in teleop.
         if (gameData.isEmpty()) {
+            m_candle.setControl(ledStatusColorGreen);
             return;
         }
-        boolean redInactiveFirst = false;
+        boolean weAreInactiveFirst = false;
         switch (gameData.charAt(0)) {
-            case 'R' -> redInactiveFirst = true;
-            case 'B' -> redInactiveFirst = false;
+            case 'R' -> weAreInactiveFirst = true;
+            case 'B' -> weAreInactiveFirst = false;
             default -> {
+            m_candle.setControl(ledStatusColorGreen);
             // If we have invalid game data, assume hub is active.
             return;
             }
         }
 
         // Shift was is active for blue if red won auto, or red if blue won auto.
-        // boolean shift1Active = switch (alliance.get()) {
-        //     case Red -> !redInactiveFirst;
-        //     case Blue -> redInactiveFirst;
-        // };
-
+        boolean shift1Active = switch (alliance.get()) {
+            case Red -> !weAreInactiveFirst;
+            case Blue -> weAreInactiveFirst;
+        };
 
         if (matchTime > 135) {
-            if(redInactiveFirst) {
-                m_candle.setControl(ledStatusFlashingGreen);
-            } else {
-                m_candle.setControl(ledStatusFlashingRed);
-            }
+            m_candle.setControl(ledStatusColorGreen);
         } else if (matchTime > 130) {
-            // Transition shift, hub is active.
-            return;
-        } else if (matchTime > 108) {
-            // Shift 1
-            if(redInactiveFirst) {
-                m_candle.setControl(ledStatusFlashingGreen);
-            } else {
-                m_candle.setControl(ledStatusFlashingRed);
-            }
-            // return shift1Active;
-        } else if (matchTime > 105) {
-            // Shift 1
-            if(redInactiveFirst) {
-                m_candle.setControl(ledStatusColorGreen);
-            } else {
-                m_candle.setControl(ledStatusColorRed);
-            }
-            // return shift1Active;
-        } else if (matchTime > 85) {
-            // Shift 2
-            if(!redInactiveFirst) {
-                m_candle.setControl(ledStatusFlashingGreen);
-            } else {
-                m_candle.setControl(ledStatusFlashingRed);
-            }
-            // return !shift1Active;
-        } else if (matchTime > 83) {
-            // Shift 2
-            if(!redInactiveFirst) {
-                m_candle.setControl(ledStatusFlashingGreen);
-            } else {
-                m_candle.setControl(ledStatusFlashingRed);
-            }
-            // return !shift1Active;
-        } else if (matchTime > 80) {
-            // Shift 2
-            if(!redInactiveFirst) {
-                m_candle.setControl(ledStatusColorGreen);
-            } else {
-                m_candle.setControl(ledStatusColorRed);
-            }
-            // return !shift1Active;
-        } else if (matchTime > 65) {
-            // Shift 2
-            if(!redInactiveFirst) {
-                m_candle.setControl(ledStatusColorGreen);
-            } else {
-                m_candle.setControl(ledStatusColorRed);
-            }
-            // return !shift1Active;
-        } else if (matchTime > 60) {
-            // Shift 2
-            if(!redInactiveFirst) {
-                m_candle.setControl(ledStatusColorGreen);
-            } else {
-                m_candle.setControl(ledStatusColorRed);
-            }
-            // return !shift1Active;
-        } else if (matchTime > 55) {
-            // Shift 3
-            if(redInactiveFirst) {
-                m_candle.setControl(ledStatusColorGreen);
-            } else {
-                m_candle.setControl(ledStatusColorRed);
-            }
-            // return shift1Active;
-        } else if (matchTime > 35) {
-            // Shift 3
-            if(redInactiveFirst) {
-                m_candle.setControl(ledStatusColorGreen);
-            } else {
-                m_candle.setControl(ledStatusColorRed);
-            }
-            // return shift1Active;
-        } else if (matchTime > 30) {
-            // Shift 4
-            if(!redInactiveFirst) {
-                m_candle.setControl(ledStatusColorGreen);
-            } else {
-                m_candle.setControl(ledStatusColorRed);
-            }
-            // return !shift1Active;
-         } else if (matchTime > 5) {
-            // Shift 4
-            if(!redInactiveFirst) {
-                m_candle.setControl(ledStatusFlashingGreen);
-            } else {
-                m_candle.setControl(ledStatusFlashingRed);
-            }
-            // return !shift1Active;
+        if (shift1Active) {
+            m_candle.setControl(ledStatusFlashingGreen);
         } else {
-            // End game, hub always active.
-            return;
+            m_candle.setControl(ledStatusFlashingRed);
+        }
+        } else if (matchTime > 110) {
+             // Shift 1
+        if (shift1Active) {
+            m_candle.setControl(ledStatusColorGreen);
+        } else {
+            m_candle.setControl(ledStatusColorRed);
+        }
+        } else if (matchTime > 105) {
+        if (!shift1Active) {
+            m_candle.setControl(ledStatusFlashingGreen);
+        } else {
+            m_candle.setControl(ledStatusFlashingRed);
+        }
+        } else if (matchTime > 85) {
+        if (!shift1Active) {
+            m_candle.setControl(ledStatusColorGreen);
+        } else {
+            m_candle.setControl(ledStatusColorRed);
+        }
+        } else if (matchTime > 80) {
+            //Shift 2
+        if (shift1Active) {
+            m_candle.setControl(ledStatusFlashingGreen);
+        } else {
+            m_candle.setControl(ledStatusFlashingRed);
+        }
+        } else if (matchTime > 60) {
+        if (shift1Active) {
+            m_candle.setControl(ledStatusColorGreen);
+        } else {
+            m_candle.setControl(ledStatusColorRed);
+        }
+        } else if (matchTime > 55) {
+            //Shift 3
+        if (!shift1Active) {
+            m_candle.setControl(ledStatusFlashingGreen);
+        } else {
+            m_candle.setControl(ledStatusFlashingRed);
+        }
+        } else if (matchTime > 35) {
+        if (!shift1Active) {
+            m_candle.setControl(ledStatusColorGreen);
+        } else {
+            m_candle.setControl(ledStatusColorRed);
+        }
+        } else if (matchTime > 30) {
+            //Shift 4
+        if (shift1Active) {
+            m_candle.setControl(ledStatusFlashingGreen);
+        } else {
+            m_candle.setControl(ledStatusFlashingRed);
+        }
+
+        } else if (matchTime > 15) {
+        if (shift1Active) {
+            m_candle.setControl(ledStatusColorGreen);
+        } else {
+            m_candle.setControl(ledStatusColorRed);
+        }
+
+        } else if (matchTime > 5) {
+        m_candle.setControl(ledStatusFlashingGreen);
+        } else {
+        m_candle.setControl(ledStatusColorGreen);
         }
     }
 }
