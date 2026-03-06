@@ -79,6 +79,7 @@ public final class AutoRoutines {
         autoChooser.addRoutine("Outpost and Depot", this::outpostAndDepotRoutine);
         autoChooser.addRoutine("AZ -> NZ", this::allianceZoneToNeutralZoneRoutine);
         autoChooser.addRoutine("Outpost and Hub", this::outpostToHubRoutine);
+        autoChooser.addRoutine("Outpost and Depot from Bump", this::outpostAndDepotRoutineFromBump);
         SmartDashboard.putData("Auto Chooser", autoChooser);
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
     }
@@ -89,6 +90,67 @@ public final class AutoRoutines {
         final AutoTrajectory outpostToDepot = OutpostAndDepotTrajectory$1.asAutoTraj(routine);
         final AutoTrajectory depotToShootingPose = OutpostAndDepotTrajectory$2.asAutoTraj(routine);
         final AutoTrajectory shootingPoseToTower = OutpostAndDepotTrajectory$3.asAutoTraj(routine);
+
+
+        
+        // routine.active().onTrue(intake.runOnce(() -> intake.set(Intake.Position.INTAKE)));
+
+        // routine.observe(hanger::isHomed).onTrue(
+        routine.active().onTrue(
+            Commands.sequence(
+                hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER))
+            )
+        );
+
+
+        routine.active().onTrue(
+            Commands.sequence(
+                // hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER)),
+                Commands.waitSeconds(1),
+                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
+            )
+        );
+
+        routine.active().onTrue(
+            Commands.sequence(
+                startToOutpost.resetOdometry(),
+                startToOutpost.cmd()
+            )
+        );
+
+        startToOutpost.doneDelayed(1).onTrue(outpostToDepot.cmd());
+
+        outpostToDepot.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
+        outpostToDepot.doneDelayed(0.1).onTrue(depotToShootingPose.cmd());
+
+        depotToShootingPose.active().whileTrue(limelight.idle());
+        depotToShootingPose.atTime(0.5).onTrue(
+            Commands.parallel(
+                shooter.spinUpCommand(3000),
+                hood.positionCommand(0.35)
+            )
+        );
+        depotToShootingPose.done().onTrue(
+            Commands.sequence(
+                subsystemCommands.aimAndShoot()
+                    .withTimeout(5),
+                shootingPoseToTower.cmd()
+            )
+        );
+
+        shootingPoseToTower.active().whileTrue(limelight.idle());
+        shootingPoseToTower.active().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
+        shootingPoseToTower.done().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
+
+        return routine;
+    }
+
+     private AutoRoutine outpostAndDepotRoutineFromBump() {
+        final AutoRoutine routine = autoFactory.newRoutine("Outpost and Depot from Bump");
+        final AutoTrajectory startToOutpost = OutpostAndDepotTrajectoryFromBump$0.asAutoTraj(routine);
+        final AutoTrajectory outpostToDepot = OutpostAndDepotTrajectoryFromBump$1.asAutoTraj(routine);
+        final AutoTrajectory depotToShootingPose = OutpostAndDepotTrajectoryFromBump$2.asAutoTraj(routine);
+        final AutoTrajectory shootingPoseToTower = OutpostAndDepotTrajectoryFromBump$3.asAutoTraj(routine);
 
 
         
