@@ -195,7 +195,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotController.setBrownoutVoltage(Volts.of(6.1));
-        SmartDashboard.putNumber("Current Hood Percent: ", hood.getCurrentPercent());
+        // SmartDashboard.putNumber("Current Hood Percent: ", hood.getCurrentPercent());
     }
 
     public void fullClear() {

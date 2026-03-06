@@ -74,9 +74,9 @@ public class AimAndDriveCommand extends Command {
     {
 //        final Translation2d hubPosition = Landmarks.hubPosition();
         calcAngleToCenter();
-        SmartDashboard.putNumber("angleToCenter", Math.toDegrees(centerVals.get("angleToCenter")));
-        SmartDashboard.putNumber("avgDistToCenter", centerVals.get("avgDistToCenter"));
-        SmartDashboard.putNumber("horizOffset", centerVals.get("horizOffset"));
+        // SmartDashboard.putNumber("angleToCenter", Math.toDegrees(centerVals.get("angleToCenter")));
+        // SmartDashboard.putNumber("avgDistToCenter", centerVals.get("avgDistToCenter"));
+        // SmartDashboard.putNumber("horizOffset", centerVals.get("horizOffset"));
         final Rotation2d centerPointAngle = new Rotation2d(-centerVals.get("angleToCenter"));
         // final Rotation2d centerPointAngle = new Rotation2d(-(2.00882*centerVals.get("angleToCenter") - 0.237045));
         // final Rotation2d centerPointAngle = new Rotation2d(-(-0.00134563*Math.pow(centerVals.get("angleToCenter"), 3)+0.00121509*Math.pow(centerVals.get("angleToCenter"), 2) + 2.10503*centerVals.get("angleToCenter")-0.313722));
@@ -102,7 +102,7 @@ public class AimAndDriveCommand extends Command {
 
         // double angleToCenter = Math.asin(centerVals.get("horizOffset")/Math.sqrt(Math.pow(centerVals.get("horizOffset"), 2) + Math.pow(centerVals.get("avgDistToCenter"), 2)));
         double angleToCenter = Math.asin((centerVals.get("horizOffset"))/Math.sqrt(Math.pow(centerVals.get("horizOffset"), 2) + Math.pow(centerVals.get("avgDistToCenter"), 2)));
-        SmartDashboard.putNumber("angleToCenter Calc", angleToCenter);
+        // SmartDashboard.putNumber("angleToCenter Calc", angleToCenter);
         centerVals.put("angleToCenter", angleToCenter);
 //        return angleToCenter;
     }
