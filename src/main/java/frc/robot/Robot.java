@@ -100,20 +100,11 @@ public class Robot extends TimedRobot {
       m_candle.setControl(new SolidColor(start, end).withColor(color));
     }
 
-    void setStrobe1Colors(RGBWColor color, double frameRateHz) {
+    void setStrobe(RGBWColor color, double frameRateHz) {
       m_candle.setControl(
           new StrobeAnimation(start, end)
               .withSlot(slot)
               .withColor(color)
-              .withFrameRate(frameRateHz));
-    }
-
-    void setStrobe2Colors(RGBWColor color, RGBWColor color2, double frameRateHz) {
-      m_candle.setControl(
-          new StrobeAnimation(start, end)
-              .withSlot(slot)
-              .withColor(color)
-              .withColor(color2)
               .withFrameRate(frameRateHz));
     }
 
@@ -214,10 +205,10 @@ public class Robot extends TimedRobot {
     private final RGBWColor statusGreen = new RGBWColor(0, 255, 0, 0);
     private final RGBWColor statusRed = new RGBWColor(255, 0, 0, 0);
 
-    private final SolidColor ledStatusColorGreen = new SolidColor(8, 84).withColor(statusGreen);
-    private final SolidColor ledStatusColorRed = new SolidColor(8, 84).withColor(statusRed);
-    private final StrobeAnimation ledStatusFlashingRed = new StrobeAnimation(8, 84).withFrameRate(100).withColor(statusRed);
-    private final StrobeAnimation ledStatusFlashingGreen = new StrobeAnimation(8, 84).withFrameRate(100).withColor(statusRed);
+    private final SolidColor ledStatusColorGreen = new SolidColor(8, 102).withColor(statusGreen);
+    private final SolidColor ledStatusColorRed = new SolidColor(8, 102).withColor(statusRed);
+    private final StrobeAnimation ledStatusFlashingRed = new StrobeAnimation(8, 102).withFrameRate(100).withColor(statusRed);
+    private final StrobeAnimation ledStatusFlashingGreen = new StrobeAnimation(8, 102).withFrameRate(100).withColor(statusRed);
 
 
       private LEDState decideState() {
@@ -228,7 +219,7 @@ public class Robot extends TimedRobot {
     if (DriverStation.isDisabled()) {
         stripRight.setLarson(GREEN, 25, LarsonBounceValue.Front, 5);
         stripLeft.setLarson(GREEN, 25, LarsonBounceValue.Front, 5);
-        stripHood.setStrobe1Colors(BLUE, 300);
+        stripHood.setStrobe(BLUE, 300);
     } else {
         isHubActive();
     }
@@ -270,10 +261,10 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
     LEDState newState = decideState();
 
-    if (newState != currentState) {
-      applyState(newState);
-      currentState = newState;
-    }
+    // if (newState != currentState) {
+    //   applyState(newState);
+    //   currentState = newState;
+    // }
 
 
 
@@ -318,46 +309,46 @@ public class Robot extends TimedRobot {
 //        }
     }
 
-    private void applyState(LEDState state) {
-    switch (state) {
-      case DISABLED: {
-        stripHood.setStrobe2Colors(GREEN, BLUE, 8.0);
-        stripLeft.setStrobe2Colors(GREEN, BLUE, 8.0);
-        stripRight.setStrobe2Colors(GREEN, BLUE, 8.0);
-        break;
-      }
+//     private void applyState(LEDState state) {
+//     switch (state) {
+//       case DISABLED: {
+//         stripHood.setStrobe2Colors(GREEN, BLUE, 8.0);
+//         stripLeft.setStrobe2Colors(GREEN, BLUE, 8.0);
+//         stripRight.setStrobe2Colors(GREEN, BLUE, 8.0);
+//         break;
+//       }
 
-      case DISABLED_LOW_BATTERY: {
-        candle.off();
-        // Fast brown strobes everywhere
-        stripLeft.setStrobe1Colors(BROWN, 8.0);
-        stripRight.setStrobe1Colors(BROWN, 8.0);
-        stripHood.setStrobe1Colors(BROWN, 8.0);
-        break;
-      }
+//       case DISABLED_LOW_BATTERY: {
+//         candle.off();
+//         // Fast brown strobes everywhere
+//         stripLeft.setStrobe1Colors(BROWN, 8.0);
+//         stripRight.setStrobe1Colors(BROWN, 8.0);
+//         stripHood.setStrobe1Colors(BROWN, 8.0);
+//         break;
+//       }
 
-      case AUTONOMOUS: {
-        candle.off();
-        // Fire on verticals, white chassis/strip
-        stripLeft.setFire(35.0, true);
-        stripRight.setFire(35.0, false);
-        break;
-      }
+//       case AUTONOMOUS: {
+//         candle.off();
+//         // Fire on verticals, white chassis/strip
+//         stripLeft.setFire(35.0, true);
+//         stripRight.setFire(35.0, false);
+//         break;
+//       }
 
-      case ENABLED: {
-        candle.off();
-        stripHood.setSolid(WHITE);
-        stripLeft.setSolid(WHITE);
-        stripRight.setSolid(WHITE);
-        break;
-      }
-      case START:
-      default: {
-        fullClear();
-        break;
-      }
-    }
-  }
+//       case ENABLED: {
+//         candle.off();
+//         stripHood.setSolid(WHITE);
+//         stripLeft.setSolid(WHITE);
+//         stripRight.setSolid(WHITE);
+//         break;
+//       }
+//       case START:
+//       default: {
+//         fullClear();
+//         break;
+//       }
+//     }
+//   }
 
     public void isHubActive() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
