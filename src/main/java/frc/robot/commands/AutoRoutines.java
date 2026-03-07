@@ -80,6 +80,7 @@ public final class AutoRoutines {
         autoChooser.addRoutine("AZ -> NZ", this::allianceZoneToNeutralZoneRoutine);
         autoChooser.addRoutine("Outpost and Hub", this::outpostToHubRoutine);
         autoChooser.addRoutine("Outpost and Depot from Bump", this::outpostAndDepotRoutineFromBump);
+        autoChooser.addRoutine("Center to Shoot to Climb", this::centerToHubToClimb);
         SmartDashboard.putData("Auto Chooser", autoChooser);
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
     }
@@ -96,25 +97,35 @@ public final class AutoRoutines {
         // routine.active().onTrue(intake.runOnce(() -> intake.set(Intake.Position.INTAKE)));
 
         // routine.observe(hanger::isHomed).onTrue(
-        routine.active().onTrue(
-            Commands.sequence(
-                hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER))
-            )
-        );
+        // routine.active().onTrue(
+        //     Commands.sequence(
+        //         hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER)),
+        //         Commands.waitSeconds(0.25),
+        //         intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
+        //     )
+        // );
 
 
-        routine.active().onTrue(
-            Commands.sequence(
-                // hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER)),
-                Commands.waitSeconds(1),
-                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
-            )
-        );
+        // routine.active().onTrue(
+        //     Commands.sequence(
+        //         // hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER)),
+        //         Commands.waitSeconds(.25),
+        //         intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
+        //     )
+        // );
 
         routine.active().onTrue(
             Commands.sequence(
                 startToOutpost.resetOdometry(),
                 startToOutpost.cmd()
+            )
+        );
+
+        routine.active().onTrue(
+            Commands.sequence(
+                hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER)),
+                Commands.waitSeconds(0.5),
+                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
             )
         );
 
@@ -300,7 +311,47 @@ public final class AutoRoutines {
         return routine;
     }
 
-    // private AutoRoutine () {}
+    private AutoRoutine centerToHubToClimb() {
+        final AutoRoutine routine = autoFactory.newRoutine("Center to Shoot to Climb");
+        final AutoTrajectory backUpToShoot = CenterToHubToClimb$0.asAutoTraj(routine);
+        final AutoTrajectory flipToClimb = CenterToHubToClimb$1.asAutoTraj(routine);
+        final AutoTrajectory climb = CenterToHubToClimb$2.asAutoTraj(routine);
+
+        routine.active().onTrue(
+            Commands.sequence(
+                backUpToShoot.resetOdometry(),
+                backUpToShoot.cmd()
+            )
+        );
+
+        routine.active().onTrue(
+            Commands.sequence(
+                hanger.runOnce(() -> hanger.set(Position.EXTEND_HOPPER)),
+                Commands.waitSeconds(0.5),
+                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
+            )
+        );
+
+        backUpToShoot.atTime(0.5).onTrue(
+            Commands.parallel(
+                shooter.spinUpCommand(3000),
+                hood.positionCommand(0.35)
+            )
+        );
+
+        routine.active().onTrue(
+            Commands.sequence(
+                flipToClimb.cmd()
+            )
+        );
+
+        climb.active().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
+        climb.done().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
+
+        return routine;
+
+
+    }
 
 }
 

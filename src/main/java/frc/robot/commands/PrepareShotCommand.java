@@ -65,7 +65,7 @@ public class PrepareShotCommand extends Command {
     public void execute() {
         //TODO: add in seperate arrays for alliance tags, and braching code for alliances
         double distanceFromTag = 0;
-        int[] validTags = {25, 26, 27, 20, 24};
+        int[] validTags = {25, 26, 27, 20, 24, 21, 19, 20, 18, 17, 31, 8, 5, 4, 3, 2, 11, 10, 9, 1, 22, 1, 6};
 //        final Distance distanceToHub = getDistanceToHub();
 //        final Shot shot = distanceToShotMap.get(distanceToHub);
 //        Shot shot;

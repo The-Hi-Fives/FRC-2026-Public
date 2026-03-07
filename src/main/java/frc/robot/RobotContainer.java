@@ -96,8 +96,10 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
         (RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
-            .onTrue(hanger.homingCommand())
             .onTrue(hood.homingCommand());
+
+        (RobotModeTriggers.autonomous())
+            .onTrue(intake.homingCommand());
 
         
         
@@ -127,7 +129,11 @@ public class RobotContainer {
         driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
         driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle For Shooter
         driver.rightBumper().whileTrue(subsystemCommands.shootManually());                    //Manual Shoot
-        driver.a().whileTrue(Commands.sequence(shooter.runOnce(() -> shooter.setRPM(4000)), hood.runOnce(() -> hood.setPosition(0.70)), Commands.waitSeconds(.125), subsystemCommands.feed())); //Feeder
+        driver.a().whileTrue(Commands.sequence(
+            Commands.waitSeconds(0.1875),
+            shooter.runOnce(() -> shooter.setRPM(4000)),
+            hood.runOnce(() -> hood.setPosition(0.70)),
+                Commands.waitSeconds(.125), subsystemCommands.feed())); //Feeder
         
         //Operator Controls\\  
         

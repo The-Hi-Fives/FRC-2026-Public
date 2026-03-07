@@ -55,37 +55,37 @@ public record ChoreoTraj(
 	public static final ChoreoTraj DepotToHubTrajectory = new ChoreoTraj(
 	    "DepotToHubTrajectory",
 	    OptionalInt.empty(),
-	    5.46273,
-	    new Pose2d(3.601, 6.019, Rotation2d.fromRadians(3.142)),
+	    5.33636,
+	    new Pose2d(3.6, 6.025, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj DepotToHubTrajectory$0 = new ChoreoTraj(
 	    "DepotToHubTrajectory",
 	    OptionalInt.of(0),
-	    1.61061,
-	    new Pose2d(3.601, 6.019, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(0.668, 5.964, Rotation2d.fromRadians(3.142))
+	    1.57179,
+	    new Pose2d(3.6, 6.025, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(0.864, 5.644, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj DepotToHubTrajectory$1 = new ChoreoTraj(
 	    "DepotToHubTrajectory",
 	    OptionalInt.of(1),
-	    2.3477699999999997,
-	    new Pose2d(0.668, 5.964, Rotation2d.fromRadians(3.142)),
+	    2.26502,
+	    new Pose2d(0.864, 5.644, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj DepotToHubTrajectory$2 = new ChoreoTraj(
 	    "DepotToHubTrajectory",
 	    OptionalInt.of(2),
-	    1.5043499999999996,
+	    1.4995500000000002,
 	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0)),
 	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostAndDepotTrajectory = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
 	    OptionalInt.empty(),
-	    11.48294,
+	    11.42862,
 	    new Pose2d(3.618, 0.635, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
+	    new Pose2d(1.08, 3.696, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostAndDepotTrajectory$0 = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
@@ -111,9 +111,9 @@ public record ChoreoTraj(
 	public static final ChoreoTraj OutpostAndDepotTrajectory$3 = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
 	    OptionalInt.of(3),
-	    3.7862899999999993,
+	    3.7319700000000005,
 	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0)),
-	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
+	    new Pose2d(1.08, 3.696, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostToHubTrajectory = new ChoreoTraj(
 	    "OutpostToHubTrajectory",
@@ -178,6 +178,34 @@ public record ChoreoTraj(
 	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0)),
 	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
 	);
+	public static final ChoreoTraj CenterToHubToClimb = new ChoreoTraj(
+	    "CenterToHubToClimb",
+	    OptionalInt.empty(),
+	    3.90099,
+	    new Pose2d(3.606, 4.035, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj CenterToHubToClimb$0 = new ChoreoTraj(
+	    "CenterToHubToClimb",
+	    OptionalInt.of(0),
+	    0.78177,
+	    new Pose2d(3.606, 4.035, Rotation2d.fromRadians(0)),
+	    new Pose2d(2.946, 4.035, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj CenterToHubToClimb$1 = new ChoreoTraj(
+	    "CenterToHubToClimb",
+	    OptionalInt.of(1),
+	    1.90152,
+	    new Pose2d(2.946, 4.035, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.778, 3.416, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj CenterToHubToClimb$2 = new ChoreoTraj(
+	    "CenterToHubToClimb",
+	    OptionalInt.of(2),
+	    1.2177000000000002,
+	    new Pose2d(1.778, 3.416, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(1.08, 3.416, Rotation2d.fromRadians(3.142))
+	);
 
     /**
      * A map between trajectory names and their corresponding data.
@@ -205,7 +233,11 @@ public record ChoreoTraj(
 		Map.entry("OutpostAndDepotTrajectoryFromBump$0", OutpostAndDepotTrajectoryFromBump$0),
 		Map.entry("OutpostAndDepotTrajectoryFromBump$1", OutpostAndDepotTrajectoryFromBump$1),
 		Map.entry("OutpostAndDepotTrajectoryFromBump$2", OutpostAndDepotTrajectoryFromBump$2),
-		Map.entry("OutpostAndDepotTrajectoryFromBump$3", OutpostAndDepotTrajectoryFromBump$3)
+		Map.entry("OutpostAndDepotTrajectoryFromBump$3", OutpostAndDepotTrajectoryFromBump$3),
+		Map.entry("CenterToHubToClimb", CenterToHubToClimb),
+		Map.entry("CenterToHubToClimb$0", CenterToHubToClimb$0),
+		Map.entry("CenterToHubToClimb$1", CenterToHubToClimb$1),
+		Map.entry("CenterToHubToClimb$2", CenterToHubToClimb$2)
     );
 
     /**

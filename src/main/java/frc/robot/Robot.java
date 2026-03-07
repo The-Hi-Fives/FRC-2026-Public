@@ -74,9 +74,9 @@ public class Robot extends TimedRobot {
   // === LED Segments (your original indices) ===
   // Note: CANdle onboard LEDs are 0-7. Strip LEDs are 8-399.
   private final LEDSegment candle = new LEDSegment(0,   7,   0); // 8 LEDs
-  private final LEDSegment stripLeft = new LEDSegment(8, 32, 1); // 24 LEDs
-  private final LEDSegment stripHood = new LEDSegment(33,  61,  2); // 28 LEDs
-  private final LEDSegment stripRight = new LEDSegment(62,   86,  3); // 24 LEDs
+  private final LEDSegment stripLeft = new LEDSegment(8, 31, 1); // 24 LEDs
+  private final LEDSegment stripHood = new LEDSegment(32,  77,  2); // 28 LEDs
+  private final LEDSegment stripRight = new LEDSegment(78,   102,  3); // 24 LEDs
 
 
   // === Segment helper ===
@@ -226,9 +226,9 @@ public class Robot extends TimedRobot {
     }
 
     if (DriverStation.isDisabled()) {
-        stripHood.setStrobe2Colors(GREEN, BLUE, 8.0);
-        stripLeft.setStrobe2Colors(GREEN, BLUE, 8.0);
-        stripRight.setStrobe2Colors(GREEN, BLUE, 8.0);
+        stripRight.setLarson(GREEN, 25, LarsonBounceValue.Front, 5);
+        stripLeft.setLarson(GREEN, 25, LarsonBounceValue.Front, 5);
+        stripHood.setStrobe1Colors(BLUE, 300);
     } else {
         isHubActive();
     }
@@ -289,7 +289,7 @@ public class Robot extends TimedRobot {
         // m_candle.setControl(ledStatusColorRed);
 
         double distanceFromTag = 0.0;
-        int[] validTags = {25, 26, 27, 20, 24, 21, 19, 20, 18, 17, 31};
+        int[] validTags = {25, 26, 27, 20, 24, 21, 19, 20, 18, 17, 31, 8, 5, 4, 3, 2, 11, 10, 9, 1, 22, 1, 6};
         LimelightHelpers.RawFiducial[] detectedTags = LimelightHelpers.getRawFiducials("limelight");
         for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
             if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
