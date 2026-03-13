@@ -53,8 +53,6 @@ public class Robot extends TimedRobot {
     SHOOTING,
   }
 
-  private LEDState currentState = LEDState.START;
-
   // Optional: allow other code to force a state (e.g., from commands)
   private boolean overrideEnabled = false;
   private LEDState overrideState = LEDState.ENABLED;
@@ -71,19 +69,16 @@ public class Robot extends TimedRobot {
   private static final RGBWColor PINK    = new RGBWColor(255, 60,  150, 0);
   private static final RGBWColor PURPLE  = new RGBWColor(170, 0,   255, 0);
 
-  // === LED Segments (your original indices) ===
-  // Note: CANdle onboard LEDs are 0-7. Strip LEDs are 8-399.
   private final LEDSegment candle = new LEDSegment(0,   7,   0); // 8 LEDs
   private final LEDSegment stripLeft = new LEDSegment(8, 31, 1); // 24 LEDs
-  private final LEDSegment stripHood = new LEDSegment(32,  77,  2); // 28 LEDs
+  private final LEDSegment stripHood = new LEDSegment(32,  77,  2); // 46 LEDs
   private final LEDSegment stripRight = new LEDSegment(78,   102,  3); // 24 LEDs
 
 
-  // === Segment helper ===
   private final class LEDSegment {
-    final int start;     // inclusive
-    final int end;       // inclusive
-    final int slot;      // 0-7 (CANdle animation slot)
+    final int start;
+    final int end;
+    final int slot;
 
     LEDSegment(int startInclusive, int endInclusive, int slot) {
       this.start = startInclusive;
@@ -155,7 +150,6 @@ public class Robot extends TimedRobot {
      */
     public Robot() {
 
-         // Phoenix 6 CANdle config (same style as your Robot.java)
     CANdleConfiguration cfg = new CANdleConfiguration();
     cfg.LED.BrightnessScalar = 0.9;
     cfg.LED.StripType = StripTypeValue.GRB;
@@ -207,8 +201,8 @@ public class Robot extends TimedRobot {
 
     private final SolidColor ledStatusColorGreen = new SolidColor(8, 102).withColor(statusGreen);
     private final SolidColor ledStatusColorRed = new SolidColor(8, 102).withColor(statusRed);
-    private final StrobeAnimation ledStatusFlashingRed = new StrobeAnimation(8, 102).withFrameRate(100).withColor(statusRed);
-    private final StrobeAnimation ledStatusFlashingGreen = new StrobeAnimation(8, 102).withFrameRate(100).withColor(statusRed);
+    private final StrobeAnimation ledStatusFlashingRed = new StrobeAnimation(8, 102).withFrameRate(50).withColor(statusRed);
+    private final StrobeAnimation ledStatusFlashingGreen = new StrobeAnimation(8, 102).withFrameRate(50).withColor(statusRed);
 
 
       private LEDState decideState() {
@@ -230,6 +224,7 @@ public class Robot extends TimedRobot {
         // Fire on verticals, white chassis/strip
         stripLeft.setFire(35.0, true);
         stripRight.setFire(35.0, false);
+        stripHood.setSolid(WHITE);
     } else {
         isHubActive();
     }

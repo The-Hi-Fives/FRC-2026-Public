@@ -99,7 +99,8 @@ public class RobotContainer {
             .onTrue(hood.homingCommand());
 
         (RobotModeTriggers.autonomous())
-            .onTrue(intake.homingCommand());
+            .onTrue(intake.homingCommandAuto())
+            .onTrue(hanger.homingCommandMore());
 
         
         
@@ -123,30 +124,33 @@ public class RobotContainer {
         driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
         driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
 
-        driver.leftTrigger().whileTrue(intake.intakeCommand());                               //Rollers                     
+        driver.leftTrigger().whileTrue(intake.intakeCommand());                               //Rollers
+        driver.back().onTrue(hood.homingCommand());                                           //Zero Hood
         driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
 
         driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
         driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle For Shooter
-        driver.rightBumper().whileTrue(subsystemCommands.shootManually());                    //Manual Shoot
-        driver.a().whileTrue(Commands.sequence(
-            Commands.waitSeconds(0.1875),
+        // driver.rightBumper().whileTrue(subsystemCommands.shootManually());                 //Manual Shoot
+        driver.rightBumper().whileTrue(Commands.sequence(
             shooter.runOnce(() -> shooter.setRPM(4000)),
             hood.runOnce(() -> hood.setPosition(0.70)),
-                Commands.waitSeconds(.125), subsystemCommands.feed())); //Feeder
+                Commands.waitSeconds(.125), subsystemCommands.feed())); //Feeding
         
         //Operator Controls\\  
         
         operator.x().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
         operator.a().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
+        operator.rightTrigger().and(operator.start()).whileTrue((Commands.runOnce(() -> shooter.setRPM(-6000)))); //Reverse Shooter
 
         operator.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));   //Stow
+        operator.back().onTrue(intake.homingCommand());                                           //Zero Intake
 
         operator.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
         operator.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
 
         operator.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));                 //Climb Hanging
         operator.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));                  //Climb Hung
+        operator.start().onTrue(hanger.homingCommand());                                        //Zero Climb
 
         operator.leftTrigger().whileTrue(intake.reverseIntakeCommand());                          //Outtake
 

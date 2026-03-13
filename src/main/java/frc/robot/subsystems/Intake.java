@@ -213,6 +213,24 @@ public class Intake extends SubsystemBase {
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
+    public Command homingCommandAuto() {
+        return Commands.sequence(
+            runOnce(() -> setPivotPercentOutput(0.1)),
+            Commands.waitUntil(() -> pivotMotor.getSupplyCurrent().getValue().in(Amps) > 4),
+            runOnce(() -> {
+                // Commands.waitSeconds(5);
+                pivotMotor.setPosition(Position.HOMED.angle());
+                
+                // isHomed = true;
+                // // Commands.waitSeconds(5);
+                // set(Position.INTAKE);
+            }),
+            Commands.waitSeconds(1).andThen(Commands.runOnce(() -> {set(Position.INTAKE);isHomed = true; }))
+        )
+        .unless(() -> isHomed)
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addStringProperty("Command", () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "null", null);
