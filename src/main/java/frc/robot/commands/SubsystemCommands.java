@@ -151,10 +151,29 @@ public final class SubsystemCommands {
             shooter.setRPM(currentRPM + 100);
         } else if (Objects.equals(state, "D")){
             shooter.setRPM(currentRPM - 100);
-        } else if (Objects.equals(state, "1500"))
-        {
+        } else if (Objects.equals(state, "1500")) {
+
             shooter.setRPM(1500);
         }
+    }
+
+    public void setIdleRPM(String state) {
+        if (Objects.equals(state, "F")) {
+            shooter.setRPM(3000);
+        }
+    }
+
+    // public void setIdleRPM(String state) {
+    //     // if (Objects.equals(state, "1500")) {
+
+    //     //     shooter.setRPM(1500);
+    //     } else shooter.setRPM(0);
+           
+    //     }
+          
+
+    public void setRPMSpeed(double speed) {
+        shooter.setRPM(speed);
     }
 
     // public static void staticSetRPM(String state)

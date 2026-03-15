@@ -6,10 +6,12 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -124,17 +126,19 @@ public class RobotContainer {
         driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
         driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
 
-        driver.leftTrigger().whileTrue(intake.intakeCommand());                               //Rollers
+        driver.leftTrigger().whileTrue(intake.intakePosition());  
+        driver.leftTrigger().toggleOnTrue(intake.intakeRollers());                             //Rollers
         driver.back().onTrue(hood.homingCommand());                                           //Zero Hood
         driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
 
         driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
         driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle For Shooter
         // driver.rightBumper().whileTrue(subsystemCommands.shootManually());                 //Manual Shoot
+        driver.rightBumper().whileTrue(Commands.run(() -> subsystemCommands.setIdleRPM("F")));
         driver.rightBumper().whileTrue(Commands.sequence(
-            shooter.runOnce(() -> shooter.setRPM(4000)),
+            shooter.runOnce(() -> shooter.setRPM(3500)),
             hood.runOnce(() -> hood.setPosition(0.70)),
-                Commands.waitSeconds(.125), subsystemCommands.feed())); //Feeding
+            subsystemCommands.feed())); //Feeding
         
         //Operator Controls\\  
         

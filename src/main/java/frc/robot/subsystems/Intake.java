@@ -163,11 +163,29 @@ public class Intake extends SubsystemBase {
         );
     }
 
-    public Command intakeCommand() {
+    public Command intakePosition() {
         return startEnd(
             () -> {
                 set(Position.INTAKE);
+            },
+            () -> set(Speed.STOP)
+        );
+    }
+
+     public Command intakeRollers() {
+        return startEnd(
+            () -> {
                 set(Speed.INTAKE);
+            },
+            () -> set(Speed.STOP)
+        );
+    }
+    
+    public Command intakeCommand() {
+        return startEnd(
+            () -> {
+                set(Speed.INTAKE);
+                set(Position.INTAKE);
             },
             () -> set(Speed.STOP)
         );

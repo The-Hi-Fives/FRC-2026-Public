@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.Shooter;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -37,6 +38,7 @@ import frc.robot.subsystems.Hood;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
+    Shooter shooter;
     private final RobotContainer m_robotContainer;
 
     public enum LEDState {
@@ -181,6 +183,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotController.setBrownoutVoltage(Volts.of(6.1));
         // SmartDashboard.putNumber("Current Hood Percent: ", hood.getCurrentPercent());
+        // shooter.setRPM(1500);
     }
 
     public void fullClear() {
@@ -255,6 +258,8 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
     LEDState newState = decideState();
+    // shooter.setRPM(1500);
+    
 
     // if (newState != currentState) {
     //   applyState(newState);
