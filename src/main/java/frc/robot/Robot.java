@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Hanger;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Shooter;
 
@@ -151,6 +152,7 @@ public class Robot extends TimedRobot {
      * initialization code.
      */
     public Robot() {
+       
 
     CANdleConfiguration cfg = new CANdleConfiguration();
     cfg.LED.BrightnessScalar = 0.9;

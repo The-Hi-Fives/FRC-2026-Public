@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -92,13 +93,18 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+
+        if (DriverStation.isTeleopEnabled()) {
+
+        }
         configureManualDriveBindings();
         // limelight.setDefaultCommand(updateVisionCommand());
 
         // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
         (RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
-            .onTrue(hood.homingCommand());
+            .onTrue(hood.homingCommand())
+            .onTrue(hanger.hangerUp());        
 
         (RobotModeTriggers.autonomous())
             .onTrue(intake.homingCommandAuto())
@@ -132,25 +138,35 @@ public class RobotContainer {
         driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
 
         driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
-        driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle For Shooter
+        driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Shooting
+        driver.rightBumper().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Feeding
         // driver.rightBumper().whileTrue(subsystemCommands.shootManually());                 //Manual Shoot
         driver.rightBumper().whileTrue(Commands.run(() -> subsystemCommands.setIdleRPM("F")));
         driver.rightBumper().whileTrue(Commands.sequence(
-            shooter.runOnce(() -> shooter.setRPM(3500)),
-            hood.runOnce(() -> hood.setPosition(0.70)),
+            shooter.runOnce(() -> shooter.setRPM(3700)),
+            hood.runOnce(() -> hood.setPosition(1)),
             subsystemCommands.feed())); //Feeding
         
         //Operator Controls\\  
         
-        operator.x().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
-        operator.a().onTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
+        operator.x().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
+        operator.a().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
+
+        operator.leftStick().whileTrue(Commands.run(() -> subsystemCommands.setFeedSpeed("FM")));
+        operator.leftStick().whileTrue(Commands.sequence(
+            shooter.runOnce(() -> shooter.setRPM(5000)),
+            hood.runOnce(() -> hood.setPosition(1)),
+            subsystemCommands.feed())); //Feeding
+
+        operator.leftStick().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Hail Mary
+
         operator.rightTrigger().and(operator.start()).whileTrue((Commands.runOnce(() -> shooter.setRPM(-6000)))); //Reverse Shooter
 
         operator.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));   //Stow
         operator.back().onTrue(intake.homingCommand());                                           //Zero Intake
 
-        operator.y().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
-        operator.b().onTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
+        operator.y().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
+        operator.b().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
 
         operator.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));                 //Climb Hanging
         operator.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));                  //Climb Hung

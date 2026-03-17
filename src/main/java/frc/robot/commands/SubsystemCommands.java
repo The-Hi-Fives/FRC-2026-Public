@@ -76,7 +76,7 @@ public final class SubsystemCommands {
         final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getState().Pose);
         return Commands.parallel(
             //  aimAndDriveCommand,
-            Commands.waitSeconds(0.25)
+            Commands.waitSeconds(0)
                 .andThen(prepareShotCommand),
             Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
                 .andThen(feed())
@@ -160,6 +160,12 @@ public final class SubsystemCommands {
     public void setIdleRPM(String state) {
         if (Objects.equals(state, "F")) {
             shooter.setRPM(3000);
+        }
+    }
+
+    public void setFeedSpeed(String state) {
+        if (Objects.equals(state, "FM")) {
+            shooter.setRPM(5000);
         }
     }
 

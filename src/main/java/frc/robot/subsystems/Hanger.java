@@ -18,6 +18,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Measure;
@@ -25,6 +26,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -60,6 +62,7 @@ public class Hanger extends SubsystemBase {
     private final VoltageOut voltageRequest = new VoltageOut(0);
 
     private boolean isHomed = false;
+    private boolean isHanging = true;
 
     public Hanger() {
         motor = new TalonFX(Ports.kHanger, Ports.kCANivoreCANBus);
@@ -141,8 +144,27 @@ public class Hanger extends SubsystemBase {
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
+    public Command hangerUp() {
+        return Commands.sequence(
+            runOnce(() -> setPercentOutput(-0.1)), 
+            Commands.waitUntil(() -> motor.getSupplyCurrent().getValue().in(Amps) > 0.4),
+            runOnce(() -> {
+                motor.setPosition(Position.HUNG.motorAngle());
+                isHanging = true;
+                set(Position.HANGING);
+            })
+        )
+        .unless(() -> isHomed)
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+
     public boolean isHomed() {
         return isHomed;
+    }
+
+    public boolean isHanging() {
+        return isHanging;
     }
 
     private boolean isExtensionWithinTolerance() {
