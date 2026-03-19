@@ -20,6 +20,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
@@ -49,6 +51,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
+    private double simYawDeg = 0.0;
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
@@ -206,7 +209,23 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+
+    var mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
+    var mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
+      if (mt2_left.tagCount >= 1) {
+          poseEstimator.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
+      }
+
+      if (mt2_right.tagCount >= 1) {
+          poseEstimator.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
+      }
+
+//      odometryLock.update(m_gyro.getRotation2d(),
+//              m_leftEncoder.getDistance(),
+//              m_rightEncoder.getDistance());
+//      m_field.setRobotPose(m_odometry.getPoseMeters());
   }
+
 
   /**
    * Runs the drive at the desired velocity.
@@ -356,4 +375,59 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
   }
+
+    public void drive(double xSpeed, double ySpeed, double omega) {
+        // xSpeed, ySpeed in meters/sec, omega in radians/sec
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                xSpeed,
+                ySpeed,
+                omega,
+                getPose().getRotation() // fused heading
+        );
+
+// Convert to module states
+        SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
+//        // 1️⃣ Convert field-relative to robot-relative
+//        double heading = getPose().getRotation().getRadians(); // fused gyro + MegaTag2
+//        double tempX = xSpeed * Math.cos(heading) + ySpeed * Math.sin(heading);
+//        double tempY = -xSpeed * Math.sin(heading) + ySpeed * Math.cos(heading);
+//
+//        // 2️⃣ Robot dimensions
+//        double L = wheelBaseLength; // front-back distance
+//        double W = wheelBaseWidth;  // side-side distance
+//        double R = Math.hypot(L, W);
+//
+//        // 3️⃣ Intermediate calculations for swerve kinematics
+//        double A = tempX - omega * (L / R);
+//        double B = tempX + omega * (L / R);
+//        double C = tempY - omega * (W / R);
+//        double D = tempY + omega * (W / R);
+//
+//        // 4️⃣ Compute wheel speeds
+//        double frontLeftSpeed  = Math.hypot(B, D);
+//        double frontRightSpeed = Math.hypot(B, C);
+//        double backLeftSpeed   = Math.hypot(A, D);
+//        double backRightSpeed  = Math.hypot(A, C);
+//
+//        // 5️⃣ Compute wheel angles
+//        double frontLeftAngle  = Math.atan2(B, D);
+//        double frontRightAngle = Math.atan2(B, C);
+//        double backLeftAngle   = Math.atan2(A, D);
+//        double backRightAngle  = Math.atan2(A, C);
+
+        // 6️⃣ Send outputs to modules using runSetPoint
+        modules[0].runSetpoint(states[0]);
+        modules[1].runSetpoint(states[1]);
+        modules[2].runSetpoint(states[2]);
+        modules[3].runSetpoint(states[3]);
+//        // Convert x, y, omega into wheel angles & speeds using your kinematics
+//        SwerveModuleState[] states = kinematics.toSwerveModuleStates(
+//                new ChassisSpeeds(xSpeed, ySpeed, omega)
+//        );
+//
+//        // Apply states to each module
+//        for (int i = 0; i < modules.length; i++) {
+//            modules[i].setDesiredState(states[i]);
+//        }
+    }
 }

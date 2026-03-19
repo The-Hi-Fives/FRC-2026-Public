@@ -17,6 +17,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.generated.TunerConstants;
@@ -47,6 +48,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             TunerConstants.BackLeft, 
             TunerConstants.BackRight
         );
+
+        // Default perspective to Blue if not set (useful for simulation)
+        setOperatorPerspectiveForward(kBlueAlliancePerspectiveRotation);
     }
 
     /**
@@ -136,6 +140,15 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        /*
+         * Update the simulation state.
+         * 0.02 is the standard loop time, and RobotController.getBatteryVoltage() is the battery voltage.
+         */
+        updateSimState(0.02, RobotController.getBatteryVoltage());
     }
 
     /**

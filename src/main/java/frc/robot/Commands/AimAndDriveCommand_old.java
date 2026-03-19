@@ -11,16 +11,18 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Driving;
+import frc.robot.Landmarks;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.Swerve;
 import frc.util.DriveInputSmoother;
 import frc.util.GeometryUtil;
 import frc.util.ManualDriveInput;
 
-public class AimAndDriveCommand extends Command {
+public class AimAndDriveCommand_old extends Command {
     private static final Angle kAimTolerance = Degrees.of(1);
 
     private final Swerve swerve;
@@ -34,7 +36,7 @@ public class AimAndDriveCommand extends Command {
         .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
         .withHeadingPID(5, 0, 0);
 
-    public AimAndDriveCommand(
+    public AimAndDriveCommand_old(
         Swerve swerve,
         DoubleSupplier forwardInput,
         DoubleSupplier leftInput
@@ -46,7 +48,7 @@ public class AimAndDriveCommand extends Command {
 
     private HashMap<String, Double> centerVals = new HashMap<String, Double>();
 
-    public AimAndDriveCommand(Swerve swerve) {
+    public AimAndDriveCommand_old(Swerve swerve) {
         this(swerve, () -> 0, () -> 0);
     }
 
@@ -67,6 +69,9 @@ public class AimAndDriveCommand extends Command {
 
     private Rotation2d getDirectionToHub()
     {
+        final Translation2d hubPosition = Landmarks.hubPosition();
+        final Translation2d robotPosition = swerve.getState().Pose.getTranslation();
+
 //        final Translation2d hubPosition = Landmarks.hubPosition();
         calcAngleToCenter();
         // SmartDashboard.putNumber("angleToCenter", Math.toDegrees(centerVals.get("angleToCenter")));

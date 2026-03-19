@@ -29,9 +29,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Hanger;
-import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.Shooter;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -39,7 +36,6 @@ import frc.robot.subsystems.Shooter;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
-    Shooter shooter;
     private final RobotContainer m_robotContainer;
 
     public enum LEDState {
@@ -163,29 +159,11 @@ public class Robot extends TimedRobot {
     // Start with everything off
     fullClear();
 
-        // /* Configure CANdle */
-        // var cfg = new CANdleConfiguration();
-        // /* set the LED strip type and brightness */
-        // cfg.LED.StripType = StripTypeValue.GRB;
-        // cfg.LED.BrightnessScalar = 0.5;
-        // /* disable status LED when being controlled */
-        // cfg.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Disabled;
-
-        // m_candle.getConfigurator().apply(cfg);
-
-        // /* clear all previous animations */
-        // for (int i = 0; i < 8; ++i) {
-        //     m_candle.setControl(new EmptyAnimation(i));
-        // }
-
-        Hood hood = new Hood();
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
         SmartDashboard.putData(CommandScheduler.getInstance());
         RobotController.setBrownoutVoltage(Volts.of(6.1));
-        // SmartDashboard.putNumber("Current Hood Percent: ", hood.getCurrentPercent());
-        // shooter.setRPM(1500);
     }
 
     public void fullClear() {
@@ -247,9 +225,6 @@ public class Robot extends TimedRobot {
         return LEDState.START;
   }
 
-
-//    private LimelightHelpers.RawFiducial[] detectedTags;
-
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
@@ -260,18 +235,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
     LEDState newState = decideState();
-    // shooter.setRPM(1500);
-    
-
-    // if (newState != currentState) {
-    //   applyState(newState);
-    //   currentState = newState;
-    // }
-
-
-
-    // Default while enabled in teleop
-   
        
         // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
         // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -279,7 +242,6 @@ public class Robot extends TimedRobot {
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
         isHubActive();
-        // m_candle.setControl(ledStatusColorRed);
 
         double distanceFromTag = 0.0;
         int[] validTags = {25, 26, 27, 20, 24, 21, 19, 20, 18, 17, 31, 8, 5, 4, 3, 2, 11, 10, 9, 1, 22, 1, 6};
@@ -292,65 +254,12 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
             }
         }
-
-
-        
-
-
-        
-
-
-//        detectedTags = LimelightHelpers.getRawFiducials("limelight");
-//
-//        SmartDashboard.putString("detectedTags Size: ", String.valueOf(detectedTags.length));
-//        //            SmartDashboard.putNumberArray("Detected IDs: ", )
-//        for(int i = 0; i < detectedTags.length; i++)
-//        {
-//        for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
-//            SmartDashboard.putNumber("Tag" + i + "# ", detectedTags[i].id);
-//        }
     }
 
-//     private void applyState(LEDState state) {
-//     switch (state) {
-//       case DISABLED: {
-//         stripHood.setStrobe2Colors(GREEN, BLUE, 8.0);
-//         stripLeft.setStrobe2Colors(GREEN, BLUE, 8.0);
-//         stripRight.setStrobe2Colors(GREEN, BLUE, 8.0);
-//         break;
-//       }
-
-//       case DISABLED_LOW_BATTERY: {
-//         candle.off();
-//         // Fast brown strobes everywhere
-//         stripLeft.setStrobe1Colors(BROWN, 8.0);
-//         stripRight.setStrobe1Colors(BROWN, 8.0);
-//         stripHood.setStrobe1Colors(BROWN, 8.0);
-//         break;
-//       }
-
-//       case AUTONOMOUS: {
-//         candle.off();
-//         // Fire on verticals, white chassis/strip
-//         stripLeft.setFire(35.0, true);
-//         stripRight.setFire(35.0, false);
-//         break;
-//       }
-
-//       case ENABLED: {
-//         candle.off();
-//         stripHood.setSolid(WHITE);
-//         stripLeft.setSolid(WHITE);
-//         stripRight.setSolid(WHITE);
-//         break;
-//       }
-//       case START:
-//       default: {
-//         fullClear();
-//         break;
-//       }
-//     }
-//   }
+    @Override
+    public void simulationPeriodic() {
+        m_robotContainer.simulationPeriodic();
+    }
 
     public void isHubActive() {
         Optional<Alliance> alliance = DriverStation.getAlliance();

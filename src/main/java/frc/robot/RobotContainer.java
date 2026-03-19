@@ -46,8 +46,8 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
     private final Hanger hanger = new Hanger();
-    // private final Limelight limelightright = new Limelight("limelight-right");
-    // private final Limelight limelightleft = new Limelight("limelight-left");
+     private final Limelight limelightright = new Limelight("limelight-right");
+     private final Limelight limelightleft = new Limelight("limelight-left");
 
 
     private final SwerveTelemetry swerveTelemetry = new SwerveTelemetry(Driving.kMaxSpeed.in(MetersPerSecond));
@@ -197,4 +197,13 @@ public class RobotContainer {
     //     })
     //     .ignoringDisable(true);
     // }
+    /**
+     * Updates all subsystem simulations. This should be called from the robot's
+     * simulationPeriodic method.
+     */
+    public void simulationPeriodic() {
+        swerve.simulationPeriodic();
+        shooter.simulationPeriodic();
+        // Add other subsystems here as you implement their simulation logic
+    }
 }
