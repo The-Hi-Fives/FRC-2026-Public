@@ -69,7 +69,7 @@ public class PrepareShotCommand extends Command {
 //        final Distance distanceToHub = getDistanceToHub();
 //        final Shot shot = distanceToShotMap.get(distanceToHub);
 //        Shot shot;
-        LimelightHelpers.RawFiducial[] detectedTags = LimelightHelpers.getRawFiducials("limelight");
+        LimelightHelpers.RawFiducial[] detectedTags = LimelightHelpers.getRawFiducials("limelight-right");
         for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
             if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
             {
