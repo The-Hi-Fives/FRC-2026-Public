@@ -43,7 +43,8 @@ public final class AutoRoutines {
     private final Shooter shooter;
     private final Hood hood;
     private final Hanger hanger;
-    private final Limelight limelight;
+    private final Limelight limelightright;
+    private final Limelight limelightleft;
 
     private final SubsystemCommands subsystemCommands;
 
@@ -58,7 +59,8 @@ public final class AutoRoutines {
         Shooter shooter,
         Hood hood,
         Hanger hanger,
-        Limelight limelight
+        Limelight limelightright,
+        Limelight limelightleft
     ) {
         this.swerve = swerve;
         this.intake = intake;
@@ -67,7 +69,8 @@ public final class AutoRoutines {
         this.shooter = shooter;
         this.hood = hood;
         this.hanger = hanger;
-        this.limelight = limelight;
+        this.limelightright = limelightright;
+        this.limelightleft = limelightleft;
 
         this.subsystemCommands = new SubsystemCommands(swerve, intake, floor, feeder, shooter, hood, hanger);
 
@@ -135,7 +138,7 @@ public final class AutoRoutines {
         outpostToDepot.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
         outpostToDepot.doneDelayed(0.1).onTrue(depotToShootingPose.cmd());
 
-        depotToShootingPose.active().whileTrue(limelight.idle());
+        depotToShootingPose.active().whileTrue(limelightright.idle());
         depotToShootingPose.atTime(0.5).onTrue(
             Commands.parallel(
                 shooter.spinUpCommand(3000),
@@ -150,7 +153,7 @@ public final class AutoRoutines {
             )
         );
 
-        shootingPoseToTower.active().whileTrue(limelight.idle());
+        shootingPoseToTower.active().whileTrue(limelightright.idle());
         shootingPoseToTower.active().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
         shootingPoseToTower.done().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
 
@@ -191,7 +194,7 @@ public final class AutoRoutines {
         outpostToDepot.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
         outpostToDepot.doneDelayed(0.1).onTrue(depotToShootingPose.cmd());
 
-        depotToShootingPose.active().whileTrue(limelight.idle());
+        depotToShootingPose.active().whileTrue(limelightright.idle());
         depotToShootingPose.atTime(0.5).onTrue(
             Commands.parallel(
                 shooter.spinUpCommand(3000),
@@ -206,7 +209,7 @@ public final class AutoRoutines {
             )
         );
 
-        shootingPoseToTower.active().whileTrue(limelight.idle());
+        shootingPoseToTower.active().whileTrue(limelightright.idle());
         shootingPoseToTower.active().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
         shootingPoseToTower.done().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
 
@@ -287,7 +290,7 @@ public final class AutoRoutines {
 
         startToOutpost.doneDelayed(1).onTrue(outpostToShootingPoseToTower.cmd());
 
-        outpostToShootingPoseToTower.active().whileTrue(limelight.idle());
+        outpostToShootingPoseToTower.active().whileTrue(limelightright.idle());
         outpostToShootingPoseToTower.atTime(0.5).onTrue(
             Commands.parallel(
                 shooter.spinUpCommand(2600),
@@ -302,7 +305,7 @@ public final class AutoRoutines {
             )
         );
 
-        shootingPoseToTowerToClimb.active().whileTrue(limelight.idle());
+        shootingPoseToTowerToClimb.active().whileTrue(limelightright.idle());
         shootingPoseToTowerToClimb.active().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
         shootingPoseToTowerToClimb.done().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
 

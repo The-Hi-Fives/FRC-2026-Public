@@ -46,7 +46,9 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
     private final Hanger hanger = new Hanger();
-    private final Limelight limelight = new Limelight("limelight");
+    // private final Limelight limelightright = new Limelight("limelight-right");
+    // private final Limelight limelightleft = new Limelight("limelight-left");
+
 
     private final SwerveTelemetry swerveTelemetry = new SwerveTelemetry(Driving.kMaxSpeed.in(MetersPerSecond));
     
@@ -62,7 +64,8 @@ public class RobotContainer {
         shooter,
         hood,
         hanger,
-        limelight
+        limelightright,
+        limelightleft
     );
     private final SubsystemCommands subsystemCommands = new SubsystemCommands(
         swerve,
@@ -180,18 +183,18 @@ public class RobotContainer {
 
     }
 
-    private Command updateVisionCommand() {
-        return limelight.run(() -> {
-            final Pose2d currentRobotPose = swerve.getState().Pose;
-            final Optional<Limelight.Measurement> measurement = limelight.getMeasurement(currentRobotPose);
-            measurement.ifPresent(m -> {
-                swerve.addVisionMeasurement(
-                    m.poseEstimate.pose, 
-                    m.poseEstimate.timestampSeconds,
-                    m.standardDeviations
-                );
-            });
-        })
-        .ignoringDisable(true);
-    }
+    // private Command updateVisionCommand() {
+    //     return limelight.run(() -> {
+    //         final Pose2d currentRobotPose = swerve.getState().Pose;
+    //         final Optional<Limelight.Measurement> measurement = limelight.getMeasurement(currentRobotPose);
+    //         measurement.ifPresent(m -> {
+    //             swerve.addVisionMeasurement(
+    //                 m.poseEstimate.pose, 
+    //                 m.poseEstimate.timestampSeconds,
+    //                 m.standardDeviations
+    //             );
+    //         });
+    //     })
+    //     .ignoringDisable(true);
+    // }
 }
