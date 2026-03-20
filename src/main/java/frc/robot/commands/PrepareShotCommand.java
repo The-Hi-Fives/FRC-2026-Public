@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -63,64 +64,66 @@ public class PrepareShotCommand extends Command {
 
     @Override
     public void execute() {
-        //TODO: add in seperate arrays for alliance tags, and braching code for alliances
-        double distanceFromTag = 0;
-        int[] validTags = {25, 26, 27, 20, 24, 21, 19, 20, 18, 17, 31, 8, 5, 4, 3, 2, 11, 10, 9, 1, 22, 1, 6};
-//        final Distance distanceToHub = getDistanceToHub();
-//        final Shot shot = distanceToShotMap.get(distanceToHub);
-//        Shot shot;
-        LimelightHelpers.RawFiducial[] detectedTagsRight = LimelightHelpers.getRawFiducials("limelight-right");
-        LimelightHelpers.RawFiducial[] detectedTagsLeft = LimelightHelpers.getRawFiducials("limelight-left");
-        
-        for (LimelightHelpers.RawFiducial detectedTag : detectedTagsRight) {
-            if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
-            {
-                //Distance from tag in inches
-                distanceFromTag = detectedTag.distToCamera * 39.37;
-                SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
-                if(distanceFromTag < prevDistToTag) prevDistToTag = distanceFromTag;
-            }
-        }
-        for (LimelightHelpers.RawFiducial detectedTag : detectedTagsLeft) {
-            if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
-            {
-                //Distance from tag in inches
-                distanceFromTag = detectedTag.distToCamera * 39.37;
-                SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
-                if(distanceFromTag < prevDistToTag) prevDistToTag = distanceFromTag;
-            }
-        }
+//        //TODO: add in seperate arrays for alliance tags, and braching code for alliances
+//        double distanceFromTag = 0;
+//        int[] validTags = {25, 26, 27, 20, 24, 21, 19, 20, 18, 17, 31, 8, 5, 4, 3, 2, 11, 10, 9, 1, 22, 1, 6};
+////        final Distance distanceToHub = getDistanceToHub();
+////        final Shot shot = distanceToShotMap.get(distanceToHub);
+////        Shot shot;
+//        LimelightHelpers.RawFiducial[] detectedTagsRight = LimelightHelpers.getRawFiducials("limelight-right");
+//        LimelightHelpers.RawFiducial[] detectedTagsLeft = LimelightHelpers.getRawFiducials("limelight-left");
+//
+//        for (LimelightHelpers.RawFiducial detectedTag : detectedTagsRight) {
+//            if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
+//            {
+//                //Distance from tag in inches
+//                distanceFromTag = detectedTag.distToCamera * 39.37;
+//                SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
+//                if(distanceFromTag < prevDistToTag) prevDistToTag = distanceFromTag;
+//            }
+//        }
+//        for (LimelightHelpers.RawFiducial detectedTag : detectedTagsLeft) {
+//            if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
+//            {
+//                //Distance from tag in inches
+//                distanceFromTag = detectedTag.distToCamera * 39.37;
+//                SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
+//                if(distanceFromTag < prevDistToTag) prevDistToTag = distanceFromTag;
+//            }
+//        }
+//
+//        // if(prevDistToTag <= 52)
+//        // {
+//        //     //2800, 0.19
+//        //     shooter.setRPM(3400);
+//        //     hood.setPosition(0.1);
+//        //     SmartDashboard.putNumber("RPM: ", 2800);
+//        //     SmartDashboard.putNumber("Position: ", 0.1);
+//        // }
+//        // else if (prevDistToTag <= 114)
+//        // {
+//        //     //3275, 0.40
+//        //     shooter.setRPM(3800);
+//        //     hood.setPosition(0.4);
+//        //     SmartDashboard.putNumber("RPM: ", 3275);
+//        //     SmartDashboard.putNumber("Position: ", 0.4);
+//        // }
+//        // else if (prevDistToTag <= 165)
+//        // {
+//        //     //3650, 0.48
+//        //     shooter.setRPM(4100);
+//        //     hood.setPosition(0.48);
+//        //     SmartDashboard.putNumber("RPM: ", 3650);
+//        //     SmartDashboard.putNumber("Position: ", 0.48);
+//        // }
+//        // else
+//        // {
+//        //     //4000 0.5
+//        //     shooter.setRPM(4600);
+//        //     hood.setPosition(0.5);
+//        // }
 
-        // if(prevDistToTag <= 52)
-        // {
-        //     //2800, 0.19
-        //     shooter.setRPM(3400);
-        //     hood.setPosition(0.1);
-        //     SmartDashboard.putNumber("RPM: ", 2800);
-        //     SmartDashboard.putNumber("Position: ", 0.1);
-        // }
-        // else if (prevDistToTag <= 114)
-        // {
-        //     //3275, 0.40
-        //     shooter.setRPM(3800);
-        //     hood.setPosition(0.4);
-        //     SmartDashboard.putNumber("RPM: ", 3275);
-        //     SmartDashboard.putNumber("Position: ", 0.4);
-        // }
-        // else if (prevDistToTag <= 165)
-        // {
-        //     //3650, 0.48
-        //     shooter.setRPM(4100);
-        //     hood.setPosition(0.48);
-        //     SmartDashboard.putNumber("RPM: ", 3650);
-        //     SmartDashboard.putNumber("Position: ", 0.48);
-        // }
-        // else
-        // {
-        //     //4000 0.5
-        //     shooter.setRPM(4600);
-        //     hood.setPosition(0.5);
-        // }
+        prevDistToTag = getDistanceToHub().in(Inches);
 
         double hoodAngle = -0.00143472 * Math.pow(prevDistToTag, 2) + 0.60728 * prevDistToTag + 8.01954;
         // double shooterRPM = 0.0985926 * Math.pow(prevDistToTag, 2) + -5.42072 * prevDistToTag + 2865.86315;
