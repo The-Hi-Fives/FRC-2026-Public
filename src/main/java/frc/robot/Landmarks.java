@@ -22,7 +22,8 @@ public class Landmarks {
         public static final Translation3d HUB_POSE_BLUE = new Translation3d(BLUE_HUB_X, HUB_Y, HUB_Z);
         public static final Translation3d HUB_POSE_RED = new Translation3d(RED_HUB_X, HUB_Y, HUB_Z);
          */
-        final double BLUE_HUB_X = inchesToMeters(182.1);
+        //TODO: Change BLUE HUB X back to 182.1 at comp
+        final double BLUE_HUB_X = inchesToMeters(162.1); //182.1
         final double RED_HUB_X = inchesToMeters(316.64) - BLUE_HUB_X;
         final double HUB_Y = inchesToMeters(316.64) / 2;
         final double HUB_Z = 1.83;

@@ -63,6 +63,7 @@ public class AimAndDriveCommand extends Command {
          SmartDashboard.putNumber("hubPosition.x", robotPosition.getX());
         SmartDashboard.putNumber("hubPosition.y", robotPosition.getY());
         final Rotation2d hubDirectionInBlueAlliancePerspective = hubPosition.minus(robotPosition).getAngle();
+        SmartDashboard.putNumber("hubPosition in blue allianc pov", hubDirectionInBlueAlliancePerspective.getDegrees());
         final Rotation2d hubDirectionInOperatorPerspective = hubDirectionInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection());
         return hubDirectionInOperatorPerspective;
     }
