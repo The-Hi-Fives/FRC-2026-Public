@@ -20,10 +20,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.subsystems.drive.Drive;
 
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
+    private final Drive drive;
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -37,7 +40,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private final PIDController pathYController = new PIDController(10, 0, 0);
     private final PIDController pathThetaController = new PIDController(7, 0, 0);
 
-    public Swerve() {
+    public Swerve(Drive drive) {
         super(
             TunerConstants.DrivetrainConstants, 
             0,
@@ -51,6 +54,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
         // Default perspective to Blue if not set (useful for simulation)
         setOperatorPerspectiveForward(kBlueAlliancePerspectiveRotation);
+        this.drive = drive;
     }
 
     /**
@@ -183,5 +187,15 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+
+    public Pose2d getPose()
+    {
+        return drive.getPose();
+    }
+
+    public void setPose(Pose2d pose)
+    {
+        drive.setPose(pose);
     }
 }

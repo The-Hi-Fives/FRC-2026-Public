@@ -42,7 +42,7 @@ public class PrepareShotCommand extends Command {
     private final Shooter shooter;
     private final Hood hood;
     private final Supplier<Pose2d> robotPoseSupplier;
-    private double prevDistToTag = 0.0;
+    private double prevDistToTag = 9999999.0;
 
     public PrepareShotCommand(Shooter shooter, Hood hood, Supplier<Pose2d> robotPoseSupplier) {
         this.shooter = shooter;
@@ -69,14 +69,25 @@ public class PrepareShotCommand extends Command {
 //        final Distance distanceToHub = getDistanceToHub();
 //        final Shot shot = distanceToShotMap.get(distanceToHub);
 //        Shot shot;
-        LimelightHelpers.RawFiducial[] detectedTags = LimelightHelpers.getRawFiducials("limelight-right");
-        for (LimelightHelpers.RawFiducial detectedTag : detectedTags) {
+        LimelightHelpers.RawFiducial[] detectedTagsRight = LimelightHelpers.getRawFiducials("limelight-right");
+        LimelightHelpers.RawFiducial[] detectedTagsLeft = LimelightHelpers.getRawFiducials("limelight-left");
+        
+        for (LimelightHelpers.RawFiducial detectedTag : detectedTagsRight) {
             if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
             {
                 //Distance from tag in inches
                 distanceFromTag = detectedTag.distToCamera * 39.37;
                 SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
-                prevDistToTag = distanceFromTag;
+                if(distanceFromTag < prevDistToTag) prevDistToTag = distanceFromTag;
+            }
+        }
+        for (LimelightHelpers.RawFiducial detectedTag : detectedTagsLeft) {
+            if(IntStream.of(validTags).anyMatch(x -> x == detectedTag.id))
+            {
+                //Distance from tag in inches
+                distanceFromTag = detectedTag.distToCamera * 39.37;
+                SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
+                if(distanceFromTag < prevDistToTag) prevDistToTag = distanceFromTag;
             }
         }
 
