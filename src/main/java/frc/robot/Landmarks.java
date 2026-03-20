@@ -29,12 +29,12 @@ public class Landmarks {
         final Translation2d HUB_POSE_BLUE = new Translation2d(BLUE_HUB_X, HUB_Y);
         final Translation2d HUB_POSE_RED = new Translation2d(RED_HUB_X, HUB_Y);
         final Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Blue) {
+//        if (alliance.isPresent() && alliance.get() == Alliance.Blue) {
 
             return HUB_POSE_BLUE;
 //            return new Translation2d(Inches.of(36), Inches.of(0)); //182.105, 158.845
-        }
-        return HUB_POSE_RED;
+//        }
+//        return HUB_POSE_RED;
 //        return new Translation2d(Inches.of(36), Inches.of(0)); //469.115, 158.854
     }
 }

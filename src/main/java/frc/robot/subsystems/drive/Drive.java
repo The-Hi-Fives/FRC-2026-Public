@@ -210,15 +210,57 @@ public class Drive extends SubsystemBase {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
 
-    var mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
-    var mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
-      if (mt2_left.tagCount >= 1) {
-          poseEstimator.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
+    boolean doRejectUpdate = false;
+
+      LimelightHelpers.SetRobotOrientation("limelight-left", poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
+
+      // if our angular velocity is greater than 360 degrees per second, ignore vision updates
+//      if(Math.abs(gyroIO.getRate()) > 360)
+//      {
+//          doRejectUpdate = true;
+//      }
+      if(mt2_left.tagCount == 0)
+      {
+          doRejectUpdate = true;
+      }
+      if(!doRejectUpdate)
+      {
+          poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+          poseEstimator.addVisionMeasurement(
+                  mt2_left.pose,
+                  mt2_left.timestampSeconds);
       }
 
-      if (mt2_right.tagCount >= 1) {
-          poseEstimator.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
+      LimelightHelpers.SetRobotOrientation("limelight-right", poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
+
+      // if our angular velocity is greater than 360 degrees per second, ignore vision updates
+//      if(Math.abs(gyroIO.getRate()) > 360)
+//      {
+//          doRejectUpdate = true;
+//      }
+      if(mt2_right.tagCount == 0)
+      {
+          doRejectUpdate = true;
       }
+      if(!doRejectUpdate)
+      {
+          poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+          poseEstimator.addVisionMeasurement(
+                  mt2_right.pose,
+                  mt2_right.timestampSeconds);
+      }
+
+//    var mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
+//    var mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
+//      if (mt2_left.tagCount >= 1) {
+//          poseEstimator.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
+//      }
+//
+//      if (mt2_right.tagCount >= 1) {
+//          poseEstimator.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
+//      }
 
 //      odometryLock.update(m_gyro.getRotation2d(),
 //              m_leftEncoder.getDistance(),
@@ -375,6 +417,7 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
   }
+  
 
     public void drive(double xSpeed, double ySpeed, double omega) {
         // xSpeed, ySpeed in meters/sec, omega in radians/sec
