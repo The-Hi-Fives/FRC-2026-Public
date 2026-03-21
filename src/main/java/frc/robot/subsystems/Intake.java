@@ -50,10 +50,10 @@ public class Intake extends SubsystemBase {
     }
 
     public enum Position {
-        HOMED(110),
-        STOWED(100),
-        INTAKE(-4),
-        AGITATE(20);
+        HOMED(100),
+        STOWED(90),
+        INTAKE(-45),
+        AGITATE(-23);
 
         private final double degrees;
 

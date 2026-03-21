@@ -254,10 +254,11 @@ public class Drive extends SubsystemBase {
 //      SmartDashboard.putNumber("mt2_left", mt2_left.pose.getRotation().getDegrees());
 //      SmartDashboard.putNumber("mt2_right", mt2_right.pose.getRotation().getDegrees());
 //
-//      SmartDashboard.putNumber("estimated x", poseEstimator.getEstimatedPosition().getX());
-//      SmartDashboard.putNumber("estimated y", poseEstimator.getEstimatedPosition().getY());
-//      SmartDashboard.putNumber("rawGyro", rawGyroRotation.getDegrees());
-//      SmartDashboard.putNumber("odometry rotation", getRotation().getDegrees());
+     SmartDashboard.putNumber("estimated x", poseEstimator.getEstimatedPosition().getX());
+     SmartDashboard.putNumber("estimated y", poseEstimator.getEstimatedPosition().getY());
+     SmartDashboard.putNumber("rawGyro", rawGyroRotation.getDegrees());
+     SmartDashboard.putNumber("odometry rotation", getRotation().getDegrees());
+
   }
 
   private void visionPipeline()
@@ -272,10 +273,14 @@ public class Drive extends SubsystemBase {
     LimelightHelpers.PoseEstimate mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
     LimelightHelpers.PoseEstimate mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
 
+    LimelightHelpers.PoseEstimate mt1_left = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-left");
+    LimelightHelpers.PoseEstimate mt1_right = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-right");
+
+
 // ----------------- Stage 1: Hard Reject -----------------
     boolean reject = false;
 
-    if (mt2_left == null || mt2_right == null) reject = true;
+    if (mt2_left == null || mt2_right == null) return;
     if (mt2_left.tagCount < 1 && mt2_right.tagCount < 1) reject = true;
 
 // Reject if spinning too fast
@@ -284,7 +289,9 @@ public class Drive extends SubsystemBase {
     if (!reject) {
 
       // ----------------- Combine Measurements -----------------
-      Pose2d avgPose = averagePose(mt2_left.pose, mt2_right.pose);
+      Pose2d avgPose = averagePoseXY(mt1_left.pose, mt1_right.pose);
+      avgPose = averagePoseRot(avgPose, mt2_left.pose, mt2_right.pose);
+
 
       int tagCount = Math.max(mt2_left.tagCount, mt2_right.tagCount);
       double distance = Math.min(mt2_left.avgTagDist, mt2_right.avgTagDist);
@@ -303,11 +310,11 @@ public class Drive extends SubsystemBase {
       score *= Math.max(0.0, 1.0 - (distance / 6.0));
 
       // Angle agreement weight
-      score *= Math.max(0.0, 1.0 - (Math.abs(angleDiff) / 90.0));
+      score *= Math.max(0.0, 1.0 - (Math.abs(angleDiff) / 30.0));
 
       // ----------------- Stage 4: Convert to Std Devs -----------------
       double xyStdDev = 0.3 + (1.5 * (1.0 - score)); // meters
-      double thetaStdDev = Units.degreesToRadians(5 + (40 * (1.0 - score))); // radians
+      double thetaStdDev = Units.degreesToRadians(10 + (60 * (1.0 - score))); // radians
 
       poseEstimator.setVisionMeasurementStdDevs(
               VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
@@ -332,10 +339,13 @@ public class Drive extends SubsystemBase {
 
       // ----------------- Stage 7: Recovery Mode -----------------
       boolean multiTagStable =
-              tagCount >= 2 &&
-                      Math.abs(angleDiff) < 100 &&
+              tagCount >= 3 &&
+                      Math.abs(angleDiff) < 5 &&
                       Math.abs(gyroInputs.yawVelocityRadPerSec) < Math.toRadians(30);
 
+      SmartDashboard.putNumber("mt2_left.avgTagDist", mt2_left.avgTagDist);
+      SmartDashboard.putNumber("mt2_right.avgTagDist", mt2_right.avgTagDist);
+      SmartDashboard.putBoolean("Updating from multitags", multiTagStable);
       if (multiTagStable) {
         poseEstimator.resetPosition(
                 rawGyroRotation,
@@ -349,6 +359,13 @@ public class Drive extends SubsystemBase {
       SmartDashboard.putNumber("VisionAngleDiff", angleDiff);
       SmartDashboard.putNumber("VisionXYStdDev", xyStdDev);
       SmartDashboard.putNumber("VisionThetaStdDevDeg", Math.toDegrees(thetaStdDev));
+      SmartDashboard.putNumber("pose x", getPose().getX());
+      SmartDashboard.putNumber("pose y", getPose().getY());
+      SmartDashboard.putNumber("pose rot", getPose().getRotation().getDegrees());
+      SmartDashboard.putNumber("vision x", avgPose.getX());
+      SmartDashboard.putNumber("vision y", avgPose.getY());
+      SmartDashboard.putNumber("avgPose rot", avgPose.getRotation().getDegrees());
+      SmartDashboard.putNumber("diff angle", angleDiff);
     }
   }
 
@@ -502,7 +519,7 @@ public class Drive extends SubsystemBase {
     };
   }
   
-    private Pose2d averagePose(Pose2d a, Pose2d b)
+    private Pose2d averagePoseXY(Pose2d a, Pose2d b)
     {
       double avgX = (a.getX() + b.getX()) / 2.0;
       double avgY = (a.getY() + b.getY()) / 2.0;
@@ -516,8 +533,24 @@ public class Drive extends SubsystemBase {
       double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
       double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
 
-      Rotation2d avgRot = new Rotation2d(Math.atan2(sinAvg, cosAvg));
+      Rotation2d visionRot = new Rotation2d(Math.atan2(sinAvg, cosAvg));
+      Rotation2d avgRot = rawGyroRotation.interpolate(visionRot, .1);
 
-      return new Pose2d(avgX, avgY, avgRot);
+
+
+      return new Pose2d(avgX, avgY, visionRot);
+    }
+
+    private Pose2d averagePoseRot(Pose2d avgPose, Pose2d a, Pose2d b)
+    {
+      double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
+      double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
+
+      Rotation2d visionRot = new Rotation2d(Math.atan2(sinAvg, cosAvg));
+      Rotation2d avgRot = rawGyroRotation.interpolate(visionRot, .1);
+
+
+
+      return new Pose2d(avgPose.getX(), avgPose.getY(), visionRot);
     }
 }
