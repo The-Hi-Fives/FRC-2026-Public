@@ -35,7 +35,8 @@ import frc.robot.Ports;
 public class Intake extends SubsystemBase {
     public enum Speed {
         STOP(0),
-        INTAKE(0.8);
+        INTAKE(0.8),
+        REVERSEINTAKE(-0.8);
 
         private final double percentOutput;
 
@@ -78,7 +79,7 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         pivotMotor = new TalonFX(Ports.kIntakePivot, Ports.kCANivoreCANBus);
-        rollerMotor = new TalonFX(Ports.kIntakeRollers, Ports.kRoboRioCANBus);
+        rollerMotor = new TalonFX(Ports.kIntakeRollers, Ports.kCANivoreCANBus);
         configurePivotMotor();
         configureRollerMotor();
         SmartDashboard.putData(this);
@@ -122,7 +123,7 @@ public class Intake extends SubsystemBase {
         final TalonFXConfiguration config = new TalonFXConfiguration()
             .withMotorOutput(
                 new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake)
             )
             .withCurrentLimits(
@@ -162,11 +163,38 @@ public class Intake extends SubsystemBase {
         );
     }
 
-    public Command intakeCommand() {
+    public Command intakePosition() {
         return startEnd(
             () -> {
                 set(Position.INTAKE);
+            },
+            () -> set(Speed.STOP)
+        );
+    }
+
+     public Command intakeRollers() {
+        return startEnd(
+            () -> {
                 set(Speed.INTAKE);
+            },
+            () -> set(Speed.STOP)
+        );
+    }
+    
+    public Command intakeCommand() {
+        return startEnd(
+            () -> {
+                set(Speed.INTAKE);
+                set(Position.INTAKE);
+            },
+            () -> set(Speed.STOP)
+        );
+    }
+
+    public Command reverseIntakeCommand() {
+        return startEnd(
+            () -> {
+                set(Speed.REVERSEINTAKE);
             },
             () -> set(Speed.STOP)
         );
@@ -198,6 +226,24 @@ public class Intake extends SubsystemBase {
                 isHomed = true;
                 set(Position.STOWED);
             })
+        )
+        .unless(() -> isHomed)
+        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    public Command homingCommandAuto() {
+        return Commands.sequence(
+            runOnce(() -> setPivotPercentOutput(0.1)),
+            Commands.waitUntil(() -> pivotMotor.getSupplyCurrent().getValue().in(Amps) > 4),
+            runOnce(() -> {
+                // Commands.waitSeconds(5);
+                pivotMotor.setPosition(Position.HOMED.angle());
+                
+                // isHomed = true;
+                // // Commands.waitSeconds(5);
+                // set(Position.INTAKE);
+            }),
+            Commands.waitSeconds(1).andThen(Commands.runOnce(() -> {set(Position.INTAKE);isHomed = true; }))
         )
         .unless(() -> isHomed)
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);

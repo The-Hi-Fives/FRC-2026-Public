@@ -652,6 +652,13 @@ public class LimelightHelpers {
         return name;
     }
 
+    static final String sanitizeName2(String name) {
+        if ("".equals(name) || name == null) {
+            return "limelight2";
+        }
+        return name;
+    }
+
     /**
      * Takes a 6-length array of pose data and converts it to a Pose3d object.
      * Array format: [x, y, z, roll, pitch, yaw] where angles are in degrees.

@@ -6,10 +6,13 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -19,6 +22,7 @@ import frc.robot.Constants.Driving;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.ManualDriveCommand;
 import frc.robot.commands.SubsystemCommands;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hanger;
@@ -27,6 +31,10 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.util.SwerveTelemetry;
 
 /**
@@ -36,18 +44,28 @@ import frc.util.SwerveTelemetry;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-    private final Swerve swerve = new Swerve();
+    private final Drive drive = new Drive(
+        new GyroIOPigeon2(), 
+        new ModuleIOTalonFX(TunerConstants.FrontLeft), 
+        new ModuleIOTalonFX(TunerConstants.FrontRight), 
+        new ModuleIOTalonFX(TunerConstants.BackLeft), 
+        new ModuleIOTalonFX(TunerConstants.BackRight));
+    private final Swerve swerve = new Swerve(drive);
     private final Intake intake = new Intake();
     private final Floor floor = new Floor();
     private final Feeder feeder = new Feeder();
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
     private final Hanger hanger = new Hanger();
-    private final Limelight limelight = new Limelight("limelight");
+     private final Limelight limelightright = new Limelight("limelight-right");
+     private final Limelight limelightleft = new Limelight("limelight-left");
+
 
     private final SwerveTelemetry swerveTelemetry = new SwerveTelemetry(Driving.kMaxSpeed.in(MetersPerSecond));
     
     private final CommandXboxController driver = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
+
 
     private final AutoRoutines autoRoutines = new AutoRoutines(
         swerve,
@@ -57,7 +75,8 @@ public class RobotContainer {
         shooter,
         hood,
         hanger,
-        limelight
+        limelightright,
+        limelightleft
     );
     private final SubsystemCommands subsystemCommands = new SubsystemCommands(
         swerve,
@@ -88,20 +107,25 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+
+        if (DriverStation.isTeleopEnabled()) {
+
+        }
         configureManualDriveBindings();
-        limelight.setDefaultCommand(updateVisionCommand());
+        // limelight.setDefaultCommand(updateVisionCommand());
 
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
+        // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
+        (RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
-            .onTrue(hanger.homingCommand());
+            .onTrue(hood.homingCommand());
+            // .onTrue(hanger.hangerUp());        
 
-        driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());
-        driver.rightBumper().whileTrue(subsystemCommands.shootManually());
-        driver.leftTrigger().whileTrue(intake.intakeCommand());
-        driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));
+        (RobotModeTriggers.autonomous())
+            .onTrue(intake.homingCommandAuto())
+            .onTrue(hanger.homingCommandMore());
 
-        driver.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));
-        driver.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));
+        
+        
     }
 
     private void configureManualDriveBindings() {
@@ -112,25 +136,85 @@ public class RobotContainer {
             () -> -driver.getRightX()
         );
         swerve.setDefaultCommand(manualDriveCommand);
+
+        //Driver Controls\\  
+
+        driver.start().onTrue(Commands.runOnce(() -> manualDriveCommand.seedFieldCentric())); //Zero Robot Heading
+
         driver.a().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.k180deg)));
         driver.b().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCW_90deg)));
         driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
         driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
-        driver.back().onTrue(Commands.runOnce(() -> manualDriveCommand.seedFieldCentric()));
+
+        driver.leftTrigger().whileTrue(intake.intakePosition());  
+        driver.leftTrigger().toggleOnTrue(intake.intakeRollers());                             //Rollers
+        driver.back().onTrue(hood.homingCommand());                                           //Zero Hood
+        driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
+
+        driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
+        driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Shooting
+        driver.rightBumper().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Feeding
+        // driver.rightBumper().whileTrue(subsystemCommands.shootManually());                 //Manual Shoot
+        driver.rightBumper().whileTrue(Commands.run(() -> subsystemCommands.setIdleRPM("F")));
+        driver.rightBumper().whileTrue(Commands.sequence(
+            shooter.runOnce(() -> shooter.setRPM(3700)),
+            hood.runOnce(() -> hood.setPosition(1)),
+            subsystemCommands.feed())); //Feeding
+        
+        //Operator Controls\\  
+        
+        operator.x().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
+        operator.a().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
+
+        operator.leftStick().whileTrue(Commands.run(() -> subsystemCommands.setFeedSpeed("FM")));
+        operator.leftStick().whileTrue(Commands.sequence(
+            shooter.runOnce(() -> shooter.setRPM(5000)),
+            hood.runOnce(() -> hood.setPosition(1)),
+            subsystemCommands.feed())); //Feeding
+
+        operator.leftStick().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Hail Mary
+
+        operator.rightTrigger().and(operator.start()).whileTrue((Commands.runOnce(() -> shooter.setRPM(-6000)))); //Reverse Shooter
+
+        operator.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));   //Stow
+        operator.back().onTrue(intake.homingCommand());                                           //Zero Intake
+
+        operator.y().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
+        operator.b().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
+
+        operator.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));                 //Climb Hanging
+        operator.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));                  //Climb Hung
+        operator.start().onTrue(hanger.homingCommand());                                        //Zero Climb
+
+        operator.leftTrigger().whileTrue(intake.reverseIntakeCommand());                          //Outtake
+
+        operator.povRight().whileTrue(subsystemCommands.feed());                                  //Manual Feed
+        operator.rightBumper().whileTrue(subsystemCommands.reverseFeed());                        //Manual Feed Reverse
+        
+
     }
 
-    private Command updateVisionCommand() {
-        return limelight.run(() -> {
-            final Pose2d currentRobotPose = swerve.getState().Pose;
-            final Optional<Limelight.Measurement> measurement = limelight.getMeasurement(currentRobotPose);
-            measurement.ifPresent(m -> {
-                swerve.addVisionMeasurement(
-                    m.poseEstimate.pose, 
-                    m.poseEstimate.timestampSeconds,
-                    m.standardDeviations
-                );
-            });
-        })
-        .ignoringDisable(true);
+    // private Command updateVisionCommand() {
+    //     return limelight.run(() -> {
+    //         final Pose2d currentRobotPose = swerve.getState().Pose;
+    //         final Optional<Limelight.Measurement> measurement = limelight.getMeasurement(currentRobotPose);
+    //         measurement.ifPresent(m -> {
+    //             swerve.addVisionMeasurement(
+    //                 m.poseEstimate.pose, 
+    //                 m.poseEstimate.timestampSeconds,
+    //                 m.standardDeviations
+    //             );
+    //         });
+    //     })
+    //     .ignoringDisable(true);
+    // }
+    /**
+     * Updates all subsystem simulations. This should be called from the robot's
+     * simulationPeriodic method.
+     */
+    public void simulationPeriodic() {
+        swerve.simulationPeriodic();
+        shooter.simulationPeriodic();
+        // Add other subsystems here as you implement their simulation logic
     }
 }

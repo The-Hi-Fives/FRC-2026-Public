@@ -8,6 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -17,12 +18,16 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.subsystems.drive.Drive;
 
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
+    private final Drive drive;
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -34,9 +39,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.ApplyFieldSpeeds pathFieldSpeedsRequest = new SwerveRequest.ApplyFieldSpeeds();
     private final PIDController pathXController = new PIDController(10, 0, 0);
     private final PIDController pathYController = new PIDController(10, 0, 0);
-    private final PIDController pathThetaController = new PIDController(7, 0, 0);
+    private final PIDController pathThetaController = new PIDController(4.5, 0, 0.25);
 
-    public Swerve() {
+    public Swerve(Drive drive) {
         super(
             TunerConstants.DrivetrainConstants, 
             0,
@@ -47,6 +52,10 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             TunerConstants.BackLeft, 
             TunerConstants.BackRight
         );
+
+        // Default perspective to Blue if not set (useful for simulation)
+        setOperatorPerspectiveForward(kBlueAlliancePerspectiveRotation);
+        this.drive = drive;
     }
 
     /**
@@ -67,8 +76,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
      */
     public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> trajLogger) {
         return new AutoFactory(
-            () -> getState().Pose,
-            this::resetPose,
+            () -> getPose(),
+            pose -> drive.setPose(pose),
             this::followPath,
             true,
             this,
@@ -94,7 +103,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public void followPath(SwerveSample sample) {
         pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        var pose = getState().Pose;
+        // var pose = getState().Pose;
+        var pose = getPose();
 
         var targetSpeeds = sample.getChassisSpeeds();
         targetSpeeds.vxMetersPerSecond += pathXController.calculate(
@@ -106,6 +116,11 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         targetSpeeds.omegaRadiansPerSecond += pathThetaController.calculate(
             pose.getRotation().getRadians(), sample.heading
         );
+        targetSpeeds.omegaRadiansPerSecond = MathUtil.clamp(targetSpeeds.omegaRadiansPerSecond, -3.0, 3.0);
+        // double speed = Math.hypot(targetSpeeds.vxMetersPerSecond, targetSpeeds.vyMetersPerSecond);
+        // double scale = Math.max(0.3, 1.0 - speed);
+
+        // targetSpeeds.omegaRadiansPerSecond += scale * pathThetaController.calculate()
 
         setControl(
             pathFieldSpeedsRequest.withSpeeds(targetSpeeds)
@@ -136,6 +151,15 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        /*
+         * Update the simulation state.
+         * 0.02 is the standard loop time, and RobotController.getBatteryVoltage() is the battery voltage.
+         */
+        updateSimState(0.02, RobotController.getBatteryVoltage());
     }
 
     /**
@@ -170,5 +194,15 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+
+    public Pose2d getPose()
+    {
+        return drive.getPose();
+    }
+
+    public void setPose(Pose2d pose)
+    {
+        drive.setPose(pose);
     }
 }

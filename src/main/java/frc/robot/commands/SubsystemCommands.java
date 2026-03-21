@@ -1,7 +1,9 @@
 package frc.robot.commands;
 
+import java.util.Objects;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Feeder;
@@ -71,23 +73,41 @@ public final class SubsystemCommands {
 
     public Command aimAndShoot() {
         final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(swerve, forwardInput, leftInput);
-        final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getState().Pose);
+        final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getPose());
         return Commands.parallel(
             aimAndDriveCommand,
-            Commands.waitSeconds(0.25)
+            Commands.waitSeconds(0)
                 .andThen(prepareShotCommand),
             Commands.waitUntil(() -> aimAndDriveCommand.isAimed() && prepareShotCommand.isReadyToShoot())
                 .andThen(feed())
         );
+        //  final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(swerve, forwardInput, leftInput);
+        // final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getState().Pose);
+        // return Commands.parallel(
+        //       aimAndDriveCommand,
+        //     Commands.waitSeconds(0)
+        //         .andThen(prepareShotCommand),
+        //     Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
+        //         .andThen(feed())
+        // );
+
+        // return Commands.parallel(
+        //     prepareShotCommand, Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot()).andThen(feed())
+        // );
     }
 
     public Command shootManually() {
-        return shooter.dashboardSpinUpCommand()
-            .andThen(feed())
-            .handleInterrupt(() -> shooter.stop());
+        final ShootManually manualShoot = new ShootManually(shooter);
+        return Commands.parallel(
+            manualShoot
+        );
+
+        // return shooter.dashboardSpinUpCommand()
+        //     .andThen(feed())
+        //     .handleInterrupt(() -> shooter.stop());
     }
 
-    private Command feed() {
+    public Command feed() {
         return Commands.sequence(
             Commands.waitSeconds(0.25),
             Commands.parallel(
@@ -96,5 +116,84 @@ public final class SubsystemCommands {
                     .andThen(floor.feedCommand().alongWith(intake.agitateCommand()))
             )
         );
+
     }
+
+        public Command reverseFeed() {
+        return Commands.sequence(
+            Commands.waitSeconds(0.25),
+            Commands.parallel(
+                feeder.reverseFeedCommand(),
+                Commands.waitSeconds(0.125)
+                    .andThen(floor.reverseFeedCommand())
+            )
+        );
+    }
+
+    // public Command feedToAlliance() {
+    //     return Commands.sequence(
+    //         Commands.waitSeconds(0),
+    //         Commands.sequence(
+    //             shooter.setRPM(4000),
+    //             Commands.waitSeconds(0),
+    //             hood.setPosition(.70))
+    //         );
+    // }
+
+    public void setHoodPercent(String state) {
+
+        double currentHoodPercent = hood.getCurrentPercent();
+        SmartDashboard.putNumber("Current Hood Percent: ", currentHoodPercent);
+
+        if(Objects.equals(state, "U")){
+            hood.setPercent(currentHoodPercent + .01);
+        } else {
+            hood.setPercent(currentHoodPercent - .01);
+        }
+    }
+
+    public void setRPM(String state) {
+        double currentRPM = shooter.getMotorVelocity() * 60;
+        SmartDashboard.putNumber("Current RPM: ", currentRPM); 
+        if (Objects.equals(state, "U")) {
+
+            shooter.setRPM(currentRPM + 100);
+        } else if (Objects.equals(state, "D")){
+            shooter.setRPM(currentRPM - 100);
+        } else if (Objects.equals(state, "1500")) {
+
+            shooter.setRPM(1500);
+        }
+    }
+
+    public void setIdleRPM(String state) {
+        if (Objects.equals(state, "F")) {
+            shooter.setRPM(3000);
+        }
+    }
+
+    public void setFeedSpeed(String state) {
+        if (Objects.equals(state, "FM")) {
+            shooter.setRPM(5000);
+        }
+    }
+
+    // public void setIdleRPM(String state) {
+    //     // if (Objects.equals(state, "1500")) {
+
+    //     //     shooter.setRPM(1500);
+    //     } else shooter.setRPM(0);
+           
+    //     }
+          
+
+    public void setRPMSpeed(double speed) {
+        shooter.setRPM(speed);
+    }
+
+    // public static void staticSetRPM(String state)
+    // {
+    //     setRPM(state);
+    // }
+    
 }

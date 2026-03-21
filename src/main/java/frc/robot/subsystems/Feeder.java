@@ -25,7 +25,8 @@ import frc.robot.Ports;
 
 public class Feeder extends SubsystemBase {
     public enum Speed {
-        FEED(5000);
+        FEED(6000),
+        REVERSEFEED(-6000);
 
         private final double rpm;
 
@@ -43,7 +44,8 @@ public class Feeder extends SubsystemBase {
     private final VoltageOut voltageRequest = new VoltageOut(0);
 
     public Feeder() {
-        motor = new TalonFX(Ports.kFeeder, Ports.kRoboRioCANBus);
+        //TODO: Look at PID tuning for feeder to fix ball feeding
+        motor = new TalonFX(Ports.kFeeder, Ports.kCANivoreCANBus);
 
         final TalonFXConfiguration config = new TalonFXConfiguration()
             .withMotorOutput(
@@ -60,7 +62,7 @@ public class Feeder extends SubsystemBase {
             )
             .withSlot0(
                 new Slot0Configs()
-                    .withKP(1)
+                    .withKP(80) // 1
                     .withKI(0)
                     .withKD(0)
                     .withKV(12.0 / KrakenX60.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
@@ -86,6 +88,10 @@ public class Feeder extends SubsystemBase {
 
     public Command feedCommand() {
         return startEnd(() -> set(Speed.FEED), () -> setPercentOutput(0));
+    }
+
+    public Command reverseFeedCommand() {
+        return startEnd(() -> set(Speed.REVERSEFEED), () -> setPercentOutput(0));
     }
 
     @Override
