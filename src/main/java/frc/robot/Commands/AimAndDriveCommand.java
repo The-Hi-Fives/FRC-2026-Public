@@ -55,6 +55,7 @@ public class AimAndDriveCommand extends Command {
         final Rotation2d currentHeadingInBlueAlliancePerspective = swerve.getPose().getRotation();
         final Rotation2d currentHeadingInOperatorPerspective = currentHeadingInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection());
         // final Rotation2d currentHeadingInOperatorPerspective = currentHeadingInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection()).minus(swerve.getPose().getRotation());
+        SmartDashboard.putNumber("targetHeading", targetHeading.getDegrees());
         SmartDashboard.putNumber("heading", targetHeading.getDegrees() - currentHeadingInOperatorPerspective.getDegrees());
         return GeometryUtil.isNear(targetHeading, currentHeadingInOperatorPerspective, kAimTolerance);
     }

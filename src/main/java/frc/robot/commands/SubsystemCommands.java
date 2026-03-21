@@ -78,7 +78,8 @@ public final class SubsystemCommands {
             aimAndDriveCommand,
             Commands.waitSeconds(0)
                 .andThen(prepareShotCommand),
-            Commands.waitUntil(() -> aimAndDriveCommand.isAimed() && prepareShotCommand.isReadyToShoot())
+            // Commands.waitUntil(() -> aimAndDriveCommand.isAimed() && prepareShotCommand.isReadyToShoot())
+            Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
                 .andThen(feed())
         );
         //  final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(swerve, forwardInput, leftInput);

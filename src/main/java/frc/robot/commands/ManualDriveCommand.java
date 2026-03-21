@@ -71,7 +71,7 @@ public class ManualDriveCommand extends Command {
 
     public void seedFieldCentric() {
         initialize();
-        swerve.setPose(new Pose2d(0, 0, new Rotation2d()));
+        // swerve.setPose(new Pose2d(0, 0, new Rotation2d()));
         swerve.seedFieldCentric();
     }
 
