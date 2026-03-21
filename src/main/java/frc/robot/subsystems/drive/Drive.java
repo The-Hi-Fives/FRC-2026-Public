@@ -234,7 +234,8 @@ public class Drive extends SubsystemBase {
         SmartDashboard.putNumber("avgpose.y", avgPose.getY());
         SmartDashboard.putNumber("avgpose.rot", avgPose.getRotation().getDegrees());
 
-        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,Units.degreesToRadians(10)));
+//        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,Units.degreesToRadians(10)));
+        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
           poseEstimator.addVisionMeasurement(
                   avgPose,
                   mt2_right.timestampSeconds);
@@ -406,13 +407,15 @@ public class Drive extends SubsystemBase {
 
       SmartDashboard.putNumber("left_rot", a.getRotation().getDegrees());
       SmartDashboard.putNumber("right_rot", b.getRotation().getDegrees());
+
+      Rotation2d currentRotation = poseEstimator.getEstimatedPosition().getRotation();
       
 
-      double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
-      double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
+//      double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
+//      double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
+//
+//      Rotation2d avgRot = new Rotation2d(Math.atan2(sinAvg, cosAvg));
 
-      Rotation2d avgRot = new Rotation2d(Math.atan2(sinAvg, cosAvg));
-
-      return new Pose2d(avgX, avgY, avgRot);
+      return new Pose2d(avgX, avgY, currentRotation);
     }
 }
