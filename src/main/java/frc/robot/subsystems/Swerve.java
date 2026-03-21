@@ -8,6 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -38,7 +39,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.ApplyFieldSpeeds pathFieldSpeedsRequest = new SwerveRequest.ApplyFieldSpeeds();
     private final PIDController pathXController = new PIDController(10, 0, 0);
     private final PIDController pathYController = new PIDController(10, 0, 0);
-    private final PIDController pathThetaController = new PIDController(7, 0, 0);
+    private final PIDController pathThetaController = new PIDController(4.5, 0, 0.25);
 
     public Swerve(Drive drive) {
         super(
@@ -75,8 +76,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
      */
     public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> trajLogger) {
         return new AutoFactory(
-            () -> getState().Pose,
-            this::resetPose,
+            () -> getPose(),
+            pose -> drive.setPose(pose),
             this::followPath,
             true,
             this,
@@ -102,7 +103,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public void followPath(SwerveSample sample) {
         pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        var pose = getState().Pose;
+        // var pose = getState().Pose;
+        var pose = getPose();
 
         var targetSpeeds = sample.getChassisSpeeds();
         targetSpeeds.vxMetersPerSecond += pathXController.calculate(
@@ -114,6 +116,11 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         targetSpeeds.omegaRadiansPerSecond += pathThetaController.calculate(
             pose.getRotation().getRadians(), sample.heading
         );
+        targetSpeeds.omegaRadiansPerSecond = MathUtil.clamp(targetSpeeds.omegaRadiansPerSecond, -3.0, 3.0);
+        // double speed = Math.hypot(targetSpeeds.vxMetersPerSecond, targetSpeeds.vyMetersPerSecond);
+        // double scale = Math.max(0.3, 1.0 - speed);
+
+        // targetSpeeds.omegaRadiansPerSecond += scale * pathThetaController.calculate()
 
         setControl(
             pathFieldSpeedsRequest.withSpeeds(targetSpeeds)

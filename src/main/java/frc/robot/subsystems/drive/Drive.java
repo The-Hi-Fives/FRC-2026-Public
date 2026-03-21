@@ -9,6 +9,7 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -33,6 +34,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -198,6 +200,7 @@ public class Drive extends SubsystemBase {
       if (gyroInputs.connected) {
         // Use the real gyro angle
         rawGyroRotation = gyroInputs.odometryYawPositions[i];
+        // SmartDashboard.putNumber("rawGyroRotation", rawGyroRotation.getDegrees());
       } else {
         // Use the angle delta from the kinematics and module deltas
         Twist2d twist = kinematics.toTwist2d(moduleDeltas);
@@ -213,62 +216,37 @@ public class Drive extends SubsystemBase {
 
     boolean doRejectUpdate = false;
 
-      LimelightHelpers.SetRobotOrientation("limelight-left", poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      // LimelightHelpers.SetRobotOrientation("limelight-left", poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation("limelight-left", rawGyroRotation.getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
-
-      // if our angular velocity is greater than 360 degrees per second, ignore vision updates
-//      if(Math.abs(gyroIO.getRate()) > 360)
-//      {
-//          doRejectUpdate = true;
-//      }
-      if(mt2_left.tagCount == 0)
-      {
-          doRejectUpdate = true;
-      }
-      if(!doRejectUpdate)
-      {
-          poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-          poseEstimator.addVisionMeasurement(
-                  mt2_left.pose,
-                  mt2_left.timestampSeconds);
-      }
-
-      LimelightHelpers.SetRobotOrientation("limelight-right", poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation("limelight-right", rawGyroRotation.getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
 
       // if our angular velocity is greater than 360 degrees per second, ignore vision updates
-//      if(Math.abs(gyroIO.getRate()) > 360)
-//      {
-//          doRejectUpdate = true;
-//      }
-      if(mt2_right.tagCount == 0)
+     if(Math.abs(gyroInputs.yawVelocityRadPerSec) > Math.toRadians(90))
+     {
+         doRejectUpdate = true;
+     }
+      if((mt2_left != null && mt2_right != null) && (mt2_left.tagCount >= 1 && mt2_right.tagCount >= 1))
       {
-          doRejectUpdate = true;
-      }
-      if(!doRejectUpdate)
-      {
-          poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+        Pose2d avgPose = averagePose(mt2_left.pose, mt2_right.pose);
+        SmartDashboard.putNumber("avgpose.x", avgPose.getX());
+        SmartDashboard.putNumber("avgpose.y", avgPose.getY());
+        SmartDashboard.putNumber("avgpose.rot", avgPose.getRotation().getDegrees());
+
+        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,Units.degreesToRadians(10)));
           poseEstimator.addVisionMeasurement(
-                  mt2_right.pose,
+                  avgPose,
                   mt2_right.timestampSeconds);
       }
 
-//    var mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
-//    var mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
-//      if (mt2_left.tagCount >= 1) {
-//          poseEstimator.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
-//      }
-//
-//      if (mt2_right.tagCount >= 1) {
-//          poseEstimator.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
-//      }
+      SmartDashboard.putNumber("mt2_left", mt2_left.pose.getRotation().getDegrees());
+      SmartDashboard.putNumber("mt2_right", mt2_right.pose.getRotation().getDegrees());
 
-//      odometryLock.update(m_gyro.getRotation2d(),
-//              m_leftEncoder.getDistance(),
-//              m_rightEncoder.getDistance());
-//      m_field.setRobotPose(m_odometry.getPoseMeters());
       SmartDashboard.putNumber("estimated x", poseEstimator.getEstimatedPosition().getX());
       SmartDashboard.putNumber("estimated y", poseEstimator.getEstimatedPosition().getY());
+      SmartDashboard.putNumber("rawGyro", rawGyroRotation.getDegrees());
+      SmartDashboard.putNumber("odometry rotation", getRotation().getDegrees());
   }
 
 
@@ -421,59 +399,20 @@ public class Drive extends SubsystemBase {
     };
   }
   
+    private Pose2d averagePose(Pose2d a, Pose2d b)
+    {
+      double avgX = (a.getX() + b.getX()) / 2.0;
+      double avgY = (a.getY() + b.getY()) / 2.0;
 
-    public void drive(double xSpeed, double ySpeed, double omega) {
-        // xSpeed, ySpeed in meters/sec, omega in radians/sec
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed,
-                ySpeed,
-                omega,
-                getPose().getRotation() // fused heading
-        );
+      SmartDashboard.putNumber("left_rot", a.getRotation().getDegrees());
+      SmartDashboard.putNumber("right_rot", b.getRotation().getDegrees());
+      
 
-// Convert to module states
-        SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
-//        // 1️⃣ Convert field-relative to robot-relative
-//        double heading = getPose().getRotation().getRadians(); // fused gyro + MegaTag2
-//        double tempX = xSpeed * Math.cos(heading) + ySpeed * Math.sin(heading);
-//        double tempY = -xSpeed * Math.sin(heading) + ySpeed * Math.cos(heading);
-//
-//        // 2️⃣ Robot dimensions
-//        double L = wheelBaseLength; // front-back distance
-//        double W = wheelBaseWidth;  // side-side distance
-//        double R = Math.hypot(L, W);
-//
-//        // 3️⃣ Intermediate calculations for swerve kinematics
-//        double A = tempX - omega * (L / R);
-//        double B = tempX + omega * (L / R);
-//        double C = tempY - omega * (W / R);
-//        double D = tempY + omega * (W / R);
-//
-//        // 4️⃣ Compute wheel speeds
-//        double frontLeftSpeed  = Math.hypot(B, D);
-//        double frontRightSpeed = Math.hypot(B, C);
-//        double backLeftSpeed   = Math.hypot(A, D);
-//        double backRightSpeed  = Math.hypot(A, C);
-//
-//        // 5️⃣ Compute wheel angles
-//        double frontLeftAngle  = Math.atan2(B, D);
-//        double frontRightAngle = Math.atan2(B, C);
-//        double backLeftAngle   = Math.atan2(A, D);
-//        double backRightAngle  = Math.atan2(A, C);
+      double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
+      double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
 
-        // 6️⃣ Send outputs to modules using runSetPoint
-        modules[0].runSetpoint(states[0]);
-        modules[1].runSetpoint(states[1]);
-        modules[2].runSetpoint(states[2]);
-        modules[3].runSetpoint(states[3]);
-//        // Convert x, y, omega into wheel angles & speeds using your kinematics
-//        SwerveModuleState[] states = kinematics.toSwerveModuleStates(
-//                new ChassisSpeeds(xSpeed, ySpeed, omega)
-//        );
-//
-//        // Apply states to each module
-//        for (int i = 0; i < modules.length; i++) {
-//            modules[i].setDesiredState(states[i]);
-//        }
+      Rotation2d avgRot = new Rotation2d(Math.atan2(sinAvg, cosAvg));
+
+      return new Pose2d(avgX, avgY, avgRot);
     }
 }

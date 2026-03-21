@@ -214,9 +214,9 @@ public class Robot extends TimedRobot {
 
     if (DriverStation.isTeleopEnabled()) {
         candle.off();
-        stripHood.setSolid(WHITE);
-        stripLeft.setSolid(WHITE);
-        stripRight.setSolid(WHITE);
+        stripHood.setSolid(GREEN);
+        stripLeft.setSolid(GREEN);
+        stripRight.setSolid(GREEN);
     } else {
         isHubActive();
     }

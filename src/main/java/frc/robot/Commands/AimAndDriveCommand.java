@@ -23,18 +23,18 @@ import frc.util.GeometryUtil;
 import frc.util.ManualDriveInput;
 
 public class AimAndDriveCommand extends Command {
-    private static final Angle kAimTolerance = Degrees.of(1);
+    private static final Angle kAimTolerance = Degrees.of(5);
 
     private final Swerve swerve;
     private final DriveInputSmoother inputSmoother;
 
     private final SwerveRequest.FieldCentricFacingAngle fieldCentricFacingAngleRequest = new SwerveRequest.FieldCentricFacingAngle()
             .withRotationalDeadband(Driving.kPIDRotationDeadband)
-            .withMaxAbsRotationalRate(Driving.kMaxRotationalRate)
+            .withMaxAbsRotationalRate(Driving.kMaxRotationalRate.times(1.2))
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withSteerRequestType(SteerRequestType.MotionMagicExpo)
             .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
-            .withHeadingPID(5, 0, 0);
+            .withHeadingPID(4.5, 0, 0.25);
 
     public AimAndDriveCommand(
             Swerve swerve,
@@ -54,6 +54,8 @@ public class AimAndDriveCommand extends Command {
         final Rotation2d targetHeading = fieldCentricFacingAngleRequest.TargetDirection;
         final Rotation2d currentHeadingInBlueAlliancePerspective = swerve.getPose().getRotation();
         final Rotation2d currentHeadingInOperatorPerspective = currentHeadingInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection());
+        // final Rotation2d currentHeadingInOperatorPerspective = currentHeadingInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection()).minus(swerve.getPose().getRotation());
+        SmartDashboard.putNumber("heading", targetHeading.getDegrees() - currentHeadingInOperatorPerspective.getDegrees());
         return GeometryUtil.isNear(targetHeading, currentHeadingInOperatorPerspective, kAimTolerance);
     }
 
@@ -63,15 +65,22 @@ public class AimAndDriveCommand extends Command {
         SmartDashboard.putNumber("robotPosition.x", robotPosition.getX());
         SmartDashboard.putNumber("robotPosition.y", robotPosition.getY());
 
+        // final Rotation2d targetHeading = fieldCentricFacingAngleRequest.TargetDirection;
+
         final Rotation2d hubDirectionInBlueAlliancePerspective = hubPosition.minus(robotPosition).getAngle();
-        SmartDashboard.putNumber("hubDirectionInBlueAlliancePerspective", hubDirectionInBlueAlliancePerspective.getDegrees());
+        SmartDashboard.putNumber("hub direction", hubDirectionInBlueAlliancePerspective.getDegrees());
+        SmartDashboard.putNumber("robot rotation", swerve.getPose().getRotation().getDegrees());
+        // final Rotation2d hubDirectionInOperatorPerspective = hubDirectionInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection()).minus(swerve.getPose().getRotation());
         final Rotation2d hubDirectionInOperatorPerspective = hubDirectionInBlueAlliancePerspective.rotateBy(swerve.getOperatorForwardDirection());
+        SmartDashboard.putNumber("hubDirectionInOperatorPerspective", hubDirectionInOperatorPerspective.getDegrees());
+
         return hubDirectionInOperatorPerspective;
     }
 
     @Override
     public void execute() {
         final ManualDriveInput input = inputSmoother.getSmoothedInput();
+        Rotation2d directionToHub = getDirectionToHub();
         swerve.setControl(
                 fieldCentricFacingAngleRequest
                         .withVelocityX(Driving.kMaxSpeed.times(input.forward))
