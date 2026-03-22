@@ -53,7 +53,9 @@ public class Intake extends SubsystemBase {
         HOMED(100),
         STOWED(90),
         INTAKE(-45),
-        AGITATE(-23);
+        AGITATE(-23),
+        CENTERTOCLIMB(60),
+        CAMERAANGLE(0);
 
         private final double degrees;
 
@@ -172,6 +174,15 @@ public class Intake extends SubsystemBase {
         );
     }
 
+    public Command cameraIntakePosition() {
+        return startEnd(
+            () -> {
+                set(Position.CAMERAANGLE);
+            },
+            () -> set(Speed.STOP)
+        );
+    }
+
      public Command intakeRollers() {
         return startEnd(
             () -> {
@@ -256,5 +267,13 @@ public class Intake extends SubsystemBase {
         builder.addDoubleProperty("RPM", () -> rollerMotor.getVelocity().getValue().in(RPM), null);
         builder.addDoubleProperty("Pivot Supply Current", () -> pivotMotor.getSupplyCurrent().getValue().in(Amps), null);
         builder.addDoubleProperty("Roller Supply Current", () -> rollerMotor.getSupplyCurrent().getValue().in(Amps), null);
+    }
+
+    public void setPosition(double angle) {
+        pivotMotor.setPosition(Degrees.of(angle));
+    }
+
+    public double getPosition() {
+        return pivotMotor.getPosition().getValue().in(Degrees);
     }
 }
