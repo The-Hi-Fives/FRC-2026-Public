@@ -97,7 +97,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> trajLogger) {
         return new AutoFactory(
                 this::getPose,
-                this::setPose,
+                this::resetPose,
                 this::followPath,
                 true,
                 this,
