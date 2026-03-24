@@ -219,51 +219,27 @@ public final class AutoRoutines {
     private AutoRoutine allianceZoneToNeutralZoneRoutine() {
          final AutoRoutine routine = autoFactory.newRoutine("AZ -> NZ");
          final AutoTrajectory nZToStartIntake = AZToNZ$0.asAutoTraj(routine);
-         final AutoTrajectory startIntakeToShoot = AZToNZ$1.asAutoTraj(routine);
-         final AutoTrajectory shootToStartIntake = AZToNZ$2.asAutoTraj(routine);
+         final AutoTrajectory startIntakeToFuel = AZToNZ$1.asAutoTraj(routine);
+        //  final AutoTrajectory toFuelToShoot = AZToNZ$2.asAutoTraj(routine);
+         final AutoTrajectory shoot = AZToNZ$2.asAutoTraj(routine);
 
-        routine.active().onTrue(
+         routine.active().onTrue(
             Commands.sequence(
                 nZToStartIntake.resetOdometry(),
                 nZToStartIntake.cmd()
             )
-        );
+         );
 
-        routine.active().onTrue(
-            Commands.sequence(
-                hanger.runOnce(() -> hanger.set(Position.HANGING)),
-                Commands.waitSeconds(1.5),
-                intake.runOnce(() -> intake.set(Intake.Position.INTAKE))
-            )
-        );
+         nZToStartIntake.doneDelayed(1).onTrue(startIntakeToFuel.cmd());
+         startIntakeToFuel.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
+         startIntakeToFuel.done().onTrue(shoot.cmd());
 
-        nZToStartIntake.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
-        nZToStartIntake.doneDelayed(0.1).onTrue(startIntakeToShoot.cmd());
+        //  toFuelToShoot.done().onTrue(shoot.cmd());
 
-        startIntakeToShoot.atTime(0.5).onTrue(
-            Commands.parallel(
-                shooter.spinUpCommand(2600),
-                hood.positionCommand(0.32)
-            )
-        );
-
-        startIntakeToShoot.done().onTrue(
-            Commands.sequence(
-                subsystemCommands.aimAndShoot()
-                    .withTimeout(5),
-                shootToStartIntake.cmd()
-            )
-        );
-
-        nZToStartIntake.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
-        nZToStartIntake.doneDelayed(0.1).onTrue(
-            Commands.sequence(
-                subsystemCommands.aimAndShoot()
-                    .withTimeout(5)
-            )
-        );
+         shoot.done().onTrue(subsystemCommands.aimAndShoot());
 
 
+        
         return routine;
     }
 

@@ -130,17 +130,16 @@ public class Hanger extends SubsystemBase {
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
-    public Command homingCommandMore() {
+    public Command extendHanger() {
         return Commands.sequence(
             runOnce(() -> setPercentOutput(-0.1)), 
             Commands.waitUntil(() -> motor.getSupplyCurrent().getValue().in(Amps) > 0.4),
             runOnce(() -> {
-                motor.setPosition(Position.HOMED.motorAngle());
-                isHomed = true;
+                motor.setPosition(Position.EXTEND_HOPPER.motorAngle());
                 set(Position.EXTEND_HOPPER);
             })
         )
-        .unless(() -> isHomed)
+        
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 

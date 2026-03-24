@@ -29,6 +29,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
+    private boolean updateFromCam = false;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -41,7 +42,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.ApplyFieldSpeeds pathFieldSpeedsRequest = new SwerveRequest.ApplyFieldSpeeds();
     private final PIDController pathXController = new PIDController(10, 0, 0);
     private final PIDController pathYController = new PIDController(10, 0, 0);
-    private final PIDController pathThetaController = new PIDController(4.5, 0, 0.25);
+    private final PIDController pathThetaController = new PIDController(5.5, 0, 0.35);
 
     public Swerve() {
         super(
@@ -208,13 +209,14 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
             // ----------------- Stage 7: Recovery Mode -----------------
             boolean multiTagStable =
-                    tagCount >= 3 &&
+                    tagCount >= 2 &&
                             Math.abs(angleDiff) < 5 &&
                             Math.abs(yawVelRadPerSec) < Math.toRadians(30);
 
             SmartDashboard.putBoolean("Updating from multitags", multiTagStable);
-            if (multiTagStable) {
+            if (multiTagStable && !updateFromCam) {
                 resetPose(avgPose);
+                updateFromCam = true;
             }
 
             // ----------------- Debug -----------------

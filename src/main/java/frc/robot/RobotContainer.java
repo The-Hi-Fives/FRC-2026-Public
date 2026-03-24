@@ -110,12 +110,12 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
         (RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
-            .onTrue(hood.homingCommand());
-            // .onTrue(hanger.hangerUp());        
+            .onTrue(hood.homingCommand())
+            .onTrue(hanger.hangerUp());        
 
         (RobotModeTriggers.autonomous())
             .onTrue(intake.homingCommandAuto())
-            .onTrue(hanger.homingCommandMore());
+            .onTrue(hanger.extendHanger());
 
         
         

@@ -123,12 +123,12 @@ public class PrepareShotCommand extends Command {
 //        //     hood.setPosition(0.5);
 //        // }
 
-        prevDistToTag = getDistanceToHub().in(Inches) - 13;
+        prevDistToTag = getDistanceToHub().in(Inches);
         SmartDashboard.putNumber("Distance to Hub", prevDistToTag);
 
-        double hoodAngle = -0.00143472 * Math.pow(prevDistToTag, 2) + 0.624497 * prevDistToTag + 4.32421;
+        double hoodAngle = -0.000875213 * Math.pow(prevDistToTag, 2) + 0.547264 * prevDistToTag + 4.64651;
         // double shooterRPM = 0.0985926 * Math.pow(prevDistToTag, 2) + -5.42072 * prevDistToTag + 2865.86315;
-        double shooterRPM = 0.0985926 * Math.pow(prevDistToTag, 2) - 6.60383 * prevDistToTag + 2902;
+        double shooterRPM = 0.0240452 * Math.pow(prevDistToTag, 2) + 4.42705 * prevDistToTag + 2551;
         SmartDashboard.putNumber("shooterRPM", shooterRPM);
         SmartDashboard.putNumber("hoodAngle", hoodAngle*.01);
         shooter.setRPM(shooterRPM);
