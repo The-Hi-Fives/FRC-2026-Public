@@ -29,8 +29,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
-    private boolean updateFromCam = false;
-
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -214,9 +212,16 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                             Math.abs(yawVelRadPerSec) < Math.toRadians(30);
 
             SmartDashboard.putBoolean("Updating from multitags", multiTagStable);
-            if (multiTagStable && !updateFromCam) {
-                resetPose(avgPose);
-                updateFromCam = true;
+            // if (multiTagStable && !updateFromCam) {
+            if(multiTagStable)
+            {
+                super.addVisionMeasurement(
+                    avgPose,
+                    Utils.fpgaToCurrentTime(mt2_right.timestampSeconds),
+                    VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(2))
+                );
+                // resetPose(avgPose);
+                // updateFromCam = true;
             }
 
             // ----------------- Debug -----------------
