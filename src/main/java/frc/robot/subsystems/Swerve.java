@@ -29,6 +29,12 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
+    private double gyroOffset = 0.0;
+    private double lastRawYaw = 0.0;
+    private boolean gyroCalibrated = false;
+    private boolean poseInitialized = false;
+    private int stableFrameCount = 0;
+    private static final int INIT_THRESHOLD = 25; // ~0.5s of stable frames
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -138,16 +144,28 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         Rotation2d rawGyroRotation = getRawGyroRotation();
         double yawVelRadPerSec = getYawVelocityRadPerSec();
 
+        LimelightHelpers.PoseEstimate mt1_left  = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-left");
+        LimelightHelpers.PoseEstimate mt1_right = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-right");
+        // ---- Cold Start Gate ----
+        // Don't accept any measurements until gyro is calibrated from MT1
+        if (!gyroCalibrated) {
+            tryInitializeFromMT1(mt1_left, mt1_right, yawVelRadPerSec);
+            return; // reject everything until gyro is trustworthy
+        }
+
+        if (!poseInitialized) {
+            tryInitializePose(mt1_left, mt1_right, yawVelRadPerSec);
+            return; // reject everything until pose is seeded
+        }
+
+        double headingDeg = getFieldRelativeHeadingDeg();
         // Update Limelight orientation
-        LimelightHelpers.SetRobotOrientation("limelight-left",  rawGyroRotation.getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetRobotOrientation("limelight-right", rawGyroRotation.getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation("limelight-left",  headingDeg, 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation("limelight-right", headingDeg, 0, 0, 0, 0, 0);
 
         // Get measurements
         LimelightHelpers.PoseEstimate mt2_left  = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
         LimelightHelpers.PoseEstimate mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
-
-        LimelightHelpers.PoseEstimate mt1_left  = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-left");
-        LimelightHelpers.PoseEstimate mt1_right = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-right");
 
         // ----------------- Stage 1: Hard Reject -----------------
         boolean reject = false;
@@ -161,11 +179,17 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
         if (!reject) {
             // ----------------- Combine Measurements -----------------
-            Pose2d avgPose = averagePoseXY(mt2_left.pose, mt2_right.pose, rawGyroRotation);
+            Pose2d avgPose = averagePoseXY(mt2_left.pose, mt2_right.pose);
             // avgPose = averagePoseRot(avgPose, mt2_left.pose, mt2_right.pose);
 
             int tagCount    = Math.max(mt2_left.tagCount, mt2_right.tagCount);
             double distance = Math.min(mt2_left.avgTagDist, mt2_right.avgTagDist);
+
+            // Hard reject tags beyond 4 meters during normal operation
+            if (distance > 4.0) return;
+
+            // Beyond 2.5m, only accept if multiple tags and high score
+            if (distance > 2.5 && tagCount < 2) return;
 
             // ----------------- Stage 2: Compute Metrics -----------------
             double angleDiff = rawGyroRotation.minus(avgPose.getRotation()).getDegrees();
@@ -246,11 +270,70 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         SmartDashboard.putNumber("odometry rotation", getPose().getRotation().getDegrees());
     }
 
+    private void tryInitializeFromMT1(
+            LimelightHelpers.PoseEstimate mt1Left,
+            LimelightHelpers.PoseEstimate mt1Right,
+            double yawVelRadPerSec
+    ) {
+
+        // Need close tags, multiple tags, and robot nearly still
+        boolean goodMT1 = mt1Left != null && mt1Right != null
+                && mt1Left.tagCount >= 1 && mt1Right.tagCount >= 1
+                && mt1Left.avgTagDist < 2.5 && mt1Right.avgTagDist < 2.5;
+        boolean nearlyStationary = Math.abs(yawVelRadPerSec) < Math.toRadians(5);
+
+        if (goodMT1 && nearlyStationary) {
+            stableFrameCount++;
+            if (stableFrameCount >= INIT_THRESHOLD) {
+                Rotation2d mt1Heading = averagePoseRot(mt1Left.pose, mt1Right.pose);
+                gyroOffset = mt1Heading.getDegrees()
+                        - getPigeon2().getYaw().getValueAsDouble();
+                gyroCalibrated = true;
+                stableFrameCount = 0;
+            }
+        } else {
+            stableFrameCount = 0;
+        }
+
+        SmartDashboard.putBoolean("GyroCalibrated", gyroCalibrated);
+        SmartDashboard.putNumber("InitStableFrames", stableFrameCount);
+    }
+
+    private void tryInitializePose(
+            LimelightHelpers.PoseEstimate mt1Left,
+            LimelightHelpers.PoseEstimate mt1Right,
+            double yawVelRadPerSec
+    ) {
+        boolean goodMT1 = mt1Left != null && mt1Right != null
+                && mt1Left.tagCount >= 1 && mt1Right.tagCount >= 1
+                && mt1Left.avgTagDist < 2.5 && mt1Right.avgTagDist < 2.5;
+        boolean nearlyStationary = Math.abs(yawVelRadPerSec) < Math.toRadians(5);
+
+        if (goodMT1 && nearlyStationary) {
+            stableFrameCount++;
+            if (stableFrameCount >= INIT_THRESHOLD) {
+                Pose2d initPose = averagePoseXY(mt1Left.pose, mt1Right.pose);
+                resetPose(new Pose2d(initPose.getTranslation(),
+                        Rotation2d.fromDegrees(getFieldRelativeHeadingDeg())));
+                poseInitialized = true;
+                stableFrameCount = 0;
+            }
+        } else {
+            stableFrameCount = 0;
+        }
+
+        SmartDashboard.putBoolean("PoseInitialized", poseInitialized);
+    }
+
+    private double getFieldRelativeHeadingDeg() {
+        return getPigeon2().getYaw().getValueAsDouble() + gyroOffset;
+    }
+
     // -------------------------------------------------------------------------
     // Vision pose averaging helpers (migrated from Drive.java)
     // -------------------------------------------------------------------------
 
-    private Pose2d averagePoseXY(Pose2d a, Pose2d b, Rotation2d rawGyroRotation) {
+    private Pose2d averagePoseXY(Pose2d a, Pose2d b) {
         double avgX = (a.getX() + b.getX()) / 2.0;
         double avgY = (a.getY() + b.getY()) / 2.0;
 
@@ -264,12 +347,18 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         return new Pose2d(avgX, avgY, visionRot);
     }
 
-    private Pose2d averagePoseRot(Pose2d avgPose, Pose2d a, Pose2d b) {
+    private Rotation2d averagePoseRot(Pose2d a, Pose2d b) {
         double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
         double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
-        Rotation2d visionRot = new Rotation2d(Math.atan2(sinAvg, cosAvg));
+        return new Rotation2d(Math.atan2(sinAvg, cosAvg));
+    }
 
-        return new Pose2d(avgPose.getX(), avgPose.getY(), visionRot);
+    public void initializeForAuto(Pose2d startPose) {
+        gyroOffset = startPose.getRotation().getDegrees()
+                - getPigeon2().getYaw().getValueAsDouble();
+        gyroCalibrated = true;
+        poseInitialized = true;
+        resetPose(startPose);
     }
 
     // -------------------------------------------------------------------------
@@ -291,6 +380,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        double currentRawYaw = getPigeon2().getYaw().getValueAsDouble();
+        double yawJump = Math.abs(currentRawYaw - lastRawYaw);
+        if (yawJump > 90) { // sudden large jump indicates a reset
+            gyroCalibrated = false; // force recalibration from vision
+        }
+        lastRawYaw = currentRawYaw;
 
         visionPipeline();
     }

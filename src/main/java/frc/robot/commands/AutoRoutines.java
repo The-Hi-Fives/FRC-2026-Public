@@ -225,7 +225,7 @@ public final class AutoRoutines {
 
          routine.active().onTrue(
             Commands.sequence(
-                nZToStartIntake.resetOdometry(),
+                Commands.runOnce(() -> nZToStartIntake.getInitialPose().ifPresent(pose -> swerve.initializeForAuto(pose))),
                 nZToStartIntake.cmd()
             )
          );
