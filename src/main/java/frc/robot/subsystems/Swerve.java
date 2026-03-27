@@ -161,8 +161,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
         if (!reject) {
             // ----------------- Combine Measurements -----------------
-            Pose2d avgPose = averagePoseXY(mt1_left.pose, mt1_right.pose, rawGyroRotation);
-            avgPose = averagePoseRot(avgPose, mt2_left.pose, mt2_right.pose);
+            Pose2d avgPose = averagePoseXY(mt2_left.pose, mt2_right.pose, rawGyroRotation);
+            // avgPose = averagePoseRot(avgPose, mt2_left.pose, mt2_right.pose);
 
             int tagCount    = Math.max(mt2_left.tagCount, mt2_right.tagCount);
             double distance = Math.min(mt2_left.avgTagDist, mt2_right.avgTagDist);
@@ -191,9 +191,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             // ----------------- Stage 5: Acceptance -----------------
             boolean accept = false;
 
-            if (score > 0.7) {
+            if (score > 0.8) {
                 accept = true;
-            } else if (score > 0.4 && Math.abs(angleDiff) < 45) {
+            } else if (score > 0.5 && Math.abs(angleDiff) < 45) {
                 accept = true;
             }
 
@@ -201,13 +201,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             if (accept) {
                 super.addVisionMeasurement(
                         avgPose,
-                        Utils.fpgaToCurrentTime(mt2_right.timestampSeconds)
+                        Utils.fpgaToCurrentTime(mt1_right.timestampSeconds)
                 );
             }
 
             // ----------------- Stage 7: Recovery Mode -----------------
             boolean multiTagStable =
-                    tagCount >= 2 &&
+                    tagCount >= 3 &&
                             Math.abs(angleDiff) < 5 &&
                             Math.abs(yawVelRadPerSec) < Math.toRadians(30);
 

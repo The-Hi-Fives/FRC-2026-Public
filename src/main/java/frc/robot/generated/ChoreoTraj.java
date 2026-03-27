@@ -27,30 +27,30 @@ public record ChoreoTraj(
     public static final ChoreoTraj AZToNZ = new ChoreoTraj(
 	    "AZToNZ",
 	    OptionalInt.empty(),
-	    22.9101,
+	    11.57583,
 	    new Pose2d(3.59, 2.49, Rotation2d.fromRadians(0.785)),
-	    new Pose2d(3.304, 2.797, Rotation2d.fromRadians(0.785))
+	    new Pose2d(3.4, 2.7, Rotation2d.fromRadians(0.785))
 	);
 	public static final ChoreoTraj AZToNZ$0 = new ChoreoTraj(
 	    "AZToNZ",
 	    OptionalInt.of(0),
-	    8.63259,
+	    4.20547,
 	    new Pose2d(3.59, 2.49, Rotation2d.fromRadians(0.785)),
-	    new Pose2d(8.483, 0.895, Rotation2d.fromRadians(2.356))
+	    new Pose2d(8.114, 0.839, Rotation2d.fromRadians(2.356))
 	);
 	public static final ChoreoTraj AZToNZ$1 = new ChoreoTraj(
 	    "AZToNZ",
 	    OptionalInt.of(1),
-	    8.28039,
-	    new Pose2d(8.483, 0.895, Rotation2d.fromRadians(2.356)),
-	    new Pose2d(6.752, 3.521, Rotation2d.fromRadians(1.571))
+	    4.373749999999999,
+	    new Pose2d(8.114, 0.839, Rotation2d.fromRadians(2.356)),
+	    new Pose2d(6.752, 3.4, Rotation2d.fromRadians(1.571))
 	);
 	public static final ChoreoTraj AZToNZ$2 = new ChoreoTraj(
 	    "AZToNZ",
 	    OptionalInt.of(2),
-	    5.997119999999999,
-	    new Pose2d(6.752, 3.521, Rotation2d.fromRadians(1.571)),
-	    new Pose2d(3.304, 2.797, Rotation2d.fromRadians(0.785))
+	    2.9966100000000004,
+	    new Pose2d(6.752, 3.4, Rotation2d.fromRadians(1.571)),
+	    new Pose2d(3.4, 2.7, Rotation2d.fromRadians(0.785))
 	);
 	public static final ChoreoTraj CenterToHubToClimb = new ChoreoTraj(
 	    "CenterToHubToClimb",
