@@ -25,6 +25,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Hanger.Position;
 //import frc.robot.subsystems.drive.Drive;
 //import frc.robot.subsystems.drive.GyroIOPigeon2;
 //import frc.robot.subsystems.drive.ModuleIOTalonFX;
@@ -114,8 +115,8 @@ public class RobotContainer {
             .onTrue(hanger.hangerUp());        
 
         (RobotModeTriggers.autonomous())
-            .onTrue(intake.homingCommandAuto())
-            .onTrue(hanger.extendHanger());
+            .onTrue(intake.homingCommand())
+            .onTrue(hanger.positionCommand(Position.EXTEND_HOPPER));
 
         
         
