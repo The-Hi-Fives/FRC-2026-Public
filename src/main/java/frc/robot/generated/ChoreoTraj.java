@@ -24,40 +24,68 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj AZToNZ = new ChoreoTraj(
-	    "AZToNZ",
+    public static final ChoreoTraj AZToNZRightSideTrajectory = new ChoreoTraj(
+	    "AZToNZRightSideTrajectory",
 	    OptionalInt.empty(),
 	    12.69961,
 	    new Pose2d(3.59, 2.49, Rotation2d.fromRadians(0.785)),
 	    new Pose2d(3.374, 2.684, Rotation2d.fromRadians(0.785))
 	);
-	public static final ChoreoTraj AZToNZ$0 = new ChoreoTraj(
-	    "AZToNZ",
+	public static final ChoreoTraj AZToNZRightSideTrajectory$0 = new ChoreoTraj(
+	    "AZToNZRightSideTrajectory",
 	    OptionalInt.of(0),
 	    2.25205,
 	    new Pose2d(3.59, 2.49, Rotation2d.fromRadians(0.785)),
 	    new Pose2d(7.703, 0.895, Rotation2d.fromRadians(2.356))
 	);
-	public static final ChoreoTraj AZToNZ$1 = new ChoreoTraj(
-	    "AZToNZ",
+	public static final ChoreoTraj AZToNZRightSideTrajectory$1 = new ChoreoTraj(
+	    "AZToNZRightSideTrajectory",
 	    OptionalInt.of(1),
 	    2.94964,
 	    new Pose2d(7.703, 0.895, Rotation2d.fromRadians(2.356)),
 	    new Pose2d(6.482, 2.684, Rotation2d.fromRadians(1.833))
 	);
-	public static final ChoreoTraj AZToNZ$2 = new ChoreoTraj(
-	    "AZToNZ",
+	public static final ChoreoTraj AZToNZRightSideTrajectory$2 = new ChoreoTraj(
+	    "AZToNZRightSideTrajectory",
 	    OptionalInt.of(2),
 	    1.5628099999999998,
 	    new Pose2d(6.482, 2.684, Rotation2d.fromRadians(1.833)),
 	    new Pose2d(3.4, 2.7, Rotation2d.fromRadians(0.785))
 	);
-	public static final ChoreoTraj AZToNZ$3 = new ChoreoTraj(
-	    "AZToNZ",
+	public static final ChoreoTraj AZToNZRightSideTrajectory$3 = new ChoreoTraj(
+	    "AZToNZRightSideTrajectory",
 	    OptionalInt.of(3),
 	    5.93511,
 	    new Pose2d(3.4, 2.7, Rotation2d.fromRadians(0.785)),
 	    new Pose2d(3.374, 2.684, Rotation2d.fromRadians(0.785))
+	);
+	public static final ChoreoTraj DepotAndTowerTrajectory = new ChoreoTraj(
+	    "DepotAndTowerTrajectory",
+	    OptionalInt.empty(),
+	    7.53128,
+	    new Pose2d(3.618, 6.02, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(1.034, 3.727, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj DepotAndTowerTrajectory$0 = new ChoreoTraj(
+	    "DepotAndTowerTrajectory",
+	    OptionalInt.of(0),
+	    2.04826,
+	    new Pose2d(3.618, 6.02, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(0.645, 5.969, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj DepotAndTowerTrajectory$1 = new ChoreoTraj(
+	    "DepotAndTowerTrajectory",
+	    OptionalInt.of(1),
+	    3.08596,
+	    new Pose2d(0.645, 5.969, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(3.257, 4.029, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj DepotAndTowerTrajectory$2 = new ChoreoTraj(
+	    "DepotAndTowerTrajectory",
+	    OptionalInt.of(2),
+	    2.3970599999999997,
+	    new Pose2d(3.257, 4.029, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.034, 3.727, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj OutpostAndDepotTrajectory = new ChoreoTraj(
 	    "OutpostAndDepotTrajectory",
@@ -94,40 +122,82 @@ public record ChoreoTraj(
 	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0)),
 	    new Pose2d(1.08, 3.696, Rotation2d.fromRadians(3.142))
 	);
-	public static final ChoreoTraj DepotAndTowerTrajectory = new ChoreoTraj(
-	    "DepotAndTowerTrajectory",
+	public static final ChoreoTraj AZToNZLeftSideTrajectory = new ChoreoTraj(
+	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.empty(),
-	    11.42862,
-	    new Pose2d(3.618, 0.635, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(1.08, 3.696, Rotation2d.fromRadians(3.142))
+	    12.80391,
+	    new Pose2d(3.59, 5.5, Rotation2d.fromRadians(-0.785)),
+	    new Pose2d(3.355, 5.339, Rotation2d.fromRadians(-0.785))
 	);
-	public static final ChoreoTraj DepotAndTowerTrajectory$0 = new ChoreoTraj(
-	    "DepotAndTowerTrajectory",
+	public static final ChoreoTraj AZToNZLeftSideTrajectory$0 = new ChoreoTraj(
+	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(0),
-	    1.83723,
-	    new Pose2d(3.618, 0.635, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(0.533, 0.635, Rotation2d.fromRadians(1.571))
+	    2.16653,
+	    new Pose2d(3.59, 5.5, Rotation2d.fromRadians(-0.785)),
+	    new Pose2d(7.703, 7.2, Rotation2d.fromRadians(-0.785))
 	);
-	public static final ChoreoTraj DepotAndTowerTrajectory$1 = new ChoreoTraj(
-	    "DepotAndTowerTrajectory",
+	public static final ChoreoTraj AZToNZLeftSideTrajectory$1 = new ChoreoTraj(
+	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(1),
-	    3.2603,
-	    new Pose2d(0.533, 0.635, Rotation2d.fromRadians(1.571)),
-	    new Pose2d(0.864, 5.644, Rotation2d.fromRadians(3.142))
+	    4.42924,
+	    new Pose2d(7.703, 7.2, Rotation2d.fromRadians(-0.785)),
+	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785))
 	);
-	public static final ChoreoTraj DepotAndTowerTrajectory$2 = new ChoreoTraj(
-	    "DepotAndTowerTrajectory",
+	public static final ChoreoTraj AZToNZLeftSideTrajectory$2 = new ChoreoTraj(
+	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(2),
-	    2.59912,
-	    new Pose2d(0.864, 5.644, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0))
+	    1.5858399999999993,
+	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785)),
+	    new Pose2d(6.05, 5.231, Rotation2d.fromRadians(-1.571))
 	);
-	public static final ChoreoTraj DepotAndTowerTrajectory$3 = new ChoreoTraj(
-	    "DepotAndTowerTrajectory",
+	public static final ChoreoTraj AZToNZLeftSideTrajectory$3 = new ChoreoTraj(
+	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(3),
-	    3.7319700000000005,
-	    new Pose2d(3.179, 3.723, Rotation2d.fromRadians(0)),
-	    new Pose2d(1.08, 3.696, Rotation2d.fromRadians(3.142))
+	    4.622300000000001,
+	    new Pose2d(6.05, 5.231, Rotation2d.fromRadians(-1.571)),
+	    new Pose2d(3.355, 5.339, Rotation2d.fromRadians(-0.785))
+	);
+	public static final ChoreoTraj HubAndTowerTrajectory = new ChoreoTraj(
+	    "HubAndTowerTrajectory",
+	    OptionalInt.empty(),
+	    3.31777,
+	    new Pose2d(3.395, 4.031, Rotation2d.fromRadians(0)),
+	    new Pose2d(1, 3.749, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj HubAndTowerTrajectory$0 = new ChoreoTraj(
+	    "HubAndTowerTrajectory",
+	    OptionalInt.of(0),
+	    2.42591,
+	    new Pose2d(3.395, 4.031, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.5, 3.749, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj HubAndTowerTrajectory$1 = new ChoreoTraj(
+	    "HubAndTowerTrajectory",
+	    OptionalInt.of(1),
+	    0.8918599999999999,
+	    new Pose2d(1.5, 3.749, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(1, 3.749, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj HubToDepotAndTowerTrajectory = new ChoreoTraj(
+	    "HubToDepotAndTowerTrajectory",
+	    OptionalInt.empty(),
+	    6.99299,
+	    new Pose2d(3.395, 4.031, Rotation2d.fromRadians(0)),
+	    new Pose2d(1, 3.749, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj HubToDepotAndTowerTrajectory$0 = new ChoreoTraj(
+	    "HubToDepotAndTowerTrajectory",
+	    OptionalInt.of(0),
+	    5.03308,
+	    new Pose2d(3.395, 4.031, Rotation2d.fromRadians(0)),
+	    new Pose2d(3.395, 4.031, Rotation2d.fromRadians(0))
+	);
+	public static final ChoreoTraj HubToDepotAndTowerTrajectory$1 = new ChoreoTraj(
+	    "HubToDepotAndTowerTrajectory",
+	    OptionalInt.of(1),
+	    1.9599099999999998,
+	    new Pose2d(3.395, 4.031, Rotation2d.fromRadians(0)),
+	    new Pose2d(1, 3.749, Rotation2d.fromRadians(3.142))
 	);
 
     /**
@@ -135,21 +205,31 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("AZToNZ", AZToNZ),
-		Map.entry("AZToNZ$0", AZToNZ$0),
-		Map.entry("AZToNZ$1", AZToNZ$1),
-		Map.entry("AZToNZ$2", AZToNZ$2),
-		Map.entry("AZToNZ$3", AZToNZ$3),
+    	Map.entry("AZToNZRightSideTrajectory", AZToNZRightSideTrajectory),
+		Map.entry("AZToNZRightSideTrajectory$0", AZToNZRightSideTrajectory$0),
+		Map.entry("AZToNZRightSideTrajectory$1", AZToNZRightSideTrajectory$1),
+		Map.entry("AZToNZRightSideTrajectory$2", AZToNZRightSideTrajectory$2),
+		Map.entry("AZToNZRightSideTrajectory$3", AZToNZRightSideTrajectory$3),
+		Map.entry("DepotAndTowerTrajectory", DepotAndTowerTrajectory),
+		Map.entry("DepotAndTowerTrajectory$0", DepotAndTowerTrajectory$0),
+		Map.entry("DepotAndTowerTrajectory$1", DepotAndTowerTrajectory$1),
+		Map.entry("DepotAndTowerTrajectory$2", DepotAndTowerTrajectory$2),
 		Map.entry("OutpostAndDepotTrajectory", OutpostAndDepotTrajectory),
 		Map.entry("OutpostAndDepotTrajectory$0", OutpostAndDepotTrajectory$0),
 		Map.entry("OutpostAndDepotTrajectory$1", OutpostAndDepotTrajectory$1),
 		Map.entry("OutpostAndDepotTrajectory$2", OutpostAndDepotTrajectory$2),
 		Map.entry("OutpostAndDepotTrajectory$3", OutpostAndDepotTrajectory$3),
-		Map.entry("DepotAndTowerTrajectory", DepotAndTowerTrajectory),
-		Map.entry("DepotAndTowerTrajectory$0", DepotAndTowerTrajectory$0),
-		Map.entry("DepotAndTowerTrajectory$1", DepotAndTowerTrajectory$1),
-		Map.entry("DepotAndTowerTrajectory$2", DepotAndTowerTrajectory$2),
-		Map.entry("DepotAndTowerTrajectory$3", DepotAndTowerTrajectory$3)
+		Map.entry("AZToNZLeftSideTrajectory", AZToNZLeftSideTrajectory),
+		Map.entry("AZToNZLeftSideTrajectory$0", AZToNZLeftSideTrajectory$0),
+		Map.entry("AZToNZLeftSideTrajectory$1", AZToNZLeftSideTrajectory$1),
+		Map.entry("AZToNZLeftSideTrajectory$2", AZToNZLeftSideTrajectory$2),
+		Map.entry("AZToNZLeftSideTrajectory$3", AZToNZLeftSideTrajectory$3),
+		Map.entry("HubAndTowerTrajectory", HubAndTowerTrajectory),
+		Map.entry("HubAndTowerTrajectory$0", HubAndTowerTrajectory$0),
+		Map.entry("HubAndTowerTrajectory$1", HubAndTowerTrajectory$1),
+		Map.entry("HubToDepotAndTowerTrajectory", HubToDepotAndTowerTrajectory),
+		Map.entry("HubToDepotAndTowerTrajectory$0", HubToDepotAndTowerTrajectory$0),
+		Map.entry("HubToDepotAndTowerTrajectory$1", HubToDepotAndTowerTrajectory$1)
     );
 
     /**
