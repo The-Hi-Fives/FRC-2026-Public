@@ -157,33 +157,34 @@ public class RobotContainer {
         
         //Operator Controls\\  
         
-        operator.x().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
-        operator.a().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
+        operator.y().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
+        operator.b().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
 
-        operator.leftStick().whileTrue(Commands.run(() -> subsystemCommands.setFeedSpeed("FM")));
-        operator.leftStick().whileTrue(Commands.sequence(
-            shooter.runOnce(() -> shooter.setRPM(5000)),
-            hood.runOnce(() -> hood.setPosition(1)),
-            subsystemCommands.feed())); //Feeding
+        operator.rightTrigger().whileTrue(Commands.run(() -> subsystemCommands.setFeedSpeed("FM")));
+        operator.rightTrigger().whileTrue(Commands.sequence(
+            shooter.runOnce(() -> shooter.setRPM(6200)),
+            hood.runOnce(() -> hood.setPosition(1))));
+            //     Commands.waitSeconds(3),
+            // subsystemCommands.feed())); //Feeding
 
-        operator.leftStick().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Hail Mary
+        operator.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Hail Mary
 
-        operator.rightTrigger().and(operator.start()).whileTrue((Commands.runOnce(() -> shooter.setRPM(-6000)))); //Reverse Shooter
+        operator.leftTrigger().and(operator.start()).whileTrue((Commands.runOnce(() -> shooter.setRPM(-6000)))); //Reverse Shooter
 
-        operator.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));   //Stow
-        operator.back().onTrue(intake.homingCommand());                                           //Zero Intake
+        operator.rightBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED)));   //Stow
+        operator.start().onTrue(intake.homingCommand());                                           //Zero Intake
 
-        operator.y().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
-        operator.b().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
+        operator.x().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
+        operator.a().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
 
         operator.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));                 //Climb Hanging
         operator.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));                  //Climb Hung
-        operator.start().onTrue(hanger.homingCommand());                                        //Zero Climb
+        operator.back().onTrue(hanger.homingCommand());                                        //Zero Climb
 
-        operator.leftTrigger().whileTrue(intake.reverseIntakeCommand());                          //Outtake
+        operator.leftBumper().whileTrue(intake.reverseIntakeCommand());                          //Outtake
 
         operator.povRight().whileTrue(subsystemCommands.feed());                                  //Manual Feed
-        operator.rightBumper().whileTrue(subsystemCommands.reverseFeed());                        //Manual Feed Reverse
+        operator.povLeft().whileTrue(subsystemCommands.reverseFeed());                        //Manual Feed Reverse
         
 
     }
