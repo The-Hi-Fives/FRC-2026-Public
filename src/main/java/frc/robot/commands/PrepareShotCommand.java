@@ -3,10 +3,12 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.HashMap;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
@@ -58,7 +60,44 @@ public class PrepareShotCommand extends Command {
 
     private Distance getDistanceToHub() {
         final Translation2d robotPosition = robotPoseSupplier.get().getTranslation();
-        final Translation2d hubPosition = Landmarks.hubPosition();
+        // final Translation2d hubPosition = Landmarks.hubPosition();
+
+        // final Translation2d robotPosition = swerve.getPose().getTranslation();
+        @SuppressWarnings("unchecked")
+        final HashMap<String, Translation2d> fieldCords = Landmarks.hubPosition();
+        
+        
+        // SmartDashboard.putNumber("robotPosition.x", robotPosition.getX());
+        // SmartDashboard.putNumber("robotPosition.y", robotPosition.getY());
+
+        boolean inMiddle = false;
+        if(robotPosition.getX() > Landmarks.inchesToMeters(182.11) && robotPosition.getX() < Landmarks.inchesToMeters(469.11))
+        {
+            inMiddle = true;
+        }
+
+
+        // final Translation2d hubPosition = Landmarks.hubPosition();
+        final Translation2d hubPosition = fieldCords.get("HUB_POSE");
+        if(inMiddle)
+        {
+            if(robotPosition.getY() < Landmarks.inchesToMeters(158.84))
+            {
+                // final Rotation2d allianceDirectionInBluePerspective = fieldCords.get("PASS_RIGHT").minus(robotPosition).getAngle();
+                // final Rotation2d allianceDirectioninOperatorPerspective = allianceDirectionInBluePerspective.rotateBy(swerve.getOperatorForwardDirection());
+                // return allianceDirectioninOperatorPerspective;
+                return Meters.of(robotPosition.getDistance(fieldCords.get("PASS_RIGHT")));
+            }
+            else
+            {
+                // final Rotation2d allianceDirectionInBluePerspective = fieldCords.get("PASS_LEFT").minus(robotPosition).getAngle();
+                // final Rotation2d allianceDirectioninOperatorPerspective = allianceDirectionInBluePerspective.rotateBy(swerve.getOperatorForwardDirection());
+                // return allianceDirectioninOperatorPerspective;
+                return Meters.of(robotPosition.getDistance(fieldCords.get("PASS_LEFT")));
+            }
+        }
+
+        
         return Meters.of(robotPosition.getDistance(hubPosition));
     }
 

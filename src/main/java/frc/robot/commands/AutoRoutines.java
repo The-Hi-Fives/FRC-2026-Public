@@ -33,6 +33,7 @@ public final class AutoRoutines {
     private final Hanger hanger;
     private final Limelight limelightright;
     private final Limelight limelightleft;
+    private final Limelight limelightbottom;
 
     private final SubsystemCommands subsystemCommands;
 
@@ -48,7 +49,8 @@ public final class AutoRoutines {
         Hood hood,
         Hanger hanger,
         Limelight limelightright,
-        Limelight limelightleft
+        Limelight limelightleft,
+        Limelight limelightbottom
     ) {
         this.swerve = swerve;
         this.intake = intake;
@@ -59,6 +61,7 @@ public final class AutoRoutines {
         this.hanger = hanger;
         this.limelightright = limelightright;
         this.limelightleft = limelightleft;
+        this.limelightbottom = limelightbottom;
 
         this.subsystemCommands = new SubsystemCommands(swerve, intake, floor, feeder, shooter, hood, hanger);
 
@@ -110,7 +113,7 @@ public final class AutoRoutines {
         );
         depotToShootingPose.done().onTrue(
             Commands.sequence(
-                subsystemCommands.aimAndShoot()
+                subsystemCommands.aimAndShoot("driver")
                     .withTimeout(5),
                 shootingPoseToTower.cmd()
             )
@@ -147,14 +150,14 @@ public final class AutoRoutines {
         //  toFuelToShoot.done().onTrue(shoot.cmd());
 
         shoot.atTimeBeforeEnd(0.5).onTrue(Commands.sequence(
-            subsystemCommands.aimAndShoot().withTimeout(5),
+            subsystemCommands.aimAndShoot("driver").withTimeout(5),
             intake.intakeCommand(),
             backToNZ.cmd()
             ));
 
         // shoot.done().onTrue(backToNZ.cmd());
 
-         backToNZ.atTimeBeforeEnd(0.5).onTrue(subsystemCommands.aimAndShoot());
+         backToNZ.atTimeBeforeEnd(0.5).onTrue(subsystemCommands.aimAndShoot("driver"));
 
 
 
@@ -186,14 +189,14 @@ public final class AutoRoutines {
         //  toFuelToShoot.done().onTrue(shoot.cmd());
 
         shoot.atTimeBeforeEnd(0.5).onTrue(Commands.sequence(
-            subsystemCommands.aimAndShoot().withTimeout(5),
+            subsystemCommands.aimAndShoot("driver").withTimeout(5),
             intake.intakeCommand(),
             backToNZ.cmd()
             ));
 
         // shoot.done().onTrue(backToNZ.cmd());
 
-         backToNZ.atTimeBeforeEnd(0.5).onTrue(subsystemCommands.aimAndShoot());
+         backToNZ.atTimeBeforeEnd(0.5).onTrue(subsystemCommands.aimAndShoot("driver"));
 
 
 

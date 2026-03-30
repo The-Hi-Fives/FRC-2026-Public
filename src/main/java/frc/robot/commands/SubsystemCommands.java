@@ -25,6 +25,7 @@ public final class SubsystemCommands {
 
     private final DoubleSupplier forwardInput;
     private final DoubleSupplier leftInput;
+    private String lastUser = "";
 
     public SubsystemCommands(
         Swerve swerve,
@@ -71,7 +72,30 @@ public final class SubsystemCommands {
         );
     }
 
-    public Command aimAndShoot() {
+    public Command aimAndShoot(String user) {
+        boolean runShoot = false;
+        if(Objects.equals(lastUser, ""))
+        {
+            lastUser = user;
+        }
+        else if(Objects.equals(user, ""))
+        {
+            lastUser = "";
+        }
+
+        if(Objects.equals(user, "driver"))
+        {
+            runShoot = true;
+        }
+        else if (Objects.equals(user, "operator") && Objects.equals(lastUser, "operator"))
+        {
+            runShoot = true;
+        }
+
+        if(!runShoot)
+        {
+            return Commands.none();
+        }
         final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(swerve, forwardInput, leftInput);
         final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getPose());
         return Commands.parallel(

@@ -21,6 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -29,6 +30,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
+
+    private Field2d m_field = new Field2d();
     private double gyroOffset = 0.0;
     private double lastRawYaw = 0.0;
     private boolean gyroCalibrated = false;
@@ -61,6 +64,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         );
 
         setOperatorPerspectiveForward(kBlueAlliancePerspectiveRotation);
+
+        SmartDashboard.putData("Field", m_field);
     }
 
     // -------------------------------------------------------------------------
@@ -389,6 +394,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         lastRawYaw = currentRawYaw;
 
         visionPipeline();
+
+        m_field.setRobotPose(getPose());
+        SmartDashboard.putData("Field", m_field);
     }
 
     @Override

@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -235,6 +236,8 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
     LEDState newState = decideState();
+
+    SmartDashboard.putNumber("Match Time: ", DriverStation.getMatchTime());
        
         // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
         // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -254,6 +257,7 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putNumber("Distance to Hub (inches)", distanceFromTag);
             }
         }
+       
     }
 
     @Override

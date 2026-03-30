@@ -51,9 +51,9 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
     private final Hanger hanger = new Hanger();
-     private final Limelight limelightright = new Limelight("limelight-right");
-     private final Limelight limelightleft = new Limelight("limelight-left");
-
+    private final Limelight limelightright = new Limelight("limelight-right");
+    private final Limelight limelightleft = new Limelight("limelight-left");
+    private final Limelight limelightbottom = new Limelight("limelight-bottom");
 
     private final SwerveTelemetry swerveTelemetry = new SwerveTelemetry(Driving.kMaxSpeed.in(MetersPerSecond));
     
@@ -70,7 +70,8 @@ public class RobotContainer {
         hood,
         hanger,
         limelightright,
-        limelightleft
+        limelightleft,
+        limelightbottom
     );
     private final SubsystemCommands subsystemCommands = new SubsystemCommands(
         swerve,
@@ -145,8 +146,10 @@ public class RobotContainer {
         driver.back().onTrue(hood.homingCommand());                                           //Zero Hood
         driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
 
-        driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot());                     //Aim/Shoot
-        driver.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Shooting
+        driver.rightTrigger().whileTrue(subsystemCommands.aimAndShoot("driver"));                     //Aim/Shoot
+        driver.rightTrigger().whileFalse(Commands.sequence(
+            shooter.runOnce(() -> shooter.setRPM(1500)),
+            subsystemCommands.aimAndShoot(""))); //Idle for Shooter AFTER Shooting
         driver.rightBumper().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Feeding
         // driver.rightBumper().whileTrue(subsystemCommands.shootManually());                 //Manual Shoot
         driver.rightBumper().whileTrue(Commands.run(() -> subsystemCommands.setIdleRPM("F")));
@@ -160,14 +163,19 @@ public class RobotContainer {
         operator.y().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
         operator.b().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
 
-        operator.rightTrigger().whileTrue(Commands.run(() -> subsystemCommands.setFeedSpeed("FM")));
-        operator.rightTrigger().whileTrue(Commands.sequence(
-            shooter.runOnce(() -> shooter.setRPM(6200)),
-            hood.runOnce(() -> hood.setPosition(1))));
+        operator.rightTrigger().whileTrue(subsystemCommands.aimAndShoot("operator"));                     //Aim/Shoot
+
+        // operator.rightTrigger().whileTrue(Commands.run(() -> subsystemCommands.setFeedSpeed("FM")));
+        // operator.rightTrigger().whileTrue(Commands.sequence(
+        //     shooter.runOnce(() -> shooter.setRPM(6200)),
+        //     hood.runOnce(() -> hood.setPosition(1))));
             //     Commands.waitSeconds(3),
             // subsystemCommands.feed())); //Feeding
 
-        operator.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Hail Mary
+        // operator.rightTrigger().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Hail Mary
+        operator.rightTrigger().whileFalse(Commands.sequence(
+            shooter.runOnce(() -> shooter.setRPM(1500)),
+            subsystemCommands.aimAndShoot("")));
 
         operator.leftTrigger().and(operator.start()).whileTrue((Commands.runOnce(() -> shooter.setRPM(-6000)))); //Reverse Shooter
 
@@ -177,7 +185,7 @@ public class RobotContainer {
         operator.x().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
         operator.a().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
 
-        operator.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));                 //Climb Hanging
+        operator.povUp().onTrue(Commands.parallel(hanger.positionCommand(Hanger.Position.HANGING), intake.cameraIntakePosition()));                 //Climb Hanging
         operator.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));                  //Climb Hung
         operator.back().onTrue(hanger.homingCommand());                                        //Zero Climb
 

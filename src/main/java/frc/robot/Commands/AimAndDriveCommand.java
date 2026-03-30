@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.HashMap;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -60,10 +61,38 @@ public class AimAndDriveCommand extends Command {
     }
 
     private Rotation2d getDirectionToHub() {
-        final Translation2d hubPosition = Landmarks.hubPosition();
         final Translation2d robotPosition = swerve.getPose().getTranslation();
+        @SuppressWarnings("unchecked")
+        final HashMap<String, Translation2d> fieldCords = Landmarks.hubPosition();
+        
+        
         SmartDashboard.putNumber("robotPosition.x", robotPosition.getX());
         SmartDashboard.putNumber("robotPosition.y", robotPosition.getY());
+
+        boolean inMiddle = false;
+        if(robotPosition.getX() > Landmarks.inchesToMeters(182.11) && robotPosition.getX() < Landmarks.inchesToMeters(469.11))
+        {
+            inMiddle = true;
+        }
+
+
+        // final Translation2d hubPosition = Landmarks.hubPosition();
+        final Translation2d hubPosition = fieldCords.get("HUB_POSE");
+        if(inMiddle)
+        {
+            if(robotPosition.getY() < Landmarks.inchesToMeters(158.84))
+            {
+                final Rotation2d allianceDirectionInBluePerspective = fieldCords.get("PASS_RIGHT").minus(robotPosition).getAngle();
+                final Rotation2d allianceDirectioninOperatorPerspective = allianceDirectionInBluePerspective.rotateBy(swerve.getOperatorForwardDirection());
+                return allianceDirectioninOperatorPerspective;
+            }
+            else
+            {
+                final Rotation2d allianceDirectionInBluePerspective = fieldCords.get("PASS_LEFT").minus(robotPosition).getAngle();
+                final Rotation2d allianceDirectioninOperatorPerspective = allianceDirectionInBluePerspective.rotateBy(swerve.getOperatorForwardDirection());
+                return allianceDirectioninOperatorPerspective;
+            }
+        }
 
         // final Rotation2d targetHeading = fieldCentricFacingAngleRequest.TargetDirection;
 
@@ -80,7 +109,7 @@ public class AimAndDriveCommand extends Command {
     @Override
     public void execute() {
         final ManualDriveInput input = inputSmoother.getSmoothedInput();
-        Rotation2d directionToHub = getDirectionToHub();
+        // Rotation2d directionToHub = getDirectionToHub();
         swerve.setControl(
                 fieldCentricFacingAngleRequest
                         .withVelocityX(Driving.kMaxSpeed.times(input.forward))
