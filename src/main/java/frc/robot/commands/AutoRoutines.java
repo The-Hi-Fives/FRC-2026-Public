@@ -18,6 +18,7 @@ import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hanger;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
@@ -32,6 +33,7 @@ public final class AutoRoutines {
     private final Hood hood;
     private final Hanger hanger;
     private final Limelight limelightright;
+    private final LEDs leds;
     private final Limelight limelightleft;
     private final Limelight limelightbottom;
 
@@ -48,6 +50,7 @@ public final class AutoRoutines {
         Shooter shooter,
         Hood hood,
         Hanger hanger,
+        LEDs leds,
         Limelight limelightright,
         Limelight limelightleft,
         Limelight limelightbottom
@@ -59,11 +62,12 @@ public final class AutoRoutines {
         this.shooter = shooter;
         this.hood = hood;
         this.hanger = hanger;
+        this.leds = leds;
         this.limelightright = limelightright;
         this.limelightleft = limelightleft;
         this.limelightbottom = limelightbottom;
 
-        this.subsystemCommands = new SubsystemCommands(swerve, intake, floor, feeder, shooter, hood, hanger);
+        this.subsystemCommands = new SubsystemCommands(swerve, intake, floor, feeder, shooter, hood, hanger, leds);
 
         this.autoFactory = swerve.createAutoFactory();
         this.autoChooser = new AutoChooser();

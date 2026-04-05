@@ -13,7 +13,10 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -33,27 +36,12 @@ import frc.robot.Constants.KrakenX60;
 import frc.robot.Ports;
 
 public class Intake extends SubsystemBase {
-    public enum Speed {
-        STOP(0),
-        INTAKE(0.8),
-        REVERSEINTAKE(-0.8);
-
-        private final double percentOutput;
-
-        private Speed(double percentOutput) {
-            this.percentOutput = percentOutput;
-        }
-
-        public Voltage voltage() {
-            return Volts.of(percentOutput * 12.0);
-        }
-    }
 
     public enum Position {
         HOMED(100),
         STOWED(90),
         INTAKE(-45),
-        AGITATE(-23),
+        AGITATE(-19),
         CENTERTOCLIMB(60),
         CAMERAANGLE(0);
 
@@ -75,7 +63,7 @@ public class Intake extends SubsystemBase {
     private final TalonFX pivotMotor, rollerMotor;
     private final VoltageOut pivotVoltageRequest = new VoltageOut(0);
     private final MotionMagicVoltage pivotMotionMagicRequest = new MotionMagicVoltage(0).withSlot(0);
-    private final VoltageOut rollerVoltageRequest = new VoltageOut(0);
+    private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
     private boolean isHomed = false;
 
@@ -128,14 +116,38 @@ public class Intake extends SubsystemBase {
                     .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake)
             )
+            .withVoltage(
+                new VoltageConfigs()
+                    .withPeakReverseVoltage(Volts.of(0))
+            )
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(Amps.of(120))
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(Amps.of(70))
                     .withSupplyCurrentLimitEnable(true)
+            )
+             .withSlot0(
+                new Slot0Configs()
+                    .withKP(0.5)
+                    .withKI(2)
+                    .withKD(0)
+                    .withKV(12.0 / KrakenX60.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
             );
         rollerMotor.getConfigurator().apply(config);
+    }
+
+    
+    public void setRPM(double rpm) {
+            rollerMotor.setControl(
+                velocityRequest
+                    .withVelocity(RPM.of(rpm))
+            );
+        }
+
+    public void stop() {
+        setRPM(0);
+        intakerunning = false;
     }
 
     private boolean isPositionWithinTolerance() {
@@ -158,61 +170,37 @@ public class Intake extends SubsystemBase {
         );
     }
 
-    public void set(Speed speed) {
-        rollerMotor.setControl(
-            rollerVoltageRequest
-                .withOutput(speed.voltage())
-        );
-    }
-
-    public Command intakePosition() {
-        return startEnd(
-            () -> {
-                set(Position.INTAKE);
-            },
-            () -> set(Speed.STOP)
-        );
-    }
-
     public Command cameraIntakePosition() {
         return startEnd(
             () -> {
                 set(Position.CAMERAANGLE);
             },
-            () -> set(Speed.STOP)
+            () -> setRPM(0)
         );
     }
-
-     public Command intakeRollers() {
-        return startEnd(
-            () -> {
-                set(Speed.INTAKE);
-            },
-            () -> set(Speed.STOP)
-        );
-    }
-    
+    public static boolean intakerunning = false;
     public Command intakeCommand() {
         return startEnd(
             () -> {
-                set(Speed.INTAKE);
+                intakerunning = true;
+                setRPM(8000);
                 set(Position.INTAKE);
             },
-            () -> set(Speed.STOP)
+            () -> stop()
         );
     }
 
     public Command reverseIntakeCommand() {
         return startEnd(
             () -> {
-                set(Speed.REVERSEINTAKE);
+                setRPM(-2000);
             },
-            () -> set(Speed.STOP)
+            () -> stop()
         );
     }
 
     public Command agitateCommand() {
-        return runOnce(() -> set(Speed.INTAKE))
+        return runOnce(() -> setRPM(6000))
             .andThen(
                 Commands.sequence(
                     runOnce(() -> set(Position.AGITATE)),
@@ -224,7 +212,7 @@ public class Intake extends SubsystemBase {
             )
             .handleInterrupt(() -> {
                 set(Position.INTAKE);
-                set(Speed.STOP);
+                stop();
             });
     }
 

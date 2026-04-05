@@ -22,6 +22,7 @@ import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hanger;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
@@ -51,6 +52,7 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
     private final Hanger hanger = new Hanger();
+    private final LEDs leds = new LEDs();
     private final Limelight limelightright = new Limelight("limelight-right");
     private final Limelight limelightleft = new Limelight("limelight-left");
     private final Limelight limelightbottom = new Limelight("limelight-bottom");
@@ -69,6 +71,7 @@ public class RobotContainer {
         shooter,
         hood,
         hanger,
+        leds,
         limelightright,
         limelightleft,
         limelightbottom
@@ -81,6 +84,7 @@ public class RobotContainer {
         shooter,
         hood,
         hanger,
+        leds,
         () -> -driver.getLeftY(),
         () -> -driver.getLeftX()
     );
@@ -141,8 +145,7 @@ public class RobotContainer {
         driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
         driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
 
-        driver.leftTrigger().whileTrue(intake.intakePosition());  
-        driver.leftTrigger().toggleOnTrue(intake.intakeRollers());                             //Rollers
+        driver.leftTrigger(0.5).toggleOnTrue(intake.intakeCommand());  
         driver.back().onTrue(hood.homingCommand());                                           //Zero Hood
         driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
 
@@ -150,12 +153,11 @@ public class RobotContainer {
         driver.rightTrigger().whileFalse(Commands.sequence(
             shooter.runOnce(() -> shooter.setRPM(1500)),
             subsystemCommands.aimAndShoot(""))); //Idle for Shooter AFTER Shooting
-        driver.rightBumper().whileFalse(Commands.run(() -> subsystemCommands.setRPM("1500"))); //Idle for Shooter AFTER Feeding
-        // driver.rightBumper().whileTrue(subsystemCommands.shootManually());                 //Manual Shoot
-        driver.rightBumper().whileTrue(Commands.run(() -> subsystemCommands.setIdleRPM("F")));
+            driver.rightBumper().onFalse(Commands.runOnce(() -> subsystemCommands.setRPM("1500")));
         driver.rightBumper().whileTrue(Commands.sequence(
-            shooter.runOnce(() -> shooter.setRPM(3700)),
-            hood.runOnce(() -> hood.setPosition(1)),
+            shooter.runOnce(() -> shooter.setRPM(2800)),
+            hood.runOnce(() -> hood.setPosition(0.3)),
+            Commands.waitSeconds(.1),
             subsystemCommands.feed())); //Feeding
         
         //Operator Controls\\  

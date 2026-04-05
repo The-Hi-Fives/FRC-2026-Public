@@ -167,7 +167,7 @@ public class PrepareShotCommand extends Command {
 
         double hoodAngle = -0.000875213 * Math.pow(prevDistToTag, 2) + 0.547264 * prevDistToTag + 4.64651;
         // double shooterRPM = 0.0985926 * Math.pow(prevDistToTag, 2) + -5.42072 * prevDistToTag + 2865.86315;
-        double shooterRPM = 0.0240452 * Math.pow(prevDistToTag, 2) + 4.42705 * prevDistToTag + 2551;
+        double shooterRPM = 0.0240452 * Math.pow(prevDistToTag, 2) + 4.42705 * prevDistToTag + 2541; //2551
         SmartDashboard.putNumber("shooterRPM", shooterRPM);
         SmartDashboard.putNumber("hoodAngle", hoodAngle*.01);
         shooter.setRPM(shooterRPM);

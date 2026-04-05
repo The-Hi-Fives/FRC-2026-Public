@@ -11,6 +11,7 @@ import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hanger;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 
@@ -22,6 +23,7 @@ public final class SubsystemCommands {
     private final Shooter shooter;
     private final Hood hood;
     private final Hanger hanger;
+    private final LEDs leds;
 
     private final DoubleSupplier forwardInput;
     private final DoubleSupplier leftInput;
@@ -35,6 +37,7 @@ public final class SubsystemCommands {
         Shooter shooter,
         Hood hood,
         Hanger hanger,
+        LEDs leds,
         DoubleSupplier forwardInput,
         DoubleSupplier leftInput
     ) {
@@ -45,6 +48,8 @@ public final class SubsystemCommands {
         this.shooter = shooter;
         this.hood = hood;
         this.hanger = hanger;
+        this.leds = leds;
+        
 
         this.forwardInput = forwardInput;
         this.leftInput = leftInput;
@@ -57,7 +62,8 @@ public final class SubsystemCommands {
         Feeder feeder,
         Shooter shooter,
         Hood hood,
-        Hanger hanger
+        Hanger hanger,
+        LEDs leds
     ) {
         this(
             swerve,
@@ -67,10 +73,12 @@ public final class SubsystemCommands {
             shooter,
             hood,
             hanger,
+            leds,
             () -> 0,
             () -> 0
         );
     }
+    public static boolean isAimAndShooting = false;
 
     public Command aimAndShoot(String user) {
         boolean runShoot = false;
@@ -98,28 +106,19 @@ public final class SubsystemCommands {
         }
         final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(swerve, forwardInput, leftInput);
         final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getPose());
-        return Commands.parallel(
+        return Commands.deadline(
             aimAndDriveCommand,
             Commands.waitSeconds(0)
                 .andThen(prepareShotCommand),
             // Commands.waitUntil(() -> aimAndDriveCommand.isAimed() && prepareShotCommand.isReadyToShoot())
             Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
                 .andThen(feed())
-        );
-        //  final AimAndDriveCommand aimAndDriveCommand = new AimAndDriveCommand(swerve, forwardInput, leftInput);
-        // final PrepareShotCommand prepareShotCommand = new PrepareShotCommand(shooter, hood, () -> swerve.getState().Pose);
-        // return Commands.parallel(
-        //       aimAndDriveCommand,
-        //     Commands.waitSeconds(0)
-        //         .andThen(prepareShotCommand),
-        //     Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
-        //         .andThen(feed())
-        // );
-
-        // return Commands.parallel(
-        //     prepareShotCommand, Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot()).andThen(feed())
-        // );
-    }
+                .beforeStarting(() -> isAimAndShooting = true)
+                .finallyDo(() -> isAimAndShooting = false)
+                
+            );
+                
+        }
 
     public Command shootManually() {
         final ShootManually manualShoot = new ShootManually(shooter);
