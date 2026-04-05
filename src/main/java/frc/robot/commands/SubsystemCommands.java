@@ -23,7 +23,6 @@ public final class SubsystemCommands {
     private final Shooter shooter;
     private final Hood hood;
     private final Hanger hanger;
-    private final LEDs leds;
 
     private final DoubleSupplier forwardInput;
     private final DoubleSupplier leftInput;
@@ -37,7 +36,6 @@ public final class SubsystemCommands {
         Shooter shooter,
         Hood hood,
         Hanger hanger,
-        LEDs leds,
         DoubleSupplier forwardInput,
         DoubleSupplier leftInput
     ) {
@@ -48,7 +46,6 @@ public final class SubsystemCommands {
         this.shooter = shooter;
         this.hood = hood;
         this.hanger = hanger;
-        this.leds = leds;
         
 
         this.forwardInput = forwardInput;
@@ -62,8 +59,7 @@ public final class SubsystemCommands {
         Feeder feeder,
         Shooter shooter,
         Hood hood,
-        Hanger hanger,
-        LEDs leds
+        Hanger hanger
     ) {
         this(
             swerve,
@@ -73,7 +69,6 @@ public final class SubsystemCommands {
             shooter,
             hood,
             hanger,
-            leds,
             () -> 0,
             () -> 0
         );

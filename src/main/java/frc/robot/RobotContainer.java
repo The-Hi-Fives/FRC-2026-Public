@@ -52,7 +52,6 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
     private final Hanger hanger = new Hanger();
-    private final LEDs leds = new LEDs();
     private final Limelight limelightright = new Limelight("limelight-right");
     private final Limelight limelightleft = new Limelight("limelight-left");
     private final Limelight limelightbottom = new Limelight("limelight-bottom");
@@ -71,7 +70,6 @@ public class RobotContainer {
         shooter,
         hood,
         hanger,
-        leds,
         limelightright,
         limelightleft,
         limelightbottom
@@ -84,7 +82,6 @@ public class RobotContainer {
         shooter,
         hood,
         hanger,
-        leds,
         () -> -driver.getLeftY(),
         () -> -driver.getLeftX()
     );
