@@ -39,7 +39,7 @@ public class LEDs extends SubsystemBase {
   private static final RGBWColor GREEN   = new RGBWColor(0, 255, 0, 0);
   private static final RGBWColor BLUE    = new RGBWColor(0, 0, 255, 0);
   private static final RGBWColor PURPLE  = new RGBWColor(170, 0, 255, 0);
-  private static final RGBWColor YELLOW  = new RGBWColor(0, 255, 255, 0);
+  private static final RGBWColor YELLOW  = new RGBWColor(255, 255, 0, 0);
 
   private final RGBWColor statusGreen = new RGBWColor(0, 255, 0, 0);
   private final RGBWColor statusRed = new RGBWColor(255, 0, 0, 0);
@@ -275,7 +275,7 @@ private RGBWColor getAllianceColorHood() {
       if (SubsystemCommands.isAimAndShooting) {
         return LEDState.SHOOTING;
       }
-      if (Intake.intakerunning) {
+      if (Intake.intakeRunning) {
         return LEDState.INTAKING;
       }
 
@@ -312,15 +312,16 @@ private RGBWColor getAllianceColorHood() {
         break;
 
       case SHOOTING:
-        stripLeft.setStrobe(YELLOW, 120);
-        stripRight.setStrobe(YELLOW, 120);
-        stripHood.setStrobe(YELLOW, 120);
-        break;
-
-     case INTAKING:
         stripLeft.setStrobe(YELLOW, 30);
         stripRight.setStrobe(YELLOW, 30);
         stripHood.setStrobe(YELLOW, 30);
+        break;
+
+     case INTAKING:
+        stripLeft.setStrobe(YELLOW, 10);
+        stripRight.setStrobe(YELLOW, 10);
+        stripHood.setStrobe(YELLOW, 10);
+        break;
 
       case START:
       default:

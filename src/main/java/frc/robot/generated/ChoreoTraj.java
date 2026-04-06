@@ -27,37 +27,37 @@ public record ChoreoTraj(
     public static final ChoreoTraj AZToNZLeftSideTrajectory = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.empty(),
-	    12.80391,
+	    13.20266,
 	    new Pose2d(3.59, 5.5, Rotation2d.fromRadians(-0.785)),
-	    new Pose2d(3.355, 5.339, Rotation2d.fromRadians(-0.785))
+	    new Pose2d(3.36, 5.569, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$0 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(0),
-	    2.16653,
+	    2.16577,
 	    new Pose2d(3.59, 5.5, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(7.703, 7.2, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$1 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(1),
-	    4.42924,
+	    3.2025999999999994,
 	    new Pose2d(7.703, 7.2, Rotation2d.fromRadians(-0.785)),
-	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785))
+	    new Pose2d(6.32, 5.495, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$2 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(2),
-	    1.5858399999999993,
-	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785)),
-	    new Pose2d(6.05, 5.231, Rotation2d.fromRadians(-1.571))
+	    1.6287400000000005,
+	    new Pose2d(6.32, 5.495, Rotation2d.fromRadians(-0.785)),
+	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$3 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(3),
-	    4.622300000000001,
-	    new Pose2d(6.05, 5.231, Rotation2d.fromRadians(-1.571)),
-	    new Pose2d(3.355, 5.339, Rotation2d.fromRadians(-0.785))
+	    6.20555,
+	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785)),
+	    new Pose2d(3.36, 5.569, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZRightSideTrajectory = new ChoreoTraj(
 	    "AZToNZRightSideTrajectory",
@@ -97,29 +97,36 @@ public record ChoreoTraj(
 	public static final ChoreoTraj DepotAndTowerTrajectory = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.empty(),
-	    7.53128,
+	    9.56762,
 	    new Pose2d(3.618, 6.02, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(1.034, 3.727, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj DepotAndTowerTrajectory$0 = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.of(0),
-	    2.04826,
+	    1.60793,
 	    new Pose2d(3.618, 6.02, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(0.645, 5.969, Rotation2d.fromRadians(3.142))
+	    new Pose2d(1.875, 5.969, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj DepotAndTowerTrajectory$1 = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.of(1),
-	    3.08596,
-	    new Pose2d(0.645, 5.969, Rotation2d.fromRadians(3.142)),
-	    new Pose2d(3.257, 4.029, Rotation2d.fromRadians(0))
+	    4.5360499999999995,
+	    new Pose2d(1.875, 5.969, Rotation2d.fromRadians(3.142)),
+	    new Pose2d(2.997, 4.029, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj DepotAndTowerTrajectory$2 = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.of(2),
-	    2.3970599999999997,
-	    new Pose2d(3.257, 4.029, Rotation2d.fromRadians(0)),
+	    2.1324899999999998,
+	    new Pose2d(2.997, 4.029, Rotation2d.fromRadians(0)),
+	    new Pose2d(1.778, 3.727, Rotation2d.fromRadians(3.142))
+	);
+	public static final ChoreoTraj DepotAndTowerTrajectory$3 = new ChoreoTraj(
+	    "DepotAndTowerTrajectory",
+	    OptionalInt.of(3),
+	    1.29115,
+	    new Pose2d(1.778, 3.727, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(1.034, 3.727, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj HubAndTowerTrajectory = new ChoreoTraj(
@@ -219,6 +226,7 @@ public record ChoreoTraj(
 		Map.entry("DepotAndTowerTrajectory$0", DepotAndTowerTrajectory$0),
 		Map.entry("DepotAndTowerTrajectory$1", DepotAndTowerTrajectory$1),
 		Map.entry("DepotAndTowerTrajectory$2", DepotAndTowerTrajectory$2),
+		Map.entry("DepotAndTowerTrajectory$3", DepotAndTowerTrajectory$3),
 		Map.entry("HubAndTowerTrajectory", HubAndTowerTrajectory),
 		Map.entry("HubAndTowerTrajectory$0", HubAndTowerTrajectory$0),
 		Map.entry("HubAndTowerTrajectory$1", HubAndTowerTrajectory$1),

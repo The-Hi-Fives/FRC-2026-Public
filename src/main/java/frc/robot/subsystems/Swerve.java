@@ -339,22 +339,64 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     // -------------------------------------------------------------------------
 
     private Pose2d averagePoseXY(Pose2d a, Pose2d b) {
-        double avgX = (a.getX() + b.getX()) / 2.0;
-        double avgY = (a.getY() + b.getY()) / 2.0;
+        double avgX, avgY;
+        double cosAvg, sinAvg;
+        if(a.getX() == 0 || b.getX() == 0)
+        {
+            avgX = Math.max(a.getX(), b.getX());
+            avgY = Math.max(a.getY(), b.getY());
+        }
+        else
+        {
+            avgX = (a.getX() + b.getX()) / 2.0;
+            avgY = (a.getY() + b.getY()) / 2.0;
+        }
 
         SmartDashboard.putNumber("left_rot",  a.getRotation().getDegrees());
         SmartDashboard.putNumber("right_rot", b.getRotation().getDegrees());
 
-        double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
-        double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
+
+        if(a.getX() == 0)
+        {
+            cosAvg = Math.cos(b.getRotation().getRadians());
+            sinAvg = Math.sin(b.getRotation().getRadians());
+        }
+        else if(b.getX() == 0)
+        {
+            cosAvg = Math.cos(a.getRotation().getRadians());
+            sinAvg = Math.sin(a.getRotation().getRadians());
+        }
+        else
+        {
+            cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
+            sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
+        }
+
         Rotation2d visionRot = new Rotation2d(Math.atan2(sinAvg, cosAvg));
 
         return new Pose2d(avgX, avgY, visionRot);
     }
 
     private Rotation2d averagePoseRot(Pose2d a, Pose2d b) {
-        double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
-        double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
+        // double cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
+        // double sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
+        double cosAvg, sinAvg;
+
+        if(a.getX() == 0)
+        {
+            cosAvg = Math.cos(b.getRotation().getRadians());
+            sinAvg = Math.sin(b.getRotation().getRadians());
+        }
+        else if(b.getX() == 0)
+        {
+            cosAvg = Math.cos(a.getRotation().getRadians());
+            sinAvg = Math.sin(a.getRotation().getRadians());
+        }
+        else
+        {
+            cosAvg = Math.cos(a.getRotation().getRadians()) + Math.cos(b.getRotation().getRadians());
+            sinAvg = Math.sin(a.getRotation().getRadians()) + Math.sin(b.getRotation().getRadians());
+        }
         return new Rotation2d(Math.atan2(sinAvg, cosAvg));
     }
 

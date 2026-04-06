@@ -72,7 +72,9 @@ public final class AutoRoutines {
 
     public void configure() {
         autoChooser.addRoutine("Outpost and Depot", this::outpostAndDepotRoutine);
-        autoChooser.addRoutine("AZ -> NZ", this::allianceZoneToNeutralZoneRightSideRoutine);
+        autoChooser.addRoutine("AZ -> NZ Right", this::allianceZoneToNeutralZoneRightSideRoutine);
+        autoChooser.addRoutine("AZ -> NZ Left", this::allianceZoneToNeutralZoneLeftSideRoutine);
+        autoChooser.addRoutine("Depot to Tower", this::depotToHubToTowerTrajectory);
         SmartDashboard.putData("Auto Chooser", autoChooser);
         RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
     }
@@ -129,7 +131,7 @@ public final class AutoRoutines {
 
 
     private AutoRoutine allianceZoneToNeutralZoneRightSideRoutine() {
-         final AutoRoutine routine = autoFactory.newRoutine("AZ -> NZ");
+         final AutoRoutine routine = autoFactory.newRoutine("AZ -> NZ Right");
          final AutoTrajectory nZToStartIntake = AZToNZRightSideTrajectory$0.asAutoTraj(routine);
          final AutoTrajectory startIntakeToFuel = AZToNZRightSideTrajectory$1.asAutoTraj(routine);
          final AutoTrajectory shoot = AZToNZRightSideTrajectory$2.asAutoTraj(routine);
@@ -150,15 +152,16 @@ public final class AutoRoutines {
 
         //  toFuelToShoot.done().onTrue(shoot.cmd());
 
-        shoot.atTimeBeforeEnd(0.5).onTrue(Commands.sequence(
-            subsystemCommands.aimAndShoot("driver").withTimeout(5),
-            intake.intakeCommand(),
-            backToNZ.cmd()
+        shoot.atTimeBeforeEnd(0.2).onTrue(Commands.sequence(
+            subsystemCommands.aimAndShoot("driver").withTimeout(4),
+            Commands.deadline(
+                intake.intakeCommand(),
+                backToNZ.cmd())
             ));
 
         // shoot.done().onTrue(backToNZ.cmd());
 
-         backToNZ.atTimeBeforeEnd(0.5).onTrue(subsystemCommands.aimAndShoot("driver"));
+         backToNZ.atTimeBeforeEnd(0.2).onTrue(subsystemCommands.aimAndShoot("driver"));
 
 
 
@@ -168,7 +171,7 @@ public final class AutoRoutines {
     }
 
     private AutoRoutine allianceZoneToNeutralZoneLeftSideRoutine() {
-         final AutoRoutine routine = autoFactory.newRoutine("AZ -> NZ");
+         final AutoRoutine routine = autoFactory.newRoutine("AZ -> NZ Left");
          final AutoTrajectory nZToStartIntake = AZToNZLeftSideTrajectory$0.asAutoTraj(routine);
          final AutoTrajectory startIntakeToFuel = AZToNZLeftSideTrajectory$1.asAutoTraj(routine);
          final AutoTrajectory shoot = AZToNZLeftSideTrajectory$2.asAutoTraj(routine);
@@ -189,19 +192,52 @@ public final class AutoRoutines {
 
         //  toFuelToShoot.done().onTrue(shoot.cmd());
 
-        shoot.atTimeBeforeEnd(0.5).onTrue(Commands.sequence(
-            subsystemCommands.aimAndShoot("driver").withTimeout(5),
-            intake.intakeCommand(),
-            backToNZ.cmd()
+        shoot.atTimeBeforeEnd(0.2).onTrue(Commands.sequence(
+            subsystemCommands.aimAndShoot("driver").withTimeout(4),
+            Commands.deadline(
+                intake.intakeCommand(),
+                backToNZ.cmd())
             ));
 
         // shoot.done().onTrue(backToNZ.cmd());
 
-         backToNZ.atTimeBeforeEnd(0.5).onTrue(subsystemCommands.aimAndShoot("driver"));
+         backToNZ.atTimeBeforeEnd(0.2).onTrue(subsystemCommands.aimAndShoot("driver"));
 
 
 
+        
+        return routine;
+    }
 
+    private AutoRoutine depotToHubToTowerTrajectory() {
+        final AutoRoutine routine = autoFactory.newRoutine("Depot and Tower");
+        final AutoTrajectory toDepot = DepotAndTowerTrajectory$0.asAutoTraj(routine);
+        final AutoTrajectory shoot = DepotAndTowerTrajectory$1.asAutoTraj(routine);
+        final AutoTrajectory toHang = DepotAndTowerTrajectory$2.asAutoTraj(routine);
+        final AutoTrajectory hang = DepotAndTowerTrajectory$3.asAutoTraj(routine);
+
+        routine.active().onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> toDepot.getInitialPose().ifPresent(pose -> swerve.initializeForAuto(pose))),
+                toDepot.cmd()
+            )
+         );
+
+        toDepot.atTimeBeforeEnd(0.2).onTrue(intake.intakeCommand());
+        toDepot.doneDelayed(1).onTrue(shoot.cmd());
+        // toDepot.done().onTrue(Commands.sequence(
+        //         intake.intakeCommand().withTimeout(1),
+        //         shoot.cmd())
+        //     );
+
+        shoot.atTimeBeforeEnd(0.2).onTrue(Commands.sequence(subsystemCommands.aimAndShoot("driver").withTimeout(5),
+        toHang.cmd(), hanger.positionCommand(Position.HANGING)));
+
+            toHang.done().onTrue(hang.cmd());
+            hang.done().onTrue(hanger.positionCommand(Position.HUNG));
+
+
+         
         
         return routine;
     }

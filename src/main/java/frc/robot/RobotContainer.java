@@ -55,6 +55,7 @@ public class RobotContainer {
     private final Limelight limelightright = new Limelight("limelight-right");
     private final Limelight limelightleft = new Limelight("limelight-left");
     private final Limelight limelightbottom = new Limelight("limelight-bottom");
+    private final LEDs leds = new LEDs();
 
     private final SwerveTelemetry swerveTelemetry = new SwerveTelemetry(Driving.kMaxSpeed.in(MetersPerSecond));
     
@@ -142,7 +143,8 @@ public class RobotContainer {
         driver.x().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kCCW_90deg)));
         driver.y().onTrue(Commands.runOnce(() -> manualDriveCommand.setLockedHeading(Rotation2d.kZero)));
 
-        driver.leftTrigger(0.5).toggleOnTrue(intake.intakeCommand());  
+        driver.leftTrigger(0.5).toggleOnTrue(intake.intakeCommand()); 
+        // driver.leftTrigger().toggleOnTrue(intake.intakeRollers());
         driver.back().onTrue(hood.homingCommand());                                           //Zero Hood
         driver.leftBumper().onTrue(intake.runOnce(() -> intake.set(Intake.Position.STOWED))); //Stow
 
