@@ -28,6 +28,8 @@ public class AimAndDriveCommand extends Command {
     private final Swerve swerve;
     private final DriveInputSmoother inputSmoother;
 
+    public static boolean inMiddle = false;
+
     private final SwerveRequest.FieldCentricFacingAngle fieldCentricFacingAngleRequest = new SwerveRequest.FieldCentricFacingAngle()
             .withRotationalDeadband(Driving.kPIDRotationDeadband)
             .withMaxAbsRotationalRate(Driving.kMaxRotationalRate.times(1.2))
@@ -69,7 +71,7 @@ public class AimAndDriveCommand extends Command {
         SmartDashboard.putNumber("robotPosition.x", robotPosition.getX());
         SmartDashboard.putNumber("robotPosition.y", robotPosition.getY());
 
-        boolean inMiddle = false;
+
         if(robotPosition.getX() > Landmarks.inchesToMeters(182.11) && robotPosition.getX() < Landmarks.inchesToMeters(469.11))
         {
             inMiddle = true;
