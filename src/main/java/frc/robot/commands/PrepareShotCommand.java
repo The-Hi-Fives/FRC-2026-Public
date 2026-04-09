@@ -171,7 +171,15 @@ public class PrepareShotCommand extends Command {
         SmartDashboard.putNumber("shooterRPM", shooterRPM);
         SmartDashboard.putNumber("hoodAngle", hoodAngle*.01);
         shooter.setRPM(shooterRPM);
-        hood.setPosition(hoodAngle*.01);
+        if(AimAndDriveCommand.inMiddle)
+        {
+            hood.setPosition(0.65);
+        }
+        else
+        {
+            hood.setPosition(hoodAngle*.01);
+        }
+
 
 //        shooter.setRPM(shot.shooterRPM);
 //        hood.setPosition(shot.hoodPosition);
