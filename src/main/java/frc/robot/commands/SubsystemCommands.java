@@ -73,7 +73,7 @@ public final class SubsystemCommands {
             () -> 0
         );
     }
-    public static boolean isAimAndShooting = false;
+    public static boolean isFeeding = false;
 
     public Command aimAndShoot(String user) {
         boolean runShoot = false;
@@ -108,8 +108,6 @@ public final class SubsystemCommands {
             // Commands.waitUntil(() -> aimAndDriveCommand.isAimed() && prepareShotCommand.isReadyToShoot())
             Commands.waitUntil(() -> prepareShotCommand.isReadyToShoot())
                 .andThen(feed())
-                .beforeStarting(() -> isAimAndShooting = true)
-                .finallyDo(() -> isAimAndShooting = false)
                 
             );
                 
@@ -132,6 +130,8 @@ public final class SubsystemCommands {
                 feeder.feedCommand(),
                 Commands.waitSeconds(0.125)
                     .andThen(floor.feedCommand().alongWith(intake.agitateCommand()))
+                    .beforeStarting(() -> isFeeding = true)
+                    .finallyDo(() -> isFeeding = false)
             )
         );
 

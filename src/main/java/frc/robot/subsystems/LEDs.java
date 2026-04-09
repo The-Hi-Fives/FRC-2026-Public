@@ -27,7 +27,8 @@ public class LEDs extends SubsystemBase {
     AUTONOMOUS,
     ENABLED,
     SHOOTING,
-    INTAKING
+    INTAKING,
+    FULL
   }
 
   // ========================
@@ -272,7 +273,7 @@ private RGBWColor getAllianceColorHood() {
 
     if (DriverStation.isTeleopEnabled()) {
 
-      if (SubsystemCommands.isAimAndShooting) {
+      if (SubsystemCommands.isFeeding) {
         return LEDState.SHOOTING;
       }
       if (Intake.intakeRunning) {
@@ -322,6 +323,11 @@ private RGBWColor getAllianceColorHood() {
         stripRight.setStrobe(YELLOW, 10);
         stripHood.setStrobe(YELLOW, 10);
         break;
+
+     case FULL:
+        stripLeft.setStrobe(GREEN, 30);
+        stripRight.setStrobe(GREEN, 30);
+        stripHood.setStrobe(GREEN, 30);
 
       case START:
       default:

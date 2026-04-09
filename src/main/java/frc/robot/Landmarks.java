@@ -47,7 +47,7 @@ public class Landmarks {
             fieldCords.put("PASS_RIGHT", new Translation2d(BLUE_PASS_X, PASS_RIGHT_Y));
             return fieldCords;
         //    return new Translation2d(Inches.of(36), Inches.of(0)); //182.105, 158.845
-        }
+        } else {
         fieldCords.put("HUB_POSE", HUB_POSE_RED);
         fieldCords.put("PASS_LEFT", new Translation2d(RED_PASS_X, PASS_LEFT_Y));
         fieldCords.put("PASS_RIGHT", new Translation2d(RED_PASS_X, PASS_RIGHT_Y));
@@ -55,4 +55,6 @@ public class Landmarks {
         // return HUB_POSE_RED;
     //    return new Translation2d(Inches.of(36), Inches.of(0)); //469.115, 158.854
     }
+}
+
 }

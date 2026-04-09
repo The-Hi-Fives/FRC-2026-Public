@@ -294,6 +294,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -301,14 +302,17 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.TorqueUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -341,11 +345,34 @@ public class Intake extends SubsystemBase {
         }
     }
 
+
+    // public enum Current{
+    //     FULL(60),
+    //     EMPTY(9);
+
+
+    //     private final double current;
+
+    //     private Current(double current) {
+    //         this.current = current;
+    //     }
+
+    //     public edu.wpi.first.units.measure.Current getCurrent() {
+    //         if (current >= 40) {
+    //             hopperIsFull = false;
+    //         } else {
+    //             hopperIsFull = true;
+    //         }
+    //         return Amps.of(current * 12.0);
+    //     }
+    // }
+
+
     public enum Position {
        HOMED(100),
         STOWED(90),
         INTAKE(-45),
-        AGITATE(-19),
+        AGITATE(-15),
         CENTERTOCLIMB(60),
         CAMERAANGLE(0);
 
@@ -368,10 +395,11 @@ public class Intake extends SubsystemBase {
     private final VoltageOut pivotVoltageRequest = new VoltageOut(0);
     private final MotionMagicVoltage pivotMotionMagicRequest = new MotionMagicVoltage(0).withSlot(0);
     private final VoltageOut rollerVoltageRequest = new VoltageOut(0);
+    // private final TorqueCurrentFOC rollerCurrentRequest = new TorqueCurrentFOC(0);
 
     private boolean isHomed = false;
     public static boolean intakeRunning = false;
-
+    
     public Intake() {
         pivotMotor = new TalonFX(Ports.kIntakePivot, Ports.kCANivoreCANBus);
         rollerMotor = new TalonFX(Ports.kIntakeRollers, Ports.kCANivoreCANBus);
@@ -389,7 +417,7 @@ public class Intake extends SubsystemBase {
             )
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(Amps.of(120))
+                    .withStatorCurrentLimit(Amps.of(80))
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(Amps.of(70))
                     .withSupplyCurrentLimitEnable(true)
@@ -423,7 +451,7 @@ public class Intake extends SubsystemBase {
             )
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(Amps.of(120))
+                    .withStatorCurrentLimit(Amps.of(80))
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(Amps.of(70))
                     .withSupplyCurrentLimitEnable(true)
@@ -459,6 +487,11 @@ public class Intake extends SubsystemBase {
         );
     }
 
+    // public void Current(Current current) {
+    //     SmartDashboard.putNumber("roller current", current.getCurrent().in(Amps));
+    //     rollerMotor.getTorqueCurrent(true);
+    // }
+
     public Command intakeCommand() {
         return startEnd(
             () -> {
@@ -486,15 +519,6 @@ public class Intake extends SubsystemBase {
                 set(Speed.REVERSEINTAKE);
             },
             () -> set(Speed.STOP)
-        );
-    }
-
-    public Command cameraIntakePosition() {
-        return startEnd(
-            () -> {
-                set(Position.CAMERAANGLE);
-            },
-            () ->set(Speed.STOP)
         );
     }
 
@@ -529,6 +553,17 @@ public class Intake extends SubsystemBase {
         .unless(() -> isHomed)
         .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
+
+    // public boolean hopperIsFull() {
+    //     double current = rollerMotor.getSupplyCurrent().getValue().in(Amps);
+
+    //     if (current > 1) {
+    //         return hopperIsFull = true;
+    //     } else {
+    //         return hopperIsFull = false;
+    //     }
+    // }
+    
 
     @Override
     public void initSendable(SendableBuilder builder) {

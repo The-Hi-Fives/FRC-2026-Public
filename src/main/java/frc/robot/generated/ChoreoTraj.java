@@ -27,35 +27,35 @@ public record ChoreoTraj(
     public static final ChoreoTraj AZToNZLeftSideTrajectory = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.empty(),
-	    13.20266,
+	    13.76805,
 	    new Pose2d(3.59, 5.5, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(3.36, 5.569, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$0 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(0),
-	    2.16577,
+	    2.17011,
 	    new Pose2d(3.59, 5.5, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(7.703, 7.2, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$1 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(1),
-	    3.2025999999999994,
+	    3.75626,
 	    new Pose2d(7.703, 7.2, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(6.32, 5.495, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$2 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(2),
-	    1.6287400000000005,
+	    1.6361299999999996,
 	    new Pose2d(6.32, 5.495, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$3 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(3),
-	    6.20555,
+	    6.205550000000001,
 	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(3.36, 5.569, Rotation2d.fromRadians(-0.785))
 	);

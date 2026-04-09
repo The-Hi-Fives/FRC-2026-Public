@@ -164,7 +164,11 @@ public class RobotContainer {
         operator.y().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
         operator.b().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
 
-        operator.rightTrigger().whileTrue(subsystemCommands.aimAndShoot("operator"));                     //Aim/Shoot
+        operator.rightTrigger().whileTrue(Commands.sequence(
+            shooter.runOnce(() -> shooter.setRPM(6000)),
+            hood.runOnce(() -> hood.setPosition(1)),
+            Commands.waitSeconds(1),
+            subsystemCommands.feed())); //Feeding                  //Aim/Shoot
 
         // operator.rightTrigger().whileTrue(Commands.run(() -> subsystemCommands.setFeedSpeed("FM")));
         // operator.rightTrigger().whileTrue(Commands.sequence(
@@ -186,7 +190,7 @@ public class RobotContainer {
         operator.x().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
         operator.a().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
 
-        operator.povUp().onTrue(Commands.parallel(hanger.positionCommand(Hanger.Position.HANGING), intake.cameraIntakePosition()));                 //Climb Hanging
+        operator.povUp().onTrue(Commands.parallel(hanger.positionCommand(Hanger.Position.HANGING)));                 //Climb Hanging
         operator.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));                  //Climb Hung
         operator.back().onTrue(hanger.homingCommand());                                        //Zero Climb
 

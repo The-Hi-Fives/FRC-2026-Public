@@ -145,7 +145,7 @@ public final class AutoRoutines {
          );
 
         //  nZToStartIntake.doneDelayed(1).onTrue(startIntakeToFuel.cmd());
-        nZToStartIntake.atTimeBeforeEnd(.5).onTrue(intake.intakeCommand());
+        nZToStartIntake.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
         nZToStartIntake.done().onTrue(startIntakeToFuel.cmd());
         //  startIntakeToFuel.atTimeBeforeEnd(.5).onTrue(intake.intakeCommand());
         startIntakeToFuel.done().onTrue(shoot.cmd());
@@ -185,7 +185,7 @@ public final class AutoRoutines {
          );
 
         //  nZToStartIntake.doneDelayed(1).onTrue(startIntakeToFuel.cmd());
-        nZToStartIntake.atTimeBeforeEnd(.5).onTrue(intake.intakeCommand());
+        nZToStartIntake.atTimeBeforeEnd(1).onTrue(intake.intakeCommand());
         nZToStartIntake.done().onTrue(startIntakeToFuel.cmd());
         //  startIntakeToFuel.atTimeBeforeEnd(.5).onTrue(intake.intakeCommand());
         startIntakeToFuel.done().onTrue(shoot.cmd());
