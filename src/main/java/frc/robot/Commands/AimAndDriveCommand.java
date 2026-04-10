@@ -72,7 +72,7 @@ public class AimAndDriveCommand extends Command {
         SmartDashboard.putNumber("robotPosition.y", robotPosition.getY());
 
 
-        if(robotPosition.getX() > Landmarks.inchesToMeters(182.11) && robotPosition.getX() < Landmarks.inchesToMeters(469.11))
+        if(robotPosition.getX() > Landmarks.inchesToMeters(182.11))
         {
             inMiddle = true;
         }

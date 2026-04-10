@@ -173,7 +173,7 @@ public class PrepareShotCommand extends Command {
         shooter.setRPM(shooterRPM);
         if(AimAndDriveCommand.inMiddle)
         {
-            hood.setPosition(0.65);
+            hood.setPosition(-0.000875213 * Math.pow(prevDistToTag, 2) + 0.547264 * prevDistToTag + 9); //0.65
         }
         else
         {

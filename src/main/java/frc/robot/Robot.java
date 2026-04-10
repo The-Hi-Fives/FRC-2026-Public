@@ -100,7 +100,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putString("Active Shift", shiftName);
         SmartDashboard.putNumber("Shift Countdown", Math.round(shiftTimeRemaning));
         SmartDashboard.putNumber("Battery %", Math.round(RobotController.getBatteryVoltage()));
-       
     }
 
     @Override

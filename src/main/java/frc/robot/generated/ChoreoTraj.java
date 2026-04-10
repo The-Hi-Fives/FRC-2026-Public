@@ -27,28 +27,28 @@ public record ChoreoTraj(
     public static final ChoreoTraj AZToNZLeftSideTrajectory = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.empty(),
-	    13.76805,
+	    13.02336,
 	    new Pose2d(3.59, 5.5, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(3.36, 5.569, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$0 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(0),
-	    2.17011,
+	    2.04712,
 	    new Pose2d(3.59, 5.5, Rotation2d.fromRadians(-0.785)),
-	    new Pose2d(7.703, 7.2, Rotation2d.fromRadians(-0.785))
+	    new Pose2d(6.993, 7.182, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$1 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(1),
-	    3.75626,
-	    new Pose2d(7.703, 7.2, Rotation2d.fromRadians(-0.785)),
+	    3.1978699999999995,
+	    new Pose2d(6.993, 7.182, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(6.32, 5.495, Rotation2d.fromRadians(-0.785))
 	);
 	public static final ChoreoTraj AZToNZLeftSideTrajectory$2 = new ChoreoTraj(
 	    "AZToNZLeftSideTrajectory",
 	    OptionalInt.of(2),
-	    1.6361299999999996,
+	    1.57282,
 	    new Pose2d(6.32, 5.495, Rotation2d.fromRadians(-0.785)),
 	    new Pose2d(3.268, 5.48, Rotation2d.fromRadians(-0.785))
 	);
@@ -62,28 +62,28 @@ public record ChoreoTraj(
 	public static final ChoreoTraj AZToNZRightSideTrajectory = new ChoreoTraj(
 	    "AZToNZRightSideTrajectory",
 	    OptionalInt.empty(),
-	    12.69961,
+	    12.3795,
 	    new Pose2d(3.59, 2.49, Rotation2d.fromRadians(0.785)),
 	    new Pose2d(3.374, 2.684, Rotation2d.fromRadians(0.785))
 	);
 	public static final ChoreoTraj AZToNZRightSideTrajectory$0 = new ChoreoTraj(
 	    "AZToNZRightSideTrajectory",
 	    OptionalInt.of(0),
-	    2.25205,
+	    2.37222,
 	    new Pose2d(3.59, 2.49, Rotation2d.fromRadians(0.785)),
 	    new Pose2d(7.703, 0.895, Rotation2d.fromRadians(2.356))
 	);
 	public static final ChoreoTraj AZToNZRightSideTrajectory$1 = new ChoreoTraj(
 	    "AZToNZRightSideTrajectory",
 	    OptionalInt.of(1),
-	    2.94964,
+	    2.5095199999999998,
 	    new Pose2d(7.703, 0.895, Rotation2d.fromRadians(2.356)),
 	    new Pose2d(6.482, 2.684, Rotation2d.fromRadians(1.833))
 	);
 	public static final ChoreoTraj AZToNZRightSideTrajectory$2 = new ChoreoTraj(
 	    "AZToNZRightSideTrajectory",
 	    OptionalInt.of(2),
-	    1.5628099999999998,
+	    1.5626500000000005,
 	    new Pose2d(6.482, 2.684, Rotation2d.fromRadians(1.833)),
 	    new Pose2d(3.4, 2.7, Rotation2d.fromRadians(0.785))
 	);
@@ -97,7 +97,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj DepotAndTowerTrajectory = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.empty(),
-	    9.56762,
+	    9.91453,
 	    new Pose2d(3.618, 6.02, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(1.034, 3.727, Rotation2d.fromRadians(3.142))
 	);
@@ -118,15 +118,15 @@ public record ChoreoTraj(
 	public static final ChoreoTraj DepotAndTowerTrajectory$2 = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.of(2),
-	    2.1324899999999998,
+	    1.64569,
 	    new Pose2d(2.997, 4.029, Rotation2d.fromRadians(0)),
-	    new Pose2d(1.778, 3.727, Rotation2d.fromRadians(3.142))
+	    new Pose2d(2.286, 3.727, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj DepotAndTowerTrajectory$3 = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.of(3),
-	    1.29115,
-	    new Pose2d(1.778, 3.727, Rotation2d.fromRadians(3.142)),
+	    2.124859999999999,
+	    new Pose2d(2.286, 3.727, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(1.034, 3.727, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj HubAndTowerTrajectory = new ChoreoTraj(

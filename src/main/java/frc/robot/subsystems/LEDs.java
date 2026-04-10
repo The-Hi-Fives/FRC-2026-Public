@@ -221,34 +221,34 @@ private RGBWColor getAllianceColorHood() {
         if (matchTime > 135) {
             m_candle.setControl(ledStatusColorGreen);
         } else if (matchTime > 130) {
-        if (shift1Active) {
+        if (!shift1Active) {
             m_candle.setControl(ledStatusColorGreen);
         } else {
             m_candle.setControl(ledStatusColorRed);
         }   //Shift 1
         } else if (matchTime > 105) {
-        if (!shift1Active) {
+        if (shift1Active) {
             m_candle.setControl(ledStatusColorGreen);
         } else {
             m_candle.setControl(ledStatusColorRed);
         }
         } else if (matchTime > 80) {
             //Shift 2
-        if (shift1Active) {
+        if (!shift1Active) {
             m_candle.setControl(ledStatusColorGreen);
         } else {
             m_candle.setControl(ledStatusColorRed);
         }
         } else if (matchTime > 55) {
             //Shift 3
-        if (!shift1Active) {
+        if (shift1Active) {
             m_candle.setControl(ledStatusColorGreen);
         } else {
             m_candle.setControl(ledStatusColorRed);
         }
         } else if (matchTime > 30) {
             //Shift 4
-        if (shift1Active) {
+        if (!shift1Active) {
             m_candle.setControl(ledStatusColorGreen);
         } else {
             m_candle.setControl(ledStatusColorRed);

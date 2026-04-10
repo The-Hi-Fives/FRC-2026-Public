@@ -156,7 +156,7 @@ public class RobotContainer {
         driver.rightBumper().whileTrue(Commands.sequence(
             shooter.runOnce(() -> shooter.setRPM(2800)),
             hood.runOnce(() -> hood.setPosition(0.3)),
-            Commands.waitSeconds(.1),
+            Commands.waitSeconds(1),
             subsystemCommands.feed())); //Feeding
         
         //Operator Controls\\  
@@ -164,11 +164,13 @@ public class RobotContainer {
         operator.y().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("U")));    //Shooter Speed Up
         operator.b().whileTrue(Commands.runOnce(() -> subsystemCommands.setRPM("D")));    //Shooter Speed Down
 
-        operator.rightTrigger().whileTrue(Commands.sequence(
+        operator.rightStick().whileTrue(Commands.sequence(
             shooter.runOnce(() -> shooter.setRPM(6000)),
             hood.runOnce(() -> hood.setPosition(1)),
             Commands.waitSeconds(1),
             subsystemCommands.feed())); //Feeding                  //Aim/Shoot
+
+        operator.rightTrigger().whileTrue(subsystemCommands.aimAndShoot("operator"));
 
         // operator.rightTrigger().whileTrue(Commands.run(() -> subsystemCommands.setFeedSpeed("FM")));
         // operator.rightTrigger().whileTrue(Commands.sequence(

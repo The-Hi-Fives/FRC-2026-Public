@@ -71,7 +71,6 @@ public final class AutoRoutines {
     }
 
     public void configure() {
-        autoChooser.addRoutine("Outpost and Depot", this::outpostAndDepotRoutine);
         autoChooser.addRoutine("AZ -> NZ Right", this::allianceZoneToNeutralZoneRightSideRoutine);
         autoChooser.addRoutine("AZ -> NZ Left", this::allianceZoneToNeutralZoneLeftSideRoutine);
         autoChooser.addRoutine("Depot to Tower", this::depotToHubToTowerTrajectory);
