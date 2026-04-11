@@ -255,25 +255,25 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             }
 
             // ----------------- Debug -----------------
-        //     SmartDashboard.putNumber("VisionScore",           score);
-        //     SmartDashboard.putNumber("VisionAngleDiff",       angleDiff);
-        //     SmartDashboard.putNumber("VisionXYStdDev",        xyStdDev);
-        //     SmartDashboard.putNumber("VisionThetaStdDevDeg",  Math.toDegrees(thetaStdDev));
-        //     SmartDashboard.putNumber("mt2_left.avgTagDist",   mt2_left.avgTagDist);
-        //     SmartDashboard.putNumber("mt2_right.avgTagDist",  mt2_right.avgTagDist);
-        //     SmartDashboard.putNumber("pose x",     getPose().getX());
-        //     SmartDashboard.putNumber("pose y",     getPose().getY());
-        //     SmartDashboard.putNumber("pose rot",   getPose().getRotation().getDegrees());
-        //     SmartDashboard.putNumber("vision x",   avgPose.getX());
-        //     SmartDashboard.putNumber("vision y",   avgPose.getY());
-        //     SmartDashboard.putNumber("avgPose rot", avgPose.getRotation().getDegrees());
-        //     SmartDashboard.putNumber("diff angle", angleDiff);
+            SmartDashboard.putNumber("VisionScore",           score);
+            SmartDashboard.putNumber("VisionAngleDiff",       angleDiff);
+            SmartDashboard.putNumber("VisionXYStdDev",        xyStdDev);
+            SmartDashboard.putNumber("VisionThetaStdDevDeg",  Math.toDegrees(thetaStdDev));
+            SmartDashboard.putNumber("mt2_left.avgTagDist",   mt2_left.avgTagDist);
+            SmartDashboard.putNumber("mt2_right.avgTagDist",  mt2_right.avgTagDist);
+            SmartDashboard.putNumber("pose x",     getPose().getX());
+            SmartDashboard.putNumber("pose y",     getPose().getY());
+            SmartDashboard.putNumber("pose rot",   getPose().getRotation().getDegrees());
+            SmartDashboard.putNumber("vision x",   avgPose.getX());
+            SmartDashboard.putNumber("vision y",   avgPose.getY());
+            SmartDashboard.putNumber("avgPose rot", avgPose.getRotation().getDegrees());
+            SmartDashboard.putNumber("diff angle", angleDiff);
          }
 
-        // SmartDashboard.putNumber("estimated x",    getPose().getX());
-        // SmartDashboard.putNumber("estimated y",    getPose().getY());
-        // SmartDashboard.putNumber("rawGyro",        rawGyroRotation.getDegrees());
-        // SmartDashboard.putNumber("odometry rotation", getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("estimated x",    getPose().getX());
+        SmartDashboard.putNumber("estimated y",    getPose().getY());
+        SmartDashboard.putNumber("rawGyro",        rawGyroRotation.getDegrees());
+        SmartDashboard.putNumber("odometry rotation", getPose().getRotation().getDegrees());
     }
 
     private void tryInitializeFromMT1(

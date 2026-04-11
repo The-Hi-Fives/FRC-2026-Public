@@ -97,7 +97,7 @@ public record ChoreoTraj(
 	public static final ChoreoTraj DepotAndTowerTrajectory = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.empty(),
-	    9.91453,
+	    13.13438,
 	    new Pose2d(3.618, 6.02, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(1.034, 3.727, Rotation2d.fromRadians(3.142))
 	);
@@ -111,21 +111,21 @@ public record ChoreoTraj(
 	public static final ChoreoTraj DepotAndTowerTrajectory$1 = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.of(1),
-	    4.5360499999999995,
+	    4.80673,
 	    new Pose2d(1.875, 5.969, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(2.997, 4.029, Rotation2d.fromRadians(0))
 	);
 	public static final ChoreoTraj DepotAndTowerTrajectory$2 = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.of(2),
-	    1.64569,
+	    2.5727700000000002,
 	    new Pose2d(2.997, 4.029, Rotation2d.fromRadians(0)),
 	    new Pose2d(2.286, 3.727, Rotation2d.fromRadians(3.142))
 	);
 	public static final ChoreoTraj DepotAndTowerTrajectory$3 = new ChoreoTraj(
 	    "DepotAndTowerTrajectory",
 	    OptionalInt.of(3),
-	    2.124859999999999,
+	    4.14695,
 	    new Pose2d(2.286, 3.727, Rotation2d.fromRadians(3.142)),
 	    new Pose2d(1.034, 3.727, Rotation2d.fromRadians(3.142))
 	);

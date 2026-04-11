@@ -230,7 +230,7 @@ public final class AutoRoutines {
         //     );
 
         shoot.atTimeBeforeEnd(0.2).onTrue(Commands.sequence(subsystemCommands.aimAndShoot("driver").withTimeout(5),
-        toHang.cmd(), hanger.positionCommand(Position.HANGING)));
+        toHang.cmd()));
 
             toHang.done().onTrue(hang.cmd());
             hang.done().onTrue(hanger.positionCommand(Position.HUNG));
