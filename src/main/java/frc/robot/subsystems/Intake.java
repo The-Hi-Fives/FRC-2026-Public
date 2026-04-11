@@ -303,6 +303,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -313,6 +314,7 @@ import edu.wpi.first.units.TorqueUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -324,6 +326,9 @@ import frc.robot.Constants.KrakenX60;
 import frc.robot.Ports;
 
 public class Intake extends SubsystemBase {
+
+private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
+
     public enum Speed {
         STOP(0),
         INTAKE(0.8),
@@ -408,6 +413,13 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putData(this);
     }
 
+    public void setRPM(double rpm) {
+            rollerMotor.setControl(
+                velocityRequest
+                    .withVelocity(RPM.of(rpm))
+            );
+        }
+
     private void configurePivotMotor() {
         final TalonFXConfiguration config = new TalonFXConfiguration()
             .withMotorOutput(
@@ -417,7 +429,58 @@ public class Intake extends SubsystemBase {
             )
             .withCurrentLimits(
                 new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(Amps.of(120))
+                    .withStatorCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(Amps.of(70))
+                    .withSupplyCurrentLimitEnable(true)
+            )
+            .withFeedback(
+                new FeedbackConfigs()
+                    .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                    .withSensorToMechanismRatio(kPivotReduction)
+            )
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicCruiseVelocity(kMaxPivotSpeed)
+                    .withMotionMagicAcceleration(kMaxPivotSpeed.per(Second))
+            )
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(0.5)
+                    .withKI(2)
+                    .withKD(0)
+                    .withKV(12.0 / kMaxPivotSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
+            );
+        pivotMotor.getConfigurator().apply(config);
+    }
+
+    private void configureRollerMotor() {
+        final TalonFXConfiguration config = new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake)
+            )
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(Amps.of(80))
+                    .withStatorCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(Amps.of(70))
+                    .withSupplyCurrentLimitEnable(true)
+            );
+        rollerMotor.getConfigurator().apply(config);
+    }
+
+    private void configureVerlocityVoltageRoller() {
+         final TalonFXConfiguration config = new TalonFXConfiguration()
+            .withMotorOutput(
+                new MotorOutputConfigs()
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withNeutralMode(NeutralModeValue.Brake)
+            )
+            .withCurrentLimits(
+                new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(Amps.of(150))
                     .withStatorCurrentLimitEnable(true)
                     .withSupplyCurrentLimit(Amps.of(70))
                     .withSupplyCurrentLimitEnable(true)
@@ -438,23 +501,6 @@ public class Intake extends SubsystemBase {
                     .withKI(0)
                     .withKD(0)
                     .withKV(12.0 / kMaxPivotSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
-            );
-        pivotMotor.getConfigurator().apply(config);
-    }
-
-    private void configureRollerMotor() {
-        final TalonFXConfiguration config = new TalonFXConfiguration()
-            .withMotorOutput(
-                new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
-                    .withNeutralMode(NeutralModeValue.Brake)
-            )
-            .withCurrentLimits(
-                new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(Amps.of(80))
-                    .withStatorCurrentLimitEnable(true)
-                    .withSupplyCurrentLimit(Amps.of(70))
-                    .withSupplyCurrentLimitEnable(true)
             );
         rollerMotor.getConfigurator().apply(config);
     }
@@ -502,6 +548,20 @@ public class Intake extends SubsystemBase {
 
         );
     }
+
+    public Command intaketeleopCommand() {
+        return startEnd(
+            () -> {
+                setRPM(6000);
+                set(Position.INTAKE);
+            },
+            () -> setRPM(0)
+
+        );
+
+    }
+
+        
 
     public Command intakeRollers() {
          return startEnd(

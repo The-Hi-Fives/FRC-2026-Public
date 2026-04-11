@@ -194,7 +194,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             if (distance > 4.0) return;
 
             // Beyond 2.5m, only accept if multiple tags and high score
-            if (distance > 2.5 && tagCount < 2) return;
+            if (distance > 2.0 && tagCount <= 2) return;
 
             // ----------------- Stage 2: Compute Metrics -----------------
             double angleDiff = rawGyroRotation.minus(avgPose.getRotation()).getDegrees();

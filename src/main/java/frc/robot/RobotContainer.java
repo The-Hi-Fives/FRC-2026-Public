@@ -114,12 +114,11 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
         (RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
-            .onTrue(hood.homingCommand())
-            .onTrue(hanger.hangerUp());        
+            .onTrue(hood.homingCommand());
 
         (RobotModeTriggers.autonomous())
             .onTrue(intake.homingCommand())
-            .onTrue(hanger.positionCommand(Position.EXTEND_HOPPER));
+            .onTrue(hanger.positionCommand(Position.HANGING));
 
         
         

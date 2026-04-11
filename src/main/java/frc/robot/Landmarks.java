@@ -30,7 +30,7 @@ public class Landmarks {
         // Is this correct???
         // final double RED_HUB_X = inchesToMeters(316.64) - BLUE_HUB_X;
         final double RED_HUB_X = inchesToMeters(469.11);
-        final double HUB_Y = inchesToMeters(316.64) / 2;
+        final double HUB_Y = inchesToMeters(317.69) / 2;
         final double HUB_Z = 1.83;
         final Translation2d HUB_POSE_BLUE = new Translation2d(BLUE_HUB_X, HUB_Y);
         final Translation2d HUB_POSE_RED = new Translation2d(RED_HUB_X, HUB_Y);
