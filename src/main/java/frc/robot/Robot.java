@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Swerve;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -22,6 +23,7 @@ import frc.robot.subsystems.Intake;
  */
 public class Robot extends TimedRobot {
     private final RobotContainer m_robotContainer;
+    Swerve swerve;
 
 
     /**
@@ -48,12 +50,16 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
     SmartDashboard.putNumber("Match Time: ", DriverStation.getMatchTime());
+    
+
+
        
         // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+    
 
         double distanceFromTag = 0.0;
         int[] validTags = {25, 26, 27, 20, 24, 21, 19, 20, 18, 17, 31, 8, 5, 4, 3, 2, 11, 10, 9, 1, 22, 1, 6};
@@ -96,7 +102,6 @@ public class Robot extends TimedRobot {
                 shiftTimeRemaning = time;
             }
         }
-
         SmartDashboard.putString("Active Shift", shiftName);
         SmartDashboard.putNumber("Shift Countdown", Math.round(shiftTimeRemaning));
         SmartDashboard.putNumber("Battery %", Math.round(RobotController.getBatteryVoltage()));

@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -92,6 +93,7 @@ public class RobotContainer {
         configureBindings();
         autoRoutines.configure();
         swerve.registerTelemetry(swerveTelemetry::telemeterize);
+
     }
     
     /**
@@ -114,7 +116,8 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop())
         (RobotModeTriggers.teleop())
             .onTrue(intake.homingCommand())
-            .onTrue(hood.homingCommand());
+            .onTrue(hood.homingCommand())
+            .onTrue(hanger.homingCommand());
 
         (RobotModeTriggers.autonomous())
             .onTrue(intake.homingCommand())
@@ -191,7 +194,7 @@ public class RobotContainer {
         operator.x().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("U"))); //Hood Angle Up
         operator.a().whileTrue(Commands.runOnce(() -> subsystemCommands.setHoodPercent("D"))); //Hood Angle Down
 
-        operator.povUp().onTrue(Commands.parallel(hanger.positionCommand(Hanger.Position.HANGING)));                 //Climb Hanging
+        operator.povUp().onTrue(hanger.positionCommand(Hanger.Position.HANGING));                 //Climb Hanging
         operator.povDown().onTrue(hanger.positionCommand(Hanger.Position.HUNG));                  //Climb Hung
         operator.back().onTrue(hanger.homingCommand());                                        //Zero Climb
 

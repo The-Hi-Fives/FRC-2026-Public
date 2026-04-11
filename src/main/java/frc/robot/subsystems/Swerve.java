@@ -20,6 +20,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,7 +38,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private boolean gyroCalibrated = false;
     private boolean poseInitialized = false;
     private int stableFrameCount = 0;
-    private static final int INIT_THRESHOLD = 25; // ~0.5s of stable frames
+    private static final int INIT_THRESHOLD = 15; // ~0.5s of stable frames
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -145,7 +146,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     // Vision pipeline (migrated from Drive.java)
     // -------------------------------------------------------------------------
 
-    private void visionPipeline() {
+    public void visionPipeline() {
         Rotation2d rawGyroRotation = getRawGyroRotation();
         double yawVelRadPerSec = getYawVelocityRadPerSec();
 
@@ -180,7 +181,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         if (mt2_left.tagCount < 1 && mt2_right.tagCount < 1) reject = true;
 
         // Reject if spinning too fast
-        if (Math.abs(yawVelRadPerSec) > Math.toRadians(120)) reject = true;
+        // if (Math.abs(yawVelRadPerSec) > Math.toRadians(120)) reject = true;
 
         if (!reject) {
             // ----------------- Combine Measurements -----------------
@@ -254,25 +255,25 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             }
 
             // ----------------- Debug -----------------
-            SmartDashboard.putNumber("VisionScore",           score);
-            SmartDashboard.putNumber("VisionAngleDiff",       angleDiff);
-            SmartDashboard.putNumber("VisionXYStdDev",        xyStdDev);
-            SmartDashboard.putNumber("VisionThetaStdDevDeg",  Math.toDegrees(thetaStdDev));
-            SmartDashboard.putNumber("mt2_left.avgTagDist",   mt2_left.avgTagDist);
-            SmartDashboard.putNumber("mt2_right.avgTagDist",  mt2_right.avgTagDist);
-            SmartDashboard.putNumber("pose x",     getPose().getX());
-            SmartDashboard.putNumber("pose y",     getPose().getY());
-            SmartDashboard.putNumber("pose rot",   getPose().getRotation().getDegrees());
-            SmartDashboard.putNumber("vision x",   avgPose.getX());
-            SmartDashboard.putNumber("vision y",   avgPose.getY());
-            SmartDashboard.putNumber("avgPose rot", avgPose.getRotation().getDegrees());
-            SmartDashboard.putNumber("diff angle", angleDiff);
-        }
+        //     SmartDashboard.putNumber("VisionScore",           score);
+        //     SmartDashboard.putNumber("VisionAngleDiff",       angleDiff);
+        //     SmartDashboard.putNumber("VisionXYStdDev",        xyStdDev);
+        //     SmartDashboard.putNumber("VisionThetaStdDevDeg",  Math.toDegrees(thetaStdDev));
+        //     SmartDashboard.putNumber("mt2_left.avgTagDist",   mt2_left.avgTagDist);
+        //     SmartDashboard.putNumber("mt2_right.avgTagDist",  mt2_right.avgTagDist);
+        //     SmartDashboard.putNumber("pose x",     getPose().getX());
+        //     SmartDashboard.putNumber("pose y",     getPose().getY());
+        //     SmartDashboard.putNumber("pose rot",   getPose().getRotation().getDegrees());
+        //     SmartDashboard.putNumber("vision x",   avgPose.getX());
+        //     SmartDashboard.putNumber("vision y",   avgPose.getY());
+        //     SmartDashboard.putNumber("avgPose rot", avgPose.getRotation().getDegrees());
+        //     SmartDashboard.putNumber("diff angle", angleDiff);
+         }
 
-        SmartDashboard.putNumber("estimated x",    getPose().getX());
-        SmartDashboard.putNumber("estimated y",    getPose().getY());
-        SmartDashboard.putNumber("rawGyro",        rawGyroRotation.getDegrees());
-        SmartDashboard.putNumber("odometry rotation", getPose().getRotation().getDegrees());
+        // SmartDashboard.putNumber("estimated x",    getPose().getX());
+        // SmartDashboard.putNumber("estimated y",    getPose().getY());
+        // SmartDashboard.putNumber("rawGyro",        rawGyroRotation.getDegrees());
+        // SmartDashboard.putNumber("odometry rotation", getPose().getRotation().getDegrees());
     }
 
     private void tryInitializeFromMT1(
@@ -284,7 +285,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         // Need close tags, multiple tags, and robot nearly still
         boolean goodMT1 = mt1Left != null && mt1Right != null
                 && mt1Left.tagCount >= 1 && mt1Right.tagCount >= 1
-                && mt1Left.avgTagDist < 2.5 && mt1Right.avgTagDist < 2.5;
+                && mt1Left.avgTagDist < 2.0 && mt1Right.avgTagDist < 2.0;
         boolean nearlyStationary = Math.abs(yawVelRadPerSec) < Math.toRadians(5);
 
         if (goodMT1 && nearlyStationary) {
